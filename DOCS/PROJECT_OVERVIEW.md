@@ -39,6 +39,18 @@ users → org_members → orgs → projects → (prompts → prompt_versions, da
 
 ---
 
+
+## Documentation Health Rules
+
+Use these rules to keep context continuity across sessions:
+
+- **Single source of truth:** `PROJECT_OVERVIEW.md` owns global decisions and status.
+- **Canonical API prefixes:** all backend endpoints are documented with the `/api/...` prefix.
+- **Status synchronization:** when a task is done, update both this tracker and the relevant `CONTEXT_*.md` checklist in the same commit.
+- **No contradictory architecture notes:** if a fallback pattern is added (for example, CORS/provider compatibility), document why it still preserves BYOK and security assumptions.
+
+---
+
 ## Progress Tracker
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.

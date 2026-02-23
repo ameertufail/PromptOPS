@@ -72,7 +72,7 @@ Located in `apps/web/src/lib/llm-client.ts`. Abstraction with generate(prompt, c
 
 Implementations for OpenAI (chat completions API) and Anthropic (messages API). Calls go directly from browser to provider — never through our backend. User's decrypted provider key used.
 
-**CORS note:** OpenAI allows browser requests. Anthropic requires `anthropic-dangerous-direct-browser-access` header. If CORS blocks, fallback is a thin proxy Worker endpoint that adds user's key and forwards.
+**CORS note:** OpenAI allows browser requests. Anthropic requires `anthropic-dangerous-direct-browser-access` header. If a provider blocks direct browser access, that provider is marked unsupported for browser-direct BYOK in MVP; compatibility work is tracked explicitly before enabling any relay mode.
 
 ## Verdict Calculation
 
@@ -91,7 +91,7 @@ Before processing, the engine checks which items already have results (from a pr
 ## Error Handling
 
 - LLM call fails: retry once after 2 seconds
-- Retry fails: mark item as ERROR verdict, continue with next
+- Retry fails: store the error in metrics and set verdict to UNKNOWN, then continue with next item
 - 5+ consecutive errors: pause and show error to user
 - All errors stored in item metrics
 

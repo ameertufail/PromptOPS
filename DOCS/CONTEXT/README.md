@@ -39,3 +39,12 @@ This way your next session knows exactly where you left off.
 ## File Sizes
 
 All files are pure context — no code blocks, no implementations. Just what things are, how they connect, what's been decided, and what's done.
+
+
+## Documentation Consistency Checklist
+
+Before ending a session, verify:
+1. Endpoint names match `CONTEXT_BACKEND.md` canonical `/api/...` paths.
+2. Any architecture change is reflected in both `PROJECT_OVERVIEW.md` and the relevant `CONTEXT_*.md`.
+3. Progress checkboxes are updated in every affected context file.
+4. New constraints or caveats are written as explicit rules, not hidden in examples.

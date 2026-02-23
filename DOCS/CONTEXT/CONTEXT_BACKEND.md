@@ -25,23 +25,74 @@ DB (D1), STORAGE (R2), secrets: JWT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECR
 
 Every route: validate with Zod → RBAC middleware → business logic → audit event → JSON response. Error format: `{ error, message, details }`.
 
-## All Endpoints
+## All Endpoints (Canonical Paths)
 
-**Auth:** GET github, GET callback, GET me, POST logout
+**Auth**
+- `GET /api/auth/github`
+- `GET /api/auth/callback`
+- `GET /api/auth/me`
+- `POST /api/auth/logout`
 
-**Orgs:** POST create, GET list, GET detail, POST/PATCH/DELETE members, GET audit-events
+**Orgs**
+- `POST /api/orgs`
+- `GET /api/orgs`
+- `GET /api/orgs/:orgId`
+- `POST /api/orgs/:orgId/members`
+- `PATCH /api/orgs/:orgId/members/:userId`
+- `DELETE /api/orgs/:orgId/members/:userId`
+- `GET /api/orgs/:orgId/audit-events`
 
-**Projects:** POST create [MEMBER+], GET list [VIEWER+], GET detail [VIEWER+], PATCH update [ADMIN+], DELETE [OWNER], POST seed-demo [MEMBER+]
+**Projects**
+- `POST /api/orgs/:orgId/projects` [MEMBER+]
+- `GET /api/orgs/:orgId/projects` [VIEWER+]
+- `GET /api/projects/:projectId` [VIEWER+]
+- `PATCH /api/projects/:projectId` [ADMIN+]
+- `DELETE /api/projects/:projectId` [OWNER]
+- `POST /api/projects/:projectId/seed-demo` [MEMBER+]
 
-**Prompts:** POST create [MEMBER+], GET list [VIEWER+], GET detail+versions [VIEWER+], POST version [MEMBER+], PATCH release [ADMIN+], PATCH archive [MEMBER+], GET diff [VIEWER+]
+**Prompts**
+- `POST /api/projects/:projectId/prompts` [MEMBER+]
+- `GET /api/projects/:projectId/prompts` [VIEWER+]
+- `GET /api/prompts/:promptId` [VIEWER+]
+- `POST /api/prompts/:promptId/versions` [MEMBER+]
+- `PATCH /api/prompt-versions/:versionId/release` [ADMIN+]
+- `PATCH /api/prompt-versions/:versionId/archive` [MEMBER+]
+- `GET /api/prompts/:promptId/diff?baseVersionId=&candidateVersionId=` [VIEWER+]
 
-**Datasets:** POST create [MEMBER+], GET list [VIEWER+], GET detail+items [VIEWER+], PATCH update [MEMBER+], DELETE [ADMIN+], POST item [MEMBER+], POST bulk JSONL [MEMBER+], PATCH/DELETE item [MEMBER+]
+**Datasets**
+- `POST /api/projects/:projectId/datasets` [MEMBER+]
+- `GET /api/projects/:projectId/datasets` [VIEWER+]
+- `GET /api/datasets/:datasetId` [VIEWER+]
+- `PATCH /api/datasets/:datasetId` [MEMBER+]
+- `DELETE /api/datasets/:datasetId` [ADMIN+]
+- `POST /api/datasets/:datasetId/items` [MEMBER+]
+- `POST /api/datasets/:datasetId/items/bulk-jsonl` [MEMBER+]
+- `PATCH /api/dataset-items/:itemId` [MEMBER+]
+- `DELETE /api/dataset-items/:itemId` [MEMBER+]
 
-**Evals:** POST config [MEMBER+], GET configs [VIEWER+], GET/PATCH config [MEMBER+], POST run [MEMBER+], GET run status [VIEWER+], POST run item [MEMBER+], PATCH run complete [MEMBER+], GET run items [VIEWER+]
+**Evals**
+- `POST /api/projects/:projectId/eval-configs` [MEMBER+]
+- `GET /api/projects/:projectId/eval-configs` [VIEWER+]
+- `GET /api/eval-configs/:configId` [VIEWER+]
+- `PATCH /api/eval-configs/:configId` [MEMBER+]
+- `POST /api/eval-runs` [MEMBER+]
+- `GET /api/eval-runs/:runId` [VIEWER+]
+- `POST /api/eval-runs/:runId/items` [MEMBER+]
+- `PATCH /api/eval-runs/:runId/complete` [MEMBER+]
+- `GET /api/eval-runs/:runId/items` [VIEWER+]
 
-**SDK Runs (API key auth):** POST /runs, GET project runs [VIEWER+], GET project stats [VIEWER+]
+**SDK Runs (API key auth)**
+- `POST /api/runs`
+- `GET /api/projects/:projectId/runs` [VIEWER+]
+- `GET /api/projects/:projectId/runs/stats` [VIEWER+]
 
-**Keys:** POST/GET/DELETE api-keys [ADMIN+], POST/GET/DELETE provider-keys [ADMIN+]
+**Keys**
+- `POST /api/projects/:projectId/api-keys` [ADMIN+]
+- `GET /api/projects/:projectId/api-keys` [ADMIN+]
+- `DELETE /api/api-keys/:keyId` [ADMIN+]
+- `POST /api/projects/:projectId/provider-keys` [ADMIN+]
+- `GET /api/projects/:projectId/provider-keys` [ADMIN+]
+- `DELETE /api/provider-keys/:keyId` [ADMIN+]
 
 ## Key Patterns
 

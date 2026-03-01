@@ -1,4 +1,4 @@
-# CONTEXT: Authentication & Authorization
+﻿# CONTEXT: Authentication & Authorization
 
 > Attach with: PROJECT_OVERVIEW.md
 
@@ -7,12 +7,12 @@
 ## How Auth Works
 
 Two methods:
-1. **JWT (cookie):** Dashboard users. GitHub OAuth → backend issues JWT → HttpOnly cookie `po_session`. 7-day expiry.
+1. **JWT (cookie):** Dashboard users. GitHub OAuth â†’ backend issues JWT â†’ HttpOnly cookie `po_session`. 7-day expiry.
 2. **API Key (header):** SDK only. Format `po_sk_` + 32 chars. Sent as `Authorization: Bearer po_sk_...`. Project-scoped.
 
 ## GitHub OAuth Flow
 
-User clicks login → backend redirects to GitHub (with CSRF state param) → GitHub redirects back with code → backend exchanges code for token → fetches profile → upserts user → issues JWT cookie.
+User clicks login â†’ backend redirects to GitHub (with CSRF state param) â†’ GitHub redirects back with code â†’ backend exchanges code for token â†’ fetches profile â†’ upserts user â†’ issues JWT cookie.
 
 Secrets needed: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, JWT_SECRET (Wrangler secrets)
 
@@ -20,13 +20,13 @@ Secrets needed: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, JWT_SECRET (Wrangler sec
 
 | Action | OWNER | ADMIN | MEMBER | VIEWER |
 |--------|-------|-------|--------|--------|
-| Read anything | ✅ | ✅ | ✅ | ✅ |
-| Create/edit prompts, datasets | ✅ | ✅ | ✅ | ❌ |
-| Release prompt versions | ✅ | ✅ | ❌ | ❌ |
-| Manage members, API keys | ✅ | ✅ | ❌ | ❌ |
-| Delete project/org | ✅ | ❌ | ❌ | ❌ |
+| Read anything | âœ… | âœ… | âœ… | âœ… |
+| Create/edit prompts, datasets | âœ… | âœ… | âœ… | âŒ |
+| Release prompt versions | âœ… | âœ… | âŒ | âŒ |
+| Manage members, API keys | âœ… | âœ… | âŒ | âŒ |
+| Delete project/org | âœ… | âŒ | âŒ | âŒ |
 
-Resolution: request → look up project → get org_id → check org_members for role → 403 if insufficient.
+Resolution: request â†’ look up project â†’ get org_id â†’ check org_members for role â†’ 403 if insufficient.
 
 ## API Keys
 
@@ -67,3 +67,12 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 - [ ] Org creation + switcher UI
 - [ ] API key management UI
 - [ ] Provider key management UI
+
+
+## Completion Notes
+
+- Format: `YYYY-MM-DD - Task X.Y - one-line summary`
+- Add newest entry at the top.
+- (no completed tasks yet)
+
+

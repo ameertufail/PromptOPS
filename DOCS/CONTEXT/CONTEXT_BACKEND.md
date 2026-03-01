@@ -1,4 +1,4 @@
-# CONTEXT: Backend API
+﻿# CONTEXT: Backend API
 
 > Attach with: PROJECT_OVERVIEW.md
 
@@ -10,12 +10,12 @@ Hono.js on Cloudflare Workers. Location: `apps/api/`.
 
 ## Structure
 
-- `src/index.ts` — Entry, route registration, CORS, logging
-- `src/routes/` — auth, orgs, projects, prompts, datasets, evals, runs, keys, demo
-- `src/middleware/` — auth, rbac, audit, rateLimit
-- `src/services/` — guardrails, diff, summary computation
-- `src/db/` — migrations/ and queries.ts
-- `src/lib/` — crypto, ulid, errors, validation
+- `src/index.ts` â€” Entry, route registration, CORS, logging
+- `src/routes/` â€” auth, orgs, projects, prompts, datasets, evals, runs, keys, demo
+- `src/middleware/` â€” auth, rbac, audit, rateLimit
+- `src/services/` â€” guardrails, diff, summary computation
+- `src/db/` â€” migrations/ and queries.ts
+- `src/lib/` â€” crypto, ulid, errors, validation
 
 ## Worker Bindings
 
@@ -23,7 +23,7 @@ DB (D1), STORAGE (R2), secrets: JWT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECR
 
 ## Route Pattern
 
-Every route: validate with Zod → RBAC middleware → business logic → audit event → JSON response. Error format: `{ error, message, details }`.
+Every route: validate with Zod â†’ RBAC middleware â†’ business logic â†’ audit event â†’ JSON response. Error format: `{ error, message, details }`.
 
 ## All Endpoints
 
@@ -76,3 +76,12 @@ Every route: validate with Zod → RBAC middleware → business logic → audit 
 - [ ] API key routes
 - [ ] Provider key routes
 - [ ] Demo seed endpoint
+
+
+## Completion Notes
+
+- Format: `YYYY-MM-DD - Task X.Y - one-line summary`
+- Add newest entry at the top.
+- (no completed tasks yet)
+
+

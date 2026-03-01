@@ -1,4 +1,4 @@
-# CONTEXT: Database & Data Model
+﻿# CONTEXT: Database & Data Model
 
 > Attach with: PROJECT_OVERVIEW.md
 
@@ -19,35 +19,35 @@ Free tier: 5M reads/day, 100K writes/day, 5GB. Location: `apps/api/src/db/`.
 
 ## All Tables (15)
 
-**users** — id, github_id (unique), email, name, avatar_url, created_at
+**users** â€” id, github_id (unique), email, name, avatar_url, created_at
 
-**orgs** — id, name, slug (unique), created_at
+**orgs** â€” id, name, slug (unique), created_at
 
-**org_members** — org_id+user_id (PK), role (OWNER/ADMIN/MEMBER/VIEWER), created_at
+**org_members** â€” org_id+user_id (PK), role (OWNER/ADMIN/MEMBER/VIEWER), created_at
 
-**projects** — id, org_id, name, slug, description, created_at. Unique(org_id, slug)
+**projects** â€” id, org_id, name, slug, description, created_at. Unique(org_id, slug)
 
-**prompts** — id, project_id, name, description, created_by, created_at
+**prompts** â€” id, project_id, name, description, created_by, created_at
 
-**prompt_versions** — id, prompt_id, version_number, content (template), variables_schema (JSON), model_config (JSON), status (DRAFT/RELEASED/ARCHIVED), created_by, created_at. Unique(prompt_id, version_number). Immutable.
+**prompt_versions** â€” id, prompt_id, version_number, content (template), variables_schema (JSON), model_config (JSON), status (DRAFT/RELEASED/ARCHIVED), created_by, created_at. Unique(prompt_id, version_number). Immutable.
 
-**datasets** — id, project_id, name, description, type (GENERATION/EXTRACTION/CLASSIFICATION), item_count (denormalized), created_by, created_at
+**datasets** â€” id, project_id, name, description, type (GENERATION/EXTRACTION/CLASSIFICATION), item_count (denormalized), created_by, created_at
 
-**dataset_items** — id, dataset_id, input (JSON), expected_output (JSON, nullable), rubric (nullable), tags (JSON array, nullable), sort_order, created_at
+**dataset_items** â€” id, dataset_id, input (JSON), expected_output (JSON, nullable), rubric (nullable), tags (JSON array, nullable), sort_order, created_at
 
-**eval_configs** — id, project_id, name, dataset_id, rules (JSON — checks, guardrails, judge, thresholds, comparison settings), created_by, created_at
+**eval_configs** â€” id, project_id, name, dataset_id, rules (JSON â€” checks, guardrails, judge, thresholds, comparison settings), created_by, created_at
 
-**eval_runs** — id, eval_config_id, base_version_id, candidate_version_id, status (QUEUED/RUNNING/COMPLETED/FAILED), progress_current, progress_total, summary (JSON), error_message, created_by, created_at, finished_at
+**eval_runs** â€” id, eval_config_id, base_version_id, candidate_version_id, status (QUEUED/RUNNING/COMPLETED/FAILED), progress_current, progress_total, summary (JSON), error_message, created_by, created_at, finished_at
 
-**eval_run_items** — id, eval_run_id, dataset_item_id, base_output, candidate_output, base_metrics (JSON), candidate_metrics (JSON), delta (JSON), verdict (IMPROVED/REGRESSED/SAME/UNKNOWN), created_at
+**eval_run_items** â€” id, eval_run_id, dataset_item_id, base_output, candidate_output, base_metrics (JSON), candidate_metrics (JSON), delta (JSON), verdict (IMPROVED/REGRESSED/SAME/UNKNOWN), created_at
 
-**runs** — id, project_id, prompt_version_id (nullable), input (JSON), output, metrics (JSON), source (SDK/UI/EVAL), created_at
+**runs** â€” id, project_id, prompt_version_id (nullable), input (JSON), output, metrics (JSON), source (SDK/UI/EVAL), created_at
 
-**api_keys** — id, project_id, name, key_hash, key_prefix, last_used_at, created_by, created_at
+**api_keys** â€” id, project_id, name, key_hash, key_prefix, last_used_at, created_by, created_at
 
-**provider_keys** — id, project_id, provider, encrypted_key, key_hint, created_by, created_at. Unique(project_id, provider)
+**provider_keys** â€” id, project_id, provider, encrypted_key, key_hint, created_by, created_at. Unique(project_id, provider)
 
-**audit_events** — id, org_id, actor_user_id, action, entity_type, entity_id, metadata (JSON), created_at
+**audit_events** â€” id, org_id, actor_user_id, action, entity_type, entity_id, metadata (JSON), created_at
 
 ## Key JSON Fields
 
@@ -85,3 +85,12 @@ Numbered SQL files. Test with `--local`, apply with `--remote`. Track in `_migra
 - [ ] Typed query helpers
 - [ ] Test migrations locally
 - [ ] Apply to production D1
+
+
+## Completion Notes
+
+- Format: `YYYY-MM-DD - Task X.Y - one-line summary`
+- Add newest entry at the top.
+- (no completed tasks yet)
+
+

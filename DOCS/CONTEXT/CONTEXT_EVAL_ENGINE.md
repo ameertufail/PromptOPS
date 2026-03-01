@@ -1,4 +1,4 @@
-# CONTEXT: Eval Engine, Checks, Judge & Guardrails
+﻿# CONTEXT: Eval Engine, Checks, Judge & Guardrails
 
 > Attach with PROJECT_OVERVIEW.md when working on: Eval runner, deterministic checks, LLM-as-judge, guardrails (PII, injection), verdict logic, template rendering
 
@@ -6,23 +6,23 @@
 
 ## Architecture: Client-Side Execution
 
-The eval engine runs ENTIRELY in the browser. This is critical — not the backend.
+The eval engine runs ENTIRELY in the browser. This is critical â€” not the backend.
 
 **Flow per eval run:**
 1. User clicks "Run Eval" in the UI
 2. Frontend calls POST /api/eval-runs to create a run record (status: RUNNING)
 3. Backend returns: eval config + rules + all dataset items + both prompt versions
 4. Frontend's eval engine processes each item (concurrency: 3 at a time):
-   a. Render base template with item's input variables → base prompt
-   b. Render candidate template with item's input variables → candidate prompt
-   c. Call LLM via BYOK (browser → provider directly) for base → base output + latency
-   d. Call LLM via BYOK for candidate → candidate output + latency
+   a. Render base template with item's input variables â†’ base prompt
+   b. Render candidate template with item's input variables â†’ candidate prompt
+   c. Call LLM via BYOK (browser â†’ provider directly) for base â†’ base output + latency
+   d. Call LLM via BYOK for candidate â†’ candidate output + latency
    e. Run deterministic checks on both outputs
    f. Run guardrails on both outputs
-   g. If judge enabled: call LLM with judge prompt → scores for both
+   g. If judge enabled: call LLM with judge prompt â†’ scores for both
    h. Calculate verdict (IMPROVED/REGRESSED/SAME)
    i. POST result to backend: /api/eval-runs/:id/items (idempotent)
-5. When all items done: PATCH /api/eval-runs/:id/complete → backend computes summary
+5. When all items done: PATCH /api/eval-runs/:id/complete â†’ backend computes summary
 
 **Why client-side:** BYOK keys stay in browser (security), no Workers CPU limits, backend stays cheap, user sees real-time progress.
 
@@ -70,17 +70,17 @@ Rubric can come from: per-item rubric in dataset_items, or global rubric in eval
 
 Located in `apps/web/src/lib/llm-client.ts`. Abstraction with generate(prompt, config) method returning { output, latencyMs, tokenCount }.
 
-Implementations for OpenAI (chat completions API) and Anthropic (messages API). Calls go directly from browser to provider — never through our backend. User's decrypted provider key used.
+Implementations for OpenAI (chat completions API) and Anthropic (messages API). Calls go directly from browser to provider â€” never through our backend. User's decrypted provider key used.
 
 **CORS note:** OpenAI allows browser requests. Anthropic requires `anthropic-dangerous-direct-browser-access` header. If CORS blocks, fallback is a thin proxy Worker endpoint that adds user's key and forwards.
 
 ## Verdict Calculation
 
 Priority order:
-1. If candidate passes all checks + guardrails but base doesn't → IMPROVED
-2. If base passes but candidate doesn't → REGRESSED
-3. If both pass or both fail, compare judge scores: delta >= threshold → IMPROVED, delta <= -threshold → REGRESSED
-4. Otherwise → SAME
+1. If candidate passes all checks + guardrails but base doesn't â†’ IMPROVED
+2. If base passes but candidate doesn't â†’ REGRESSED
+3. If both pass or both fail, compare judge scores: delta >= threshold â†’ IMPROVED, delta <= -threshold â†’ REGRESSED
+4. Otherwise â†’ SAME
 
 Default delta threshold: 0.5 (configurable in eval config rules).
 
@@ -130,3 +130,12 @@ After all items complete, backend computes: totalItems, basePassRate, candidateP
 - [ ] Store eval run item endpoint (idempotent)
 - [ ] Complete eval run endpoint (compute + store summary)
 - [ ] Summary computation service
+
+
+## Completion Notes
+
+- Format: `YYYY-MM-DD - Task X.Y - one-line summary`
+- Add newest entry at the top.
+- (no completed tasks yet)
+
+

@@ -1,4 +1,4 @@
-# CONTEXT: Deployment & CI/CD
+﻿# CONTEXT: Deployment & CI/CD
 
 > Attach with PROJECT_OVERVIEW.md when working on: Vercel deploy, Cloudflare Workers deploy, D1 migrations, R2 setup, CI pipeline, env vars, domains, monitoring
 
@@ -13,7 +13,7 @@
 
 ## Vercel (Frontend)
 
-**Setup:** Create Vercel account → import GitHub repo → set root directory to `apps/web` → set build command to `cd ../.. && pnpm turbo build --filter=web`. Auto-deploys on every push to main. PRs get preview deploys.
+**Setup:** Create Vercel account â†’ import GitHub repo â†’ set root directory to `apps/web` â†’ set build command to `cd ../.. && pnpm turbo build --filter=web`. Auto-deploys on every push to main. PRs get preview deploys.
 
 **Env vars (set in Vercel dashboard):**
 - NEXT_PUBLIC_API_URL = https://promptops-api.your-sub.workers.dev
@@ -24,7 +24,7 @@
 **Setup steps:**
 1. Create Cloudflare account
 2. Install Wrangler CLI, authenticate with `wrangler login`
-3. Create D1 database: `wrangler d1 create promptops-db` → note the database_id
+3. Create D1 database: `wrangler d1 create promptops-db` â†’ note the database_id
 4. Update wrangler.toml with real database_id
 5. Run all SQL migrations against production: `wrangler d1 execute promptops-db --file=<path> --remote`
 6. Create R2 bucket: `wrangler r2 bucket create promptops-storage`
@@ -45,16 +45,16 @@
 **Local D1:** Created automatically by Wrangler. Apply migrations with `--local` flag. SQLite file in `.wrangler/state/d1/`.
 
 **Local env files:**
-- `apps/web/.env.local` — NEXT_PUBLIC_API_URL=http://localhost:8787, NEXT_PUBLIC_APP_URL=http://localhost:3000
-- `apps/api/.dev.vars` — JWT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, ENCRYPTION_KEY (dev values)
+- `apps/web/.env.local` â€” NEXT_PUBLIC_API_URL=http://localhost:8787, NEXT_PUBLIC_APP_URL=http://localhost:3000
+- `apps/api/.dev.vars` â€” JWT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, ENCRYPTION_KEY (dev values)
 
 ## CI Pipeline
 
-GitHub Actions on push/PR: checkout → pnpm install → turbo lint → turbo typecheck → turbo test. On main branch merge: also deploy Worker using CLOUDFLARE_API_TOKEN secret.
+GitHub Actions on push/PR: checkout â†’ pnpm install â†’ turbo lint â†’ turbo typecheck â†’ turbo test. On main branch merge: also deploy Worker using CLOUDFLARE_API_TOKEN secret.
 
-**GitHub Secrets needed:** CLOUDFLARE_API_TOKEN (create at Cloudflare Dashboard → API Tokens with Workers Scripts:Edit + D1:Edit permissions)
+**GitHub Secrets needed:** CLOUDFLARE_API_TOKEN (create at Cloudflare Dashboard â†’ API Tokens with Workers Scripts:Edit + D1:Edit permissions)
 
-Vercel auto-deploys from GitHub — no CI config needed for frontend.
+Vercel auto-deploys from GitHub â€” no CI config needed for frontend.
 
 ## Migration Workflow
 
@@ -127,3 +127,12 @@ For MVP: use default Vercel + Workers subdomains. Later: custom domain via Cloud
 - [ ] Update OAuth callback URLs
 - [ ] Update CORS config
 - [ ] Update env vars
+
+
+## Completion Notes
+
+- Format: `YYYY-MM-DD - Task X.Y - one-line summary`
+- Add newest entry at the top.
+- (no completed tasks yet)
+
+

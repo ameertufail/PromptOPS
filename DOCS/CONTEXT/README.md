@@ -1,4 +1,4 @@
-# Context Files — How to Use
+﻿# Context Files â€” How to Use
 
 ## The Rule
 
@@ -33,9 +33,21 @@ Every file has checkboxes at the bottom. After completing a task:
 1. Mark it `[x]` in the relevant CONTEXT file
 2. Mark it `[x]` in PROJECT_OVERVIEW.md master tracker
 3. Update the "Current Status" section in PROJECT_OVERVIEW.md
+4. Add a one-line note under `## Completion Notes` in every touched context file using:
+   `- YYYY-MM-DD - Task X.Y - one-line summary`
+5. Keep newest notes at the top
 
-This way your next session knows exactly where you left off.
+This way your next session knows exactly where you left off and what was done.
 
 ## File Sizes
 
-All files are pure context — no code blocks, no implementations. Just what things are, how they connect, what's been decided, and what's done.
+All files are pure context â€” no code blocks, no implementations. Just what things are, how they connect, what's been decided, and what's done.
+
+
+## Completion Notes
+
+- Format: `YYYY-MM-DD - Task X.Y - one-line summary`
+- Add newest entry at the top.
+- (no completed tasks yet)
+
+

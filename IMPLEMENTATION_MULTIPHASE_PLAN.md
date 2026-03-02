@@ -26,10 +26,10 @@ Completion Summary: 2026-03-02 - Locked browser-orchestrated evals as primary, d
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
 Instruction: Finalize rules for BYOK, key storage, JWT/cookie usage, RBAC enforcement, and production secret handling so all implementation work follows one security baseline.
 Completion Summary: 2026-03-02 - Frozen a single security baseline for BYOK boundaries, key storage, JWT/cookie sessions, RBAC deny-by-default enforcement, and production secret handling.
-3. [ ] Task 1.3: Define delivery governance and handoff protocol.  
+3. [x] Task 1.3: Define delivery governance and handoff protocol.  
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [CONTEXT/README.md](DOCS/CONTEXT/README.md), [main.md](DOCS/main.md)  
 Instruction: Set branch strategy, review checklist, definition of done, and documentation update rules so every merged task also updates the relevant context trackers.
-Completion Summary: Pending.
+Completion Summary: 2026-03-02 - Defined branch and PR governance, formalized definition of done, and locked mandatory context/documentation writeback rules for every merge.
 
 ## Phase 2 - Monorepo and Workspace Scaffolding
 1. [ ] Task 2.1: Initialize the monorepo structure and package boundaries.  

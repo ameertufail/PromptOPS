@@ -38,6 +38,39 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 - [x] RBAC deny-by-default policy locked
 - [x] Production secret handling policy locked
 
+## Delivery Governance & Handoff Protocol (Phase 1 Task 1.3)
+
+### Branch Strategy
+- `main` is protected and must stay deployable.
+- Use short-lived task branches named `task/<phase>-<task>-<slug>` (example: `task/1-3-delivery-governance`).
+- Keep one implementation task per branch; open a new branch/task when scope expands.
+- Use squash merge so each merged task has one reviewable changeset tied to the task ID.
+
+### Review Checklist (Required Before Merge)
+- Scope matches the task instruction and all listed `Read Context` files were reviewed.
+- Validation evidence is included for touched behavior (tests, lint, typecheck, or explicit rationale when not applicable).
+- Phase 1.1 and 1.2 guardrails remain intact (browser-first eval model, BYOK/security constraints).
+- Documentation writebacks are complete across plan + context trackers.
+- PR description includes changed files, verification outcomes, and follow-up items.
+
+### Definition of Done
+- Task acceptance criteria are met and reflected in updated docs/checklists.
+- Implementation and documentation are consistent (no stale `Pending` summaries for completed tasks).
+- Required quality checks pass locally or in CI for changed scope.
+- Deferred work is captured as a new task, not hidden as untracked TODOs.
+
+### Handoff Protocol
+- Every final handoff update must include: what changed, verification run/results, tracker updates, and follow-ups.
+- If blocked, handoff must include blocker, impact, and the exact next step needed to unblock.
+- Missing documentation writeback evidence is merge-blocking.
+
+### Phase 1 Delivery Governance Checklist
+- [x] Branch strategy documented
+- [x] Review checklist documented
+- [x] Definition of done documented
+- [x] Handoff protocol documented
+- [x] Documentation writeback protocol documented
+
 ## MVP Acceptance Criteria (Locked)
 
 **MVP 0 is accepted only when all are true:**
@@ -94,14 +127,14 @@ users → org_members → orgs → projects → (prompts → prompt_versions, da
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 1.3 - Define delivery governance and handoff protocol]
-**Last completed:** [Task 1.2 - Architecture guardrails and security baseline lock]
-**Next up:** Task 1.3 - Define delivery governance and handoff protocol
+**Currently working on:** [Task 2.1 - Initialize the monorepo structure and package boundaries]
+**Last completed:** [Task 1.3 - Define delivery governance and handoff protocol]
+**Next up:** Task 2.1 - Initialize the monorepo structure and package boundaries
 
 ### Phase 1 — Scope, Decisions, and Execution Rules
 - [x] 1.1 Lock the execution model and success criteria
 - [x] 1.2 Freeze architecture guardrails and security principles
-- [ ] 1.3 Define delivery governance and handoff protocol
+- [x] 1.3 Define delivery governance and handoff protocol
 
 ### MVP 0 — Foundation
 - [ ] 0.1 Repo + Dev Environment
@@ -146,8 +179,8 @@ After completing a task, tell Claude: "Mark [task] as complete in the context fi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 1.3 - Added branch strategy, PR review checklist, definition of done, and mandatory handoff/writeback governance.
 - 2026-03-02 - Task 1.2 - Frozen architecture guardrails and security baseline for BYOK, key storage, JWT sessions, RBAC enforcement, and production secrets.
 - 2026-03-02 - Task 1.1 - Locked browser-first eval execution, defined MVP 0/1/2 acceptance criteria, and documented scope non-goals.
 - 2026-03-02 - Task 4.1 - Added env example files, seeded local env files for web/api, and added gitignore rules for secret files.
-
 

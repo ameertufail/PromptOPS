@@ -757,6 +757,40 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 - No enterprise SSO/SAML/SCIM or advanced billing controls in MVP 0/1/2.
 - No autonomous agent-builder workflows in MVP 0/1/2.
 
+## 7.4 Delivery Governance and Handoff Protocol (Phase 1 Task 1.3)
+
+### Branch strategy
+- `main` stays protected and always deployable.
+- Use short-lived task branches named `task/<phase>-<task>-<slug>`.
+- Keep one implementation task per branch; split expanded scope into follow-up tasks.
+- Squash merge into `main` so each merged task maps to one reviewable changeset.
+
+### PR review checklist (required)
+- Task scope matches the implementation plan instruction and listed `Read Context` docs.
+- Verification evidence is attached for changed behavior (tests/lint/typecheck/manual checks as applicable).
+- Phase 1 guardrails remain intact (browser-first eval model and security baseline).
+- Documentation writeback is complete across plan and context trackers.
+- Follow-up risks or deferred work are explicitly listed.
+
+### Definition of done
+- Task acceptance criteria are satisfied.
+- Code and documentation are consistent with no stale "Pending" task summaries for completed work.
+- Required quality gates pass for changed scope (or have explicit documented rationale if not applicable).
+- Deferred work is tracked as new tasks, not hidden as untracked TODOs.
+
+### Documentation writeback rules (mandatory for every merged task)
+1. Mark the completed task `[x]` and replace `Completion Summary: Pending.` in `IMPLEMENTATION_MULTIPHASE_PLAN.md`.
+2. Update `DOCS/PROJECT_OVERVIEW.md` status fields and relevant phase checklist items.
+3. Add one completion note line to every file listed in that task's `Read Context`.
+4. Keep newest completion notes at the top for fast session handoff.
+5. Treat missing writeback as merge-blocking.
+
+### Task 1.3 checklist
+- [x] Branch strategy documented.
+- [x] Review checklist documented.
+- [x] Definition of done documented.
+- [x] Documentation update and handoff rules documented.
+
 ---
 
 # 8. MVP 0 — Foundation (Shippable Skeleton)
@@ -2601,6 +2635,5 @@ function calculateVerdict(
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 1.3 - Added delivery governance rules covering branch strategy, PR review gates, definition of done, and mandatory documentation writebacks.
 - 2026-03-02 - Task 1.1 - Locked browser-orchestrated eval model, added MVP 0/1/2 acceptance gates, and documented explicit non-goals.
-
-

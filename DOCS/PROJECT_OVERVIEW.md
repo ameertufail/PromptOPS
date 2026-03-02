@@ -22,6 +22,22 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 - Thin Worker passthrough for provider CORS edge cases is an explicit fallback only, never the default path.
 - Any proposal that makes server-side orchestration the default must be treated as post-MVP scope and require explicit architecture sign-off.
 
+## Architecture Guardrails & Security Baseline (Phase 1 Task 1.2)
+
+- BYOK remains browser-first: provider inference calls run from client orchestration, with Worker passthrough allowed only as an explicit fallback for provider CORS edge cases.
+- Provider keys are encrypted at rest with AES-256-GCM using `ENCRYPTION_KEY`; decrypted values are never persisted or logged.
+- SDK API keys are stored as SHA-256 hashes only; plaintext is shown once at creation and never retrievable afterwards.
+- Dashboard auth uses backend-issued JWT sessions in `po_session` cookie with `HttpOnly`, `SameSite=Lax`, `Secure` in production, and 7-day max expiry.
+- RBAC is enforced server-side on every protected route using org/project membership resolution with deny-by-default behavior.
+- Production secrets are allowed only in platform secret stores (Wrangler/Vercel/GitHub), never in committed files, logs, or placeholder production configs.
+
+### Phase 1 Security Baseline Checklist
+- [x] BYOK execution boundary locked
+- [x] Key storage and secret-masking rules locked
+- [x] JWT/cookie session policy locked
+- [x] RBAC deny-by-default policy locked
+- [x] Production secret handling policy locked
+
 ## MVP Acceptance Criteria (Locked)
 
 **MVP 0 is accepted only when all are true:**
@@ -78,13 +94,13 @@ users â†’ org_members â†’ orgs â†’ projects â†’ (prompts â�
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 1.2 - Freeze architecture guardrails and security principles]
-**Last completed:** [Task 1.1 - Execution model and success criteria lock]
-**Next up:** Task 1.2 - Freeze architecture guardrails and security principles
+**Currently working on:** [Task 1.3 - Define delivery governance and handoff protocol]
+**Last completed:** [Task 1.2 - Architecture guardrails and security baseline lock]
+**Next up:** Task 1.3 - Define delivery governance and handoff protocol
 
 ### Phase 1 â€” Scope, Decisions, and Execution Rules
 - [x] 1.1 Lock the execution model and success criteria
-- [ ] 1.2 Freeze architecture guardrails and security principles
+- [x] 1.2 Freeze architecture guardrails and security principles
 - [ ] 1.3 Define delivery governance and handoff protocol
 
 ### MVP 0 â€” Foundation
@@ -130,6 +146,7 @@ After completing a task, tell Claude: "Mark [task] as complete in the context fi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 1.2 - Frozen architecture guardrails and security baseline for BYOK, key storage, JWT sessions, RBAC enforcement, and production secrets.
 - 2026-03-02 - Task 1.1 - Locked browser-first eval execution, defined MVP 0/1/2 acceptance criteria, and documented scope non-goals.
 - 2026-03-02 - Task 4.1 - Added env example files, seeded local env files for web/api, and added gitignore rules for secret files.
 

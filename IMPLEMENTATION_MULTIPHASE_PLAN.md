@@ -22,10 +22,10 @@ How to use this document:
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [main.md](DOCS/main.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md)  
 Instruction: Confirm browser-orchestrated evals are the primary model, define clear MVP 0/1/2 acceptance criteria, and document non-goals so the team can reject scope creep quickly.
 Completion Summary: 2026-03-02 - Locked browser-orchestrated evals as primary, defined MVP 0/1/2 acceptance gates, and documented non-goals to prevent scope creep.
-2. [ ] Task 1.2: Freeze architecture guardrails and security principles.  
+2. [x] Task 1.2: Freeze architecture guardrails and security principles.
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
 Instruction: Finalize rules for BYOK, key storage, JWT/cookie usage, RBAC enforcement, and production secret handling so all implementation work follows one security baseline.
-Completion Summary: Pending.
+Completion Summary: 2026-03-02 - Frozen a single security baseline for BYOK boundaries, key storage, JWT/cookie sessions, RBAC deny-by-default enforcement, and production secret handling.
 3. [ ] Task 1.3: Define delivery governance and handoff protocol.  
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [CONTEXT/README.md](DOCS/CONTEXT/README.md), [main.md](DOCS/main.md)  
 Instruction: Set branch strategy, review checklist, definition of done, and documentation update rules so every merged task also updates the relevant context trackers.

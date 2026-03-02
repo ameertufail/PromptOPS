@@ -94,9 +94,27 @@ For MVP: use default Vercel + Workers subdomains. Later: custom domain via Cloud
 - Strong random values for JWT_SECRET and ENCRYPTION_KEY in production
 - No sensitive data in console.log
 
+## Production Secret Baseline (Phase 1 Task 1.2)
+
+- **Allowed secret stores only:** Cloudflare Wrangler secrets, Vercel environment variables, and GitHub repository/environment secrets.
+- **Disallowed secret locations:** committed files, `wrangler.toml`, CI workflow YAML plaintext, logs, screenshots, and issue comments.
+- **Environment separation:** dev/staging/prod use distinct secret values; production deploys are blocked when required secrets are missing or placeholders.
+- **Rotation policy:** rotate secrets immediately after suspected exposure; revoke affected sessions or keys when JWT/encryption material changes.
+- **Logging hygiene:** redact authorization headers, cookies, and key material; never print decrypted provider keys.
+
+### Phase 1 Secret-Handling Checklist
+- [x] Secret-store boundaries documented
+- [x] Forbidden secret locations documented
+- [x] Environment separation rule documented
+- [x] Rotation and incident-response rule documented
+- [x] Log-redaction rule documented
+
 ---
 
 ## Deployment Progress
+
+**Phase 1 Governance:**
+- [x] Security baseline documented for production secret storage, environment separation, and rotation policy
 
 **Initial Setup:**
 - [ ] Create Cloudflare account
@@ -133,6 +151,7 @@ For MVP: use default Vercel + Workers subdomains. Later: custom domain via Cloud
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 1.2 - Finalized production secret-handling rules for approved stores, env separation, rotation, and log redaction.
 - 2026-03-02 - Task 4.1 - Added env example templates, seeded local env files, and added gitignore secret-file rules for web/api development.
 
 

@@ -48,10 +48,27 @@ Auth: github redirect, callback, me, logout. Orgs: CRUD + membership. API keys: 
 
 JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted. HttpOnly cookies. RBAC at API level. Rate limiting on SDK endpoint. Always verify org membership.
 
+## Security Baseline Lock (Phase 1 Task 1.2)
+
+- **BYOK boundary:** Browser orchestration is the default path for provider calls; backend is not the default inference proxy.
+- **Provider keys:** Encrypt with AES-256-GCM using `ENCRYPTION_KEY`; never store or log plaintext keys.
+- **SDK API keys:** Store only SHA-256 hash + prefix metadata; plaintext key may be shown once at creation only.
+- **JWT sessions:** Issue only after OAuth state validation; use `po_session` cookie with `HttpOnly`, `SameSite=Lax`, `Secure` in production, 7-day max expiry.
+- **RBAC:** Resolve org/project role server-side on every protected request, deny by default when membership is missing, and enforce Owner/Admin gates for sensitive actions.
+- **Route auth boundary:** `po_sk_*` API keys are accepted only for SDK run logging routes; dashboard/session routes require JWT cookie auth.
+
+### Phase 1 Security Checklist
+- [x] BYOK execution boundary documented
+- [x] Key encryption/hashing requirements documented
+- [x] JWT/cookie policy documented
+- [x] RBAC deny-by-default policy documented
+- [x] API key vs JWT route boundary documented
+
 ---
 
 ## Task Progress
 
+- [x] Security baseline frozen for BYOK, key handling, JWT/cookie policy, and RBAC enforcement
 - [ ] GitHub OAuth App registered (dev + prod)
 - [ ] OAuth flow backend (redirect, callback, token exchange, upsert)
 - [ ] JWT issuance and cookie handling
@@ -73,6 +90,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 1.2 - Locked auth guardrails for BYOK boundaries, encrypted/hashed keys, JWT cookie policy, and deny-by-default RBAC.
 - 2026-03-02 - Task 4.1 - Added backend secrets template and seeded local `.dev.vars` placeholders for JWT, GitHub OAuth, and encryption key.
 
 

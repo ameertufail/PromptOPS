@@ -20,6 +20,7 @@ Tailwind CSS + shadcn/ui (Radix + Tailwind). Icons: Lucide React. Charts: Rechar
 - When the user provides a tweakcn theme snippet/code, treat it as the canonical theme from that point forward.
 - Do not swap palette values, token names, or semantic mappings unless the user explicitly asks for a theme update.
 - All new pages and component changes must consume the active user-provided theme tokens instead of introducing parallel color systems.
+- Active canonical theme artifact: `DOCS/CONTEXT/THEMES/tweakcn-dark-active.css` (active applied tweakcn theme).
 
 ## Layout
 
@@ -52,13 +53,14 @@ Implementation rule: Initialize shadcn in `apps/web`, install the required compo
 
 - Default source: shadcn/ui components.
 - Secondary source: user-approved React component libraries when requested by the user for specific surfaces.
+- Runtime rule: component choices can be provided by the user at implementation time and those selections are mandatory for that scope.
 - Avoid reinventing existing UI primitives when an equivalent approved component exists.
 
 ---
 
 ## Task Progress
 
-- [ ] Tailwind + shadcn setup
+- [x] Tailwind + shadcn setup
 - [ ] Install all shadcn components
 - [ ] Enforce user-defined color scheme tokens across all routes/components
 - [ ] StatusBadge, VerdictBadge, StatCard, EmptyState
@@ -70,4 +72,5 @@ Implementation rule: Initialize shadcn in `apps/web`, install the required compo
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 12.0 - Registered the active tweakcn dark theme artifact and locked runtime component-selection rules.
 - (no completed tasks yet)

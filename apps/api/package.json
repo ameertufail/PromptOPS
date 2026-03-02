@@ -1,0 +1,20 @@
+{
+  "name": "@promptops/api",
+  "private": true,
+  "version": "0.0.0",
+  "description": "PromptOps Studio backend API on Cloudflare Workers",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@promptops/shared": "workspace:*",
+    "hono": "^4.6.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260305.0",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.2.0"
+  }
+}

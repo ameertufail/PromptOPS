@@ -2635,5 +2635,6 @@ function calculateVerdict(
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 2.1 - Scaffolded monorepo boundaries for `apps/web`, `apps/api`, `packages/shared`, and `packages/sdk` with shared-contract import guardrails.
 - 2026-03-02 - Task 1.3 - Added delivery governance rules covering branch strategy, PR review gates, definition of done, and mandatory documentation writebacks.
 - 2026-03-02 - Task 1.1 - Locked browser-orchestrated eval model, added MVP 0/1/2 acceptance gates, and documented explicit non-goals.

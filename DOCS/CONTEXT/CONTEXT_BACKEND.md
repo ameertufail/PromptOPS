@@ -53,7 +53,8 @@ Every route: validate with Zod → RBAC middleware → business logic → audit 
 
 ## Task Progress
 
-- [ ] Hono app setup (index.ts, CORS, bindings)
+- [x] Hono app setup (index.ts, CORS, bindings)
+- [x] API workspace boundary scaffold and shared contract import baseline
 - [ ] Auth routes
 - [ ] Auth middleware (JWT + API key)
 - [ ] RBAC middleware
@@ -82,6 +83,5 @@ Every route: validate with Zod → RBAC middleware → business logic → audit 
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
-
+- 2026-03-02 - Task 2.1 - Scaffolded `apps/api` workspace boundary files and initialized Hono entrypoint using shared contract constants.
 

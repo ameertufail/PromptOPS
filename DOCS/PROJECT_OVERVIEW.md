@@ -127,14 +127,19 @@ users → org_members → orgs → projects → (prompts → prompt_versions, da
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 2.1 - Initialize the monorepo structure and package boundaries]
-**Last completed:** [Task 1.3 - Define delivery governance and handoff protocol]
-**Next up:** Task 2.1 - Initialize the monorepo structure and package boundaries
+**Currently working on:** [Task 2.2 - Configure workspace package management and root scripts]
+**Last completed:** [Task 2.1 - Initialize the monorepo structure and package boundaries]
+**Next up:** Task 2.2 - Configure workspace package management and root scripts
 
 ### Phase 1 — Scope, Decisions, and Execution Rules
 - [x] 1.1 Lock the execution model and success criteria
 - [x] 1.2 Freeze architecture guardrails and security principles
 - [x] 1.3 Define delivery governance and handoff protocol
+
+### Phase 2 — Monorepo and Workspace Scaffolding
+- [x] 2.1 Initialize the monorepo structure and package boundaries
+- [ ] 2.2 Configure workspace package management and root scripts
+- [ ] 2.3 Add baseline repository documentation for contributors
 
 ### MVP 0 — Foundation
 - [ ] 0.1 Repo + Dev Environment
@@ -179,8 +184,8 @@ After completing a task, tell Claude: "Mark [task] as complete in the context fi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 2.1 - Initialized apps/packages monorepo boundaries with shared contract entrypoints, starter app skeletons, and ownership guardrails.
 - 2026-03-02 - Task 1.3 - Added branch strategy, PR review checklist, definition of done, and mandatory handoff/writeback governance.
 - 2026-03-02 - Task 1.2 - Frozen architecture guardrails and security baseline for BYOK, key storage, JWT sessions, RBAC enforcement, and production secrets.
 - 2026-03-02 - Task 1.1 - Locked browser-first eval execution, defined MVP 0/1/2 acceptance criteria, and documented scope non-goals.
 - 2026-03-02 - Task 4.1 - Added env example files, seeded local env files for web/api, and added gitignore rules for secret files.
-

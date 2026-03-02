@@ -47,6 +47,10 @@ Located at `apps/web/`. Next.js 14 with App Router. Entry: `src/app/`.
 
 ## Frontend Progress
 
+**Workspace Foundation:**
+- [x] `apps/web` scaffolded with Next.js package boundary files (`package.json`, `tsconfig`, `src/app` entrypoints).
+- [x] Frontend import boundary documented to consume shared contracts through `@promptops/shared`.
+
 **Layout & Navigation:**
 - [ ] Root layout (providers, fonts)
 - [ ] Auth layout (minimal)
@@ -110,6 +114,6 @@ Located at `apps/web/`. Next.js 14 with App Router. Entry: `src/app/`.
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 2.1 - Scaffolded `apps/web` workspace boundaries and wired frontend shared-contract usage via `@promptops/shared`.
 - 2026-03-02 - Task 4.1 - Added frontend env template and seeded local `.env.local` with localhost API/app URLs.
-
 

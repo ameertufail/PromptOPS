@@ -32,10 +32,10 @@ Instruction: Set branch strategy, review checklist, definition of done, and docu
 Completion Summary: 2026-03-02 - Defined branch and PR governance, formalized definition of done, and locked mandatory context/documentation writeback rules for every merge.
 
 ## Phase 2 - Monorepo and Workspace Scaffolding
-1. [ ] Task 2.1: Initialize the monorepo structure and package boundaries.  
+1. [x] Task 2.1: Initialize the monorepo structure and package boundaries.  
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [main.md](DOCS/main.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
 Instruction: Create `apps/web`, `apps/api`, `packages/shared`, and `packages/sdk` with clear ownership and avoid cross-imports that bypass shared contracts.
-Completion Summary: Pending.
+Completion Summary: 2026-03-02 - Scaffolded apps/packages workspace boundaries with shared-contract imports, starter app/package entrypoints, and monorepo ownership docs.
 2. [ ] Task 2.2: Configure workspace package management and root scripts.  
 Read Context: [main.md](DOCS/main.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
 Instruction: Standardize install, dev, build, lint, typecheck, and test commands at root so every developer and CI job uses the same execution path.
@@ -172,6 +172,10 @@ Instruction: Centralize role resolution by project to avoid duplicated access lo
 Completion Summary: Pending.
 
 ## Phase 12 - Frontend Shell, Auth UI, and Protected Navigation
+1. [ ] Task 12.0: Initialize shadcn/ui foundation and theme contract.  
+Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md)  
+Instruction: Install shadcn/ui in `apps/web`, add the baseline component set required by auth/dashboard flows, and enforce one theme-token contract where user-specified color schemes override defaults and are applied consistently across all UI pages/components. If a user-provided tweakcn theme is supplied, treat it as canonical from that point forward and do not change it unless explicitly requested; use shadcn components first and user-approved React component libraries second.  
+Completion Summary: Pending.
 1. [ ] Task 12.1: Build root, auth, and dashboard layouts with provider hierarchy.  
 Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)  
 Instruction: Implement shared app shell with protected dashboard layout, responsive sidebar behavior, and top-level providers for auth/org/project state.

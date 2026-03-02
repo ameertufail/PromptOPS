@@ -1,0 +1,5 @@
+name = "promptops-api"
+main = "src/index.ts"
+compatibility_date = "2026-03-02"
+
+# Real resource IDs and names are added in Phase 5 cloud provisioning.

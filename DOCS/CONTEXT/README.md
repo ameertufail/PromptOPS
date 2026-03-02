@@ -1,4 +1,4 @@
-﻿# Context Files â€” How to Use
+# Context Files — How to Use
 
 ## The Rule
 
@@ -41,7 +41,7 @@ This way your next session knows exactly where you left off and what was done.
 
 ## File Sizes
 
-All files are pure context â€” no code blocks, no implementations. Just what things are, how they connect, what's been decided, and what's done.
+All files are pure context — no code blocks, no implementations. Just what things are, how they connect, what's been decided, and what's done.
 
 
 ## Completion Notes

@@ -1,9 +1,9 @@
-﻿# PromptOps Studio â€” Complete Build Guide & PRD
+# PromptOps Studio — Complete Build Guide & PRD
 
 > **Last updated:** February 2026
 > **Author:** [Your Name]
 > **Status:** Pre-development
-> **Approach:** BYOK (Bring Your Own Key) â€” $0 infrastructure cost
+> **Approach:** BYOK (Bring Your Own Key) — $0 infrastructure cost
 
 ---
 
@@ -16,9 +16,9 @@
 5. [Complete Data Model](#5-complete-data-model)
 6. [API Design](#6-api-design)
 7. [MVP Roadmap Overview](#7-mvp-roadmap-overview)
-8. [MVP 0 â€” Foundation (Shippable Skeleton)](#8-mvp-0--foundation)
-9. [MVP 1 â€” Core Eval Platform](#9-mvp-1--core-eval-platform)
-10. [MVP 2 â€” Production-Grade Polish](#10-mvp-2--production-grade-polish)
+8. [MVP 0 — Foundation (Shippable Skeleton)](#8-mvp-0--foundation)
+9. [MVP 1 — Core Eval Platform](#9-mvp-1--core-eval-platform)
+10. [MVP 2 — Production-Grade Polish](#10-mvp-2--production-grade-polish)
 11. [Public Building & Shipping Strategy](#11-public-building--shipping-strategy)
 12. [Monetization Plan](#12-monetization-plan)
 13. [Risk Register](#13-risk-register)
@@ -29,7 +29,7 @@
 
 ## What is PromptOps Studio?
 
-PromptOps Studio is a lightweight LLMOps platform for teams shipping AI features. It helps developers version prompts, evaluate them against datasets, enforce guardrails, and monitor production quality â€” all without vendor lock-in.
+PromptOps Studio is a lightweight LLMOps platform for teams shipping AI features. It helps developers version prompts, evaluate them against datasets, enforce guardrails, and monitor production quality — all without vendor lock-in.
 
 ## The Problem (Why This Exists)
 
@@ -39,7 +39,7 @@ Teams building LLM-powered features face four recurring pain points:
 A developer changes one sentence in a prompt and the model starts hallucinating. There's no version history, no diff, no way to roll back. The team loses hours debugging something that could have been caught by a simple before/after comparison.
 
 **Problem 2: No Repeatable Eval Loop**
-Testing happens manually â€” someone pastes 3-4 examples into ChatGPT and eyeballs the results. There's no dataset, no scoring, no regression tracking. When the prompt changes next week, the same manual process happens again.
+Testing happens manually — someone pastes 3-4 examples into ChatGPT and eyeballs the results. There's no dataset, no scoring, no regression tracking. When the prompt changes next week, the same manual process happens again.
 
 **Problem 3: No Guardrails or Safety Checks**
 LLM outputs break JSON formats, leak PII, fail business constraints, or fall victim to prompt injection. Teams discover these issues in production, not before deployment.
@@ -67,7 +67,7 @@ Teams can't answer basic questions: Which prompt version is deployed? What's the
 **Why this is the right decision:**
 - Our infrastructure cost stays at $0 regardless of user count
 - Users keep full control of their API keys and data
-- No vendor lock-in â€” works with any LLM provider
+- No vendor lock-in — works with any LLM provider
 - This is the industry standard (Promptfoo, Braintrust, etc. do the same)
 - It's a trust/privacy feature, not a limitation
 
@@ -81,7 +81,7 @@ Teams can't answer basic questions: Which prompt version is deployed? What's the
 **For judge scoring:**
 - Primary: Uses the user's own API key
 - Fallback: Cloudflare Workers AI free tier (Llama 3) for users who want basic judge scoring without providing a key
-- Default: Deterministic checks (JSON schema, regex, exact match) â€” zero LLM calls needed
+- Default: Deterministic checks (JSON schema, regex, exact match) — zero LLM calls needed
 
 ## Decision 2: $0 Infrastructure
 
@@ -99,8 +99,8 @@ Every component runs on free tiers:
 ## Decision 3: Open Source + Hosted
 
 - The codebase is open source (MIT or Apache 2.0)
-- We run a hosted version (the Vercel/Cloudflare deployment) â€” this becomes the paid product later
-- Self-hosters get the full product for free â€” they become community + marketing
+- We run a hosted version (the Vercel/Cloudflare deployment) — this becomes the paid product later
+- Self-hosters get the full product for free — they become community + marketing
 
 ---
 
@@ -122,7 +122,7 @@ Every component runs on free tiers:
 - Doesn't write prompts but approves changes
 - Wants dashboards showing quality trends over time
 - Wants a clear report to approve/reject prompt changes
-- **Key need:** "Show me the data â€” is v2 better than v1?"
+- **Key need:** "Show me the data — is v2 better than v1?"
 
 ---
 
@@ -131,34 +131,34 @@ Every component runs on free tiers:
 ## Stack
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                   Frontend                   â”‚
-â”‚          Next.js 14 (App Router)             â”‚
-â”‚          Tailwind CSS + shadcn/ui            â”‚
-â”‚          Deployed on Vercel (free)           â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                  â”‚ API calls
-                  â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                  Backend                     â”‚
-â”‚          Cloudflare Workers (Hono.js)        â”‚
-â”‚          Auth: GitHub OAuth + JWT            â”‚
-â”‚          RBAC middleware                      â”‚
-â”‚          Deployed on Cloudflare (free)       â”‚
-â””â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-       â”‚          â”‚          â”‚
-       â–¼          â–¼          â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ D1 (SQL) â”‚ â”‚ R2     â”‚ â”‚ Workers â”‚
-â”‚ All data â”‚ â”‚ Files  â”‚ â”‚ API     â”‚
-â”‚ tables   â”‚ â”‚ JSONL  â”‚ â”‚ + Auth  â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌─────────────────────────────────────────────┐
+│                   Frontend                   │
+│          Next.js 14 (App Router)             │
+│          Tailwind CSS + shadcn/ui            │
+│          Deployed on Vercel (free)           │
+└─────────────────┬───────────────────────────┘
+                  │ API calls
+                  ▼
+┌─────────────────────────────────────────────┐
+│                  Backend                     │
+│          Cloudflare Workers (Hono.js)        │
+│          Auth: GitHub OAuth + JWT            │
+│          RBAC middleware                      │
+│          Deployed on Cloudflare (free)       │
+└──────┬──────────┬──────────┬────────────────┘
+       │          │          │
+       ▼          ▼          ▼
+┌──────────┐ ┌────────┐ ┌────────┐
+│ D1 (SQL) │ │ R2     │ │ Workers │
+│ All data │ │ Files  │ │ API     │
+│ tables   │ │ JSONL  │ │ + Auth  │
+└──────────┘ └────────┘ └─────────┘
 
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚            LLM Inference (BYOK)              â”‚
-â”‚  User's browser â†’ OpenAI / Anthropic / etc.  â”‚
-â”‚  User's own API key â€” never touches backend  â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌─────────────────────────────────────────────┐
+│            LLM Inference (BYOK)              │
+│  User's browser → OpenAI / Anthropic / etc.  │
+│  User's own API key — never touches backend  │
+└─────────────────────────────────────────────┘
 ```
 
 ## Why These Choices
@@ -175,103 +175,103 @@ Every component runs on free tiers:
 
 **GitHub OAuth:** Free, all target users have GitHub accounts, simple to implement.
 
-**shadcn/ui:** Not a component library â€” it's copy-paste components built on Radix + Tailwind. No dependency bloat, full customization.
+**shadcn/ui:** Not a component library — it's copy-paste components built on Radix + Tailwind. No dependency bloat, full customization.
 
 ## Folder Structure
 
 ```
 promptops-studio/
-â”œâ”€â”€ apps/
-â”‚   â”œâ”€â”€ web/                          # Next.js frontend
-â”‚   â”‚   â”œâ”€â”€ src/
-â”‚   â”‚   â”‚   â”œâ”€â”€ app/                  # App Router pages
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ (auth)/           # Login/callback routes
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ (dashboard)/      # Main app layout
-â”‚   â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ [orgSlug]/
-â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ [projectSlug]/
-â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ prompts/
-â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ datasets/
-â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ evals/
-â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ runs/
-â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â””â”€â”€ settings/
-â”‚   â”‚   â”‚   â”‚   â”‚   â”‚   â””â”€â”€ page.tsx  # Project overview
-â”‚   â”‚   â”‚   â”‚   â”‚   â””â”€â”€ page.tsx      # Org overview
-â”‚   â”‚   â”‚   â”‚   â””â”€â”€ page.tsx          # Landing/login
-â”‚   â”‚   â”‚   â”œâ”€â”€ components/
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ ui/               # shadcn components
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ prompts/          # Prompt editor, diff viewer
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ datasets/         # Dataset table, JSONL uploader
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ evals/            # Eval config builder, report
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ runs/             # Run dashboard, charts
-â”‚   â”‚   â”‚   â”‚   â””â”€â”€ layout/           # Sidebar, org switcher, nav
-â”‚   â”‚   â”‚   â”œâ”€â”€ lib/
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ api.ts            # API client (fetch wrapper)
-â”‚   â”‚   â”‚   â”‚   â”œâ”€â”€ auth.ts           # Auth helpers
-â”‚   â”‚   â”‚   â”‚   â””â”€â”€ utils.ts          # Shared utilities
-â”‚   â”‚   â”‚   â””â”€â”€ types/                # Frontend-specific types
-â”‚   â”‚   â”œâ”€â”€ public/
-â”‚   â”‚   â”œâ”€â”€ next.config.js
-â”‚   â”‚   â”œâ”€â”€ tailwind.config.js
-â”‚   â”‚   â””â”€â”€ package.json
-â”‚   â”‚
-â”‚   â””â”€â”€ api/                          # Cloudflare Workers backend
-â”‚       â”œâ”€â”€ src/
-â”‚       â”‚   â”œâ”€â”€ index.ts              # Hono app entry point
-â”‚       â”‚   â”œâ”€â”€ routes/
-â”‚       â”‚   â”‚   â”œâ”€â”€ auth.ts           # OAuth + session routes
-â”‚       â”‚   â”‚   â”œâ”€â”€ orgs.ts           # Org CRUD
-â”‚       â”‚   â”‚   â”œâ”€â”€ projects.ts       # Project CRUD
-â”‚       â”‚   â”‚   â”œâ”€â”€ prompts.ts        # Prompts + versions
-â”‚       â”‚   â”‚   â”œâ”€â”€ datasets.ts       # Datasets + items
-â”‚       â”‚   â”‚   â”œâ”€â”€ evals.ts          # Eval configs + runs
-â”‚       â”‚   â”‚   â”œâ”€â”€ runs.ts           # SDK run logging
-â”‚       â”‚   â”‚   â””â”€â”€ keys.ts           # API key management
-â”‚       â”‚   â”œâ”€â”€ middleware/
-â”‚       â”‚   â”‚   â”œâ”€â”€ auth.ts           # JWT verification
-â”‚       â”‚   â”‚   â”œâ”€â”€ rbac.ts           # Role-based access control
-â”‚       â”‚   â”‚   â”œâ”€â”€ audit.ts          # Audit event logging
-â”‚       â”‚   â”‚   â””â”€â”€ rateLimit.ts      # Rate limiting
-â”‚       â”‚   â”œâ”€â”€ workflows/
-â”‚       â”‚   â”‚   â””â”€â”€ jobs.ts           # Optional background jobs (not core eval execution)
-â”‚       â”‚   â”œâ”€â”€ services/
-â”‚       â”‚   â”‚   â”œâ”€â”€ guardrails.ts     # Schema, PII, injection checks
-â”‚       â”‚   â”‚   â”œâ”€â”€ judge.ts          # LLM-as-judge scoring
-â”‚       â”‚   â”‚   â””â”€â”€ diff.ts           # Prompt diff generation
-â”‚       â”‚   â”œâ”€â”€ db/
-â”‚       â”‚   â”‚   â”œâ”€â”€ schema.sql        # D1 schema migrations
-â”‚       â”‚   â”‚   â””â”€â”€ queries.ts        # Typed query helpers
-â”‚       â”‚   â””â”€â”€ lib/
-â”‚       â”‚       â”œâ”€â”€ crypto.ts         # Key encryption/hashing
-â”‚       â”‚       â””â”€â”€ utils.ts          # Shared utilities
-â”‚       â”œâ”€â”€ wrangler.toml             # Cloudflare config
-â”‚       â””â”€â”€ package.json
-â”‚
-â”œâ”€â”€ packages/
-â”‚   â”œâ”€â”€ shared/                       # Shared types & validation
-â”‚   â”‚   â”œâ”€â”€ src/
-â”‚   â”‚   â”‚   â”œâ”€â”€ types.ts              # All entity types
-â”‚   â”‚   â”‚   â”œâ”€â”€ schemas.ts            # Zod validation schemas
-â”‚   â”‚   â”‚   â”œâ”€â”€ constants.ts          # Shared constants
-â”‚   â”‚   â”‚   â””â”€â”€ index.ts
-â”‚   â”‚   â””â”€â”€ package.json
-â”‚   â”‚
-â”‚   â””â”€â”€ sdk/                          # PromptOps SDK (Node/TS)
-â”‚       â”œâ”€â”€ src/
-â”‚       â”‚   â”œâ”€â”€ index.ts              # Main SDK entry
-â”‚       â”‚   â”œâ”€â”€ client.ts             # HTTP client with retry
-â”‚       â”‚   â””â”€â”€ types.ts              # SDK-specific types
-â”‚       â”œâ”€â”€ examples/
-â”‚       â”‚   â””â”€â”€ basic-logging.ts      # Example usage
-â”‚       â”œâ”€â”€ README.md
-â”‚       â””â”€â”€ package.json
-â”‚
-â”œâ”€â”€ .github/
-â”‚   â””â”€â”€ workflows/
-â”‚       â””â”€â”€ ci.yml                    # Lint + typecheck + test
-â”œâ”€â”€ turbo.json                        # Turborepo config
-â”œâ”€â”€ package.json                      # Root workspace
-â”œâ”€â”€ pnpm-workspace.yaml
-â””â”€â”€ README.md
+├── apps/
+│   ├── web/                          # Next.js frontend
+│   │   ├── src/
+│   │   │   ├── app/                  # App Router pages
+│   │   │   │   ├── (auth)/           # Login/callback routes
+│   │   │   │   ├── (dashboard)/      # Main app layout
+│   │   │   │   │   ├── [orgSlug]/
+│   │   │   │   │   │   ├── [projectSlug]/
+│   │   │   │   │   │   │   ├── prompts/
+│   │   │   │   │   │   │   ├── datasets/
+│   │   │   │   │   │   │   ├── evals/
+│   │   │   │   │   │   │   ├── runs/
+│   │   │   │   │   │   │   └── settings/
+│   │   │   │   │   │   └── page.tsx  # Project overview
+│   │   │   │   │   └── page.tsx      # Org overview
+│   │   │   │   └── page.tsx          # Landing/login
+│   │   │   ├── components/
+│   │   │   │   ├── ui/               # shadcn components
+│   │   │   │   ├── prompts/          # Prompt editor, diff viewer
+│   │   │   │   ├── datasets/         # Dataset table, JSONL uploader
+│   │   │   │   ├── evals/            # Eval config builder, report
+│   │   │   │   ├── runs/             # Run dashboard, charts
+│   │   │   │   └── layout/           # Sidebar, org switcher, nav
+│   │   │   ├── lib/
+│   │   │   │   ├── api.ts            # API client (fetch wrapper)
+│   │   │   │   ├── auth.ts           # Auth helpers
+│   │   │   │   └── utils.ts          # Shared utilities
+│   │   │   └── types/                # Frontend-specific types
+│   │   ├── public/
+│   │   ├── next.config.js
+│   │   ├── tailwind.config.js
+│   │   └── package.json
+│   │
+│   └── api/                          # Cloudflare Workers backend
+│       ├── src/
+│       │   ├── index.ts              # Hono app entry point
+│       │   ├── routes/
+│       │   │   ├── auth.ts           # OAuth + session routes
+│       │   │   ├── orgs.ts           # Org CRUD
+│       │   │   ├── projects.ts       # Project CRUD
+│       │   │   ├── prompts.ts        # Prompts + versions
+│       │   │   ├── datasets.ts       # Datasets + items
+│       │   │   ├── evals.ts          # Eval configs + runs
+│       │   │   ├── runs.ts           # SDK run logging
+│       │   │   └── keys.ts           # API key management
+│       │   ├── middleware/
+│       │   │   ├── auth.ts           # JWT verification
+│       │   │   ├── rbac.ts           # Role-based access control
+│       │   │   ├── audit.ts          # Audit event logging
+│       │   │   └── rateLimit.ts      # Rate limiting
+│       │   ├── workflows/
+│       │   │   └── jobs.ts           # Optional background jobs (not core eval execution)
+│       │   ├── services/
+│       │   │   ├── guardrails.ts     # Schema, PII, injection checks
+│       │   │   ├── judge.ts          # LLM-as-judge scoring
+│       │   │   └── diff.ts           # Prompt diff generation
+│       │   ├── db/
+│       │   │   ├── schema.sql        # D1 schema migrations
+│       │   │   └── queries.ts        # Typed query helpers
+│       │   └── lib/
+│       │       ├── crypto.ts         # Key encryption/hashing
+│       │       └── utils.ts          # Shared utilities
+│       ├── wrangler.toml             # Cloudflare config
+│       └── package.json
+│
+├── packages/
+│   ├── shared/                       # Shared types & validation
+│   │   ├── src/
+│   │   │   ├── types.ts              # All entity types
+│   │   │   ├── schemas.ts            # Zod validation schemas
+│   │   │   ├── constants.ts          # Shared constants
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   └── sdk/                          # PromptOps SDK (Node/TS)
+│       ├── src/
+│       │   ├── index.ts              # Main SDK entry
+│       │   ├── client.ts             # HTTP client with retry
+│       │   └── types.ts              # SDK-specific types
+│       ├── examples/
+│       │   └── basic-logging.ts      # Example usage
+│       ├── README.md
+│       └── package.json
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml                    # Lint + typecheck + test
+├── turbo.json                        # Turborepo config
+├── package.json                      # Root workspace
+├── pnpm-workspace.yaml
+└── README.md
 ```
 
 ---
@@ -281,21 +281,21 @@ promptops-studio/
 ## Entity Relationship Overview
 
 ```
-users â”€â”€â”
-        â”œâ”€â”€ org_members â”€â”€â”€â”€ orgs
-        â”‚                      â”‚
-        â”‚                      â”œâ”€â”€ projects
-        â”‚                      â”‚     â”‚
-        â”‚                      â”‚     â”œâ”€â”€ prompts â”€â”€ prompt_versions
-        â”‚                      â”‚     â”œâ”€â”€ datasets â”€â”€ dataset_items
-        â”‚                      â”‚     â”œâ”€â”€ eval_configs
-        â”‚                      â”‚     â”‚     â””â”€â”€ eval_runs â”€â”€ eval_run_items
-        â”‚                      â”‚     â”œâ”€â”€ runs (SDK logs)
-        â”‚                      â”‚     â””â”€â”€ api_keys
-        â”‚                      â”‚
-        â”‚                      â””â”€â”€ audit_events
-        â”‚
-        â””â”€â”€ provider_keys (encrypted, per project)
+users ──┐
+        ├── org_members ──── orgs
+        │                      │
+        │                      ├── projects
+        │                      │     │
+        │                      │     ├── prompts ── prompt_versions
+        │                      │     ├── datasets ── dataset_items
+        │                      │     ├── eval_configs
+        │                      │     │     └── eval_runs ── eval_run_items
+        │                      │     ├── runs (SDK logs)
+        │                      │     └── api_keys
+        │                      │
+        │                      └── audit_events
+        │
+        └── provider_keys (encrypted, per project)
 ```
 
 ## SQL Schema (D1 Migrations)
@@ -477,7 +477,7 @@ CREATE TABLE api_keys (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Provider Keys (BYOK â€” encrypted with project-specific key)
+-- Provider Keys (BYOK — encrypted with project-specific key)
 CREATE TABLE provider_keys (
     id TEXT PRIMARY KEY,
     project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
@@ -604,83 +604,83 @@ CREATE INDEX idx_audit_events_created ON audit_events(created_at);
 
 ### Auth
 ```
-GET  /api/auth/github          â†’ Redirect to GitHub OAuth
-GET  /api/auth/callback        â†’ Exchange code, return JWT
-GET  /api/auth/me              â†’ Current user info
-POST /api/auth/logout          â†’ Invalidate session
+GET  /api/auth/github          → Redirect to GitHub OAuth
+GET  /api/auth/callback        → Exchange code, return JWT
+GET  /api/auth/me              → Current user info
+POST /api/auth/logout          → Invalidate session
 ```
 
 ### Organizations
 ```
-POST /api/orgs                 â†’ Create org { name, slug }
-GET  /api/orgs                 â†’ List user's orgs
-GET  /api/orgs/:orgId          â†’ Get org details + members
-POST /api/orgs/:orgId/members  â†’ Invite member { email, role }
-PATCH /api/orgs/:orgId/members/:userId â†’ Update role
-DELETE /api/orgs/:orgId/members/:userId â†’ Remove member
+POST /api/orgs                 → Create org { name, slug }
+GET  /api/orgs                 → List user's orgs
+GET  /api/orgs/:orgId          → Get org details + members
+POST /api/orgs/:orgId/members  → Invite member { email, role }
+PATCH /api/orgs/:orgId/members/:userId → Update role
+DELETE /api/orgs/:orgId/members/:userId → Remove member
 ```
 
 ### Projects
 ```
-POST /api/orgs/:orgId/projects          â†’ Create project { name, slug }
-GET  /api/orgs/:orgId/projects          â†’ List projects
-GET  /api/projects/:projectId           â†’ Project overview (stats)
-PATCH /api/projects/:projectId          â†’ Update project
-DELETE /api/projects/:projectId         â†’ Delete project
+POST /api/orgs/:orgId/projects          → Create project { name, slug }
+GET  /api/orgs/:orgId/projects          → List projects
+GET  /api/projects/:projectId           → Project overview (stats)
+PATCH /api/projects/:projectId          → Update project
+DELETE /api/projects/:projectId         → Delete project
 ```
 
 ### Prompts & Versions
 ```
-POST /api/projects/:projectId/prompts            â†’ Create prompt { name, description }
-GET  /api/projects/:projectId/prompts             â†’ List prompts
-GET  /api/prompts/:promptId                       â†’ Get prompt + list versions
-POST /api/prompts/:promptId/versions              â†’ Create version { content, variablesSchema, modelConfig }
-GET  /api/prompt-versions/:versionId              â†’ Get version details
-PATCH /api/prompt-versions/:versionId/release     â†’ Set status = RELEASED
-PATCH /api/prompt-versions/:versionId/archive     â†’ Set status = ARCHIVED
-GET  /api/prompts/:promptId/diff?base=v1&candidate=v2 â†’ Get diff between versions
+POST /api/projects/:projectId/prompts            → Create prompt { name, description }
+GET  /api/projects/:projectId/prompts             → List prompts
+GET  /api/prompts/:promptId                       → Get prompt + list versions
+POST /api/prompts/:promptId/versions              → Create version { content, variablesSchema, modelConfig }
+GET  /api/prompt-versions/:versionId              → Get version details
+PATCH /api/prompt-versions/:versionId/release     → Set status = RELEASED
+PATCH /api/prompt-versions/:versionId/archive     → Set status = ARCHIVED
+GET  /api/prompts/:promptId/diff?base=v1&candidate=v2 → Get diff between versions
 ```
 
 ### Datasets
 ```
-POST /api/projects/:projectId/datasets            â†’ Create dataset { name, type }
-GET  /api/projects/:projectId/datasets             â†’ List datasets
-GET  /api/datasets/:datasetId                      â†’ Get dataset + paginated items
-POST /api/datasets/:datasetId/items                â†’ Add single item
-POST /api/datasets/:datasetId/items/bulk           â†’ Upload JSONL (multipart)
-PATCH /api/dataset-items/:itemId                   â†’ Edit item
-DELETE /api/dataset-items/:itemId                   â†’ Delete item
+POST /api/projects/:projectId/datasets            → Create dataset { name, type }
+GET  /api/projects/:projectId/datasets             → List datasets
+GET  /api/datasets/:datasetId                      → Get dataset + paginated items
+POST /api/datasets/:datasetId/items                → Add single item
+POST /api/datasets/:datasetId/items/bulk           → Upload JSONL (multipart)
+PATCH /api/dataset-items/:itemId                   → Edit item
+DELETE /api/dataset-items/:itemId                   → Delete item
 ```
 
 ### Eval System
 ```
-POST /api/projects/:projectId/eval-configs         â†’ Create eval config
-GET  /api/projects/:projectId/eval-configs          â†’ List eval configs
-GET  /api/eval-configs/:configId                    â†’ Get config details
-PATCH /api/eval-configs/:configId                   â†’ Update config
+POST /api/projects/:projectId/eval-configs         → Create eval config
+GET  /api/projects/:projectId/eval-configs          → List eval configs
+GET  /api/eval-configs/:configId                    → Get config details
+PATCH /api/eval-configs/:configId                   → Update config
 
-POST /api/eval-runs                                 â†’ Start eval run { evalConfigId, baseVersionId, candidateVersionId }
-GET  /api/eval-runs/:runId                          â†’ Get run status + summary
-GET  /api/eval-runs/:runId/items                    â†’ Paginated items (?verdict=REGRESSED&page=1)
-GET  /api/projects/:projectId/eval-runs             â†’ List runs for project
+POST /api/eval-runs                                 → Start eval run { evalConfigId, baseVersionId, candidateVersionId }
+GET  /api/eval-runs/:runId                          → Get run status + summary
+GET  /api/eval-runs/:runId/items                    → Paginated items (?verdict=REGRESSED&page=1)
+GET  /api/projects/:projectId/eval-runs             → List runs for project
 ```
 
 ### SDK Run Logging
 ```
-POST /api/runs                â†’ Log a run (SDK auth via API key)
-GET  /api/projects/:projectId/runs â†’ List runs (?promptVersionId=...&from=...&to=...)
-GET  /api/projects/:projectId/runs/stats â†’ Aggregated stats (latency, counts, etc.)
+POST /api/runs                → Log a run (SDK auth via API key)
+GET  /api/projects/:projectId/runs → List runs (?promptVersionId=...&from=...&to=...)
+GET  /api/projects/:projectId/runs/stats → Aggregated stats (latency, counts, etc.)
 ```
 
 ### API Keys & Provider Keys
 ```
-POST /api/projects/:projectId/api-keys             â†’ Create API key (returns plaintext ONCE)
-GET  /api/projects/:projectId/api-keys              â†’ List keys (prefix only)
-DELETE /api/api-keys/:keyId                          â†’ Revoke key
+POST /api/projects/:projectId/api-keys             → Create API key (returns plaintext ONCE)
+GET  /api/projects/:projectId/api-keys              → List keys (prefix only)
+DELETE /api/api-keys/:keyId                          → Revoke key
 
-POST /api/projects/:projectId/provider-keys         â†’ Store provider key { provider, key }
-GET  /api/projects/:projectId/provider-keys          â†’ List providers (hint only, never full key)
-DELETE /api/provider-keys/:keyId                      â†’ Remove provider key
+POST /api/projects/:projectId/provider-keys         → Store provider key { provider, key }
+GET  /api/projects/:projectId/provider-keys          → List providers (hint only, never full key)
+DELETE /api/provider-keys/:keyId                      → Remove provider key
 ```
 
 ---
@@ -691,26 +691,26 @@ The build is structured as three MVPs, each shippable and usable:
 
 ```
 MVP 0: Foundation (Shippable Skeleton)
-â”œâ”€â”€ Iteration 0.1: Repo + Dev Environment
-â”œâ”€â”€ Iteration 0.2: Auth + Multi-tenancy
-â”œâ”€â”€ Iteration 0.3: Prompt CRUD + Versioning
-â”œâ”€â”€ Iteration 0.4: Basic UI Shell
-â””â”€â”€ SHIP â†’ "You can sign in, create a project, version prompts, and see diffs"
+├── Iteration 0.1: Repo + Dev Environment
+├── Iteration 0.2: Auth + Multi-tenancy
+├── Iteration 0.3: Prompt CRUD + Versioning
+├── Iteration 0.4: Basic UI Shell
+└── SHIP → "You can sign in, create a project, version prompts, and see diffs"
 
 MVP 1: Core Eval Platform
-â”œâ”€â”€ Iteration 1.1: Dataset Manager
-â”œâ”€â”€ Iteration 1.2: Eval Config Builder
-â”œâ”€â”€ Iteration 1.3: Eval Runner (Browser-Orchestrated)
-â”œâ”€â”€ Iteration 1.4: Eval Report Page
-â”œâ”€â”€ Iteration 1.5: Guardrails Pipeline
-â””â”€â”€ SHIP â†’ "Full eval loop: upload dataset, configure checks, run comparison, see report"
+├── Iteration 1.1: Dataset Manager
+├── Iteration 1.2: Eval Config Builder
+├── Iteration 1.3: Eval Runner (Browser-Orchestrated)
+├── Iteration 1.4: Eval Report Page
+├── Iteration 1.5: Guardrails Pipeline
+└── SHIP → "Full eval loop: upload dataset, configure checks, run comparison, see report"
 
 MVP 2: Production-Grade Polish
-â”œâ”€â”€ Iteration 2.1: SDK + Run Logging
-â”œâ”€â”€ Iteration 2.2: Dashboards & Observability
-â”œâ”€â”€ Iteration 2.3: Demo Polish + Onboarding
-â”œâ”€â”€ Iteration 2.4: Open Source Launch Prep
-â””â”€â”€ SHIP â†’ "Complete product with SDK, dashboards, demo data, README, and open source"
+├── Iteration 2.1: SDK + Run Logging
+├── Iteration 2.2: Dashboards & Observability
+├── Iteration 2.3: Demo Polish + Onboarding
+├── Iteration 2.4: Open Source Launch Prep
+└── SHIP → "Complete product with SDK, dashboards, demo data, README, and open source"
 ```
 
 ---
@@ -759,17 +759,17 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-# 8. MVP 0 â€” Foundation (Shippable Skeleton)
+# 8. MVP 0 — Foundation (Shippable Skeleton)
 
 **Goal:** A user can sign in with GitHub, create an org and project, create prompt versions, and see diffs. The UI looks like a real product. Every action is audited.
 
-**Ship tweet:** "Day X: PromptOps Studio now has auth, org/project isolation, prompt versioning with diffs, and an audit log. Building in public ðŸš€"
+**Ship tweet:** "Day X: PromptOps Studio now has auth, org/project isolation, prompt versioning with diffs, and an audit log. Building in public 🚀"
 
 ---
 
 ## Iteration 0.1: Repo + Dev Environment
 
-**Context:** Set up the monorepo, install dependencies, verify everything runs locally. Nothing is deployed yet â€” this is pure scaffolding.
+**Context:** Set up the monorepo, install dependencies, verify everything runs locally. Nothing is deployed yet — this is pure scaffolding.
 
 **Why this matters:** A clean foundation prevents hours of debugging config issues later. Turborepo gives us fast builds across packages. pnpm saves disk space and is faster than npm.
 
@@ -815,7 +815,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 2. `pnpm create next-app . --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"`
 3. Install shadcn/ui: `pnpm dlx shadcn@latest init`
 4. Add essential shadcn components: `pnpm dlx shadcn@latest add button card input label dialog dropdown-menu table tabs badge separator sheet`
-5. Verify: `pnpm dev` â†’ Next.js running on localhost:3000
+5. Verify: `pnpm dev` → Next.js running on localhost:3000
 6. Create placeholder page: `apps/web/src/app/page.tsx` with "PromptOps Studio" heading
 
 **Done when:** `localhost:3000` shows the placeholder page with Tailwind styling working.
@@ -865,7 +865,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
    export default app;
    ```
 7. Create `tsconfig.json` for Workers
-8. Verify: `pnpm wrangler dev` â†’ health endpoint responds
+8. Verify: `pnpm wrangler dev` → health endpoint responds
 
 **Done when:** `curl localhost:8787/api/health` returns `{"status":"ok"}`.
 
@@ -906,7 +906,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 1. Create `apps/api/src/db/migrations/001_core.sql` (copy the SQL from Section 5)
 2. For local dev: `pnpm wrangler d1 create promptops-db` (or use local SQLite)
 3. Run migration: `pnpm wrangler d1 execute promptops-db --file=./src/db/migrations/001_core.sql --local`
-4. Create `apps/api/src/db/queries.ts` â€” typed helper functions:
+4. Create `apps/api/src/db/queries.ts` — typed helper functions:
    ```typescript
    // Example: getUserById, createOrg, etc.
    // Each function takes D1Database binding + params, returns typed result
@@ -944,10 +944,10 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### ðŸš¢ Iteration 0.1 Ship Checkpoint
+### 🚢 Iteration 0.1 Ship Checkpoint
 
 **What you can tweet/post:**
-> "Day 1: Monorepo scaffolded for PromptOps Studio â€” Next.js frontend, Cloudflare Workers API, shared types, D1 schema, CI green. Foundation laid. ðŸ§±"
+> "Day 1: Monorepo scaffolded for PromptOps Studio — Next.js frontend, Cloudflare Workers API, shared types, D1 schema, CI green. Foundation laid. 🧱"
 
 ---
 
@@ -955,21 +955,21 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 **Context:** Users sign in with GitHub OAuth. They can create orgs, invite members, and create projects. Every mutation writes an audit event. This is the security backbone of the entire app.
 
-### Task 0.2.1: GitHub OAuth flow â€” backend
+### Task 0.2.1: GitHub OAuth flow — backend
 
 **What:** Implement the OAuth exchange on the API side.
 
 **Sub-tasks (this is complex, so breaking it down):**
 
 **0.2.1a: Register GitHub OAuth App**
-1. Go to GitHub Developer Settings â†’ OAuth Apps â†’ New
+1. Go to GitHub Developer Settings → OAuth Apps → New
 2. Set callback URL: `http://localhost:3000/auth/callback` (dev) and your production URL
 3. Note Client ID and Client Secret
 4. Store as Wrangler secrets: `pnpm wrangler secret put GITHUB_CLIENT_ID` etc.
 
 **0.2.1b: OAuth authorize redirect**
 1. Create `apps/api/src/routes/auth.ts`
-2. `GET /api/auth/github` â†’ redirect to `https://github.com/login/oauth/authorize?client_id=...&scope=user:email`
+2. `GET /api/auth/github` → redirect to `https://github.com/login/oauth/authorize?client_id=...&scope=user:email`
 3. Include a `state` parameter (random string stored in a cookie) for CSRF protection
 
 **0.2.1c: OAuth callback + token exchange**
@@ -985,7 +985,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 3. Set JWT as HttpOnly cookie (or return in response body for SPA)
 4. JWT expires in 7 days
 
-**Done when:** Full flow works: click "Sign in" â†’ GitHub â†’ callback â†’ JWT issued â†’ user in DB.
+**Done when:** Full flow works: click "Sign in" → GitHub → callback → JWT issued → user in DB.
 
 ---
 
@@ -1013,18 +1013,18 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 **Sub-tasks:**
 
 **0.2.3a: Create org**
-1. `POST /api/orgs` â†’ creates org + adds creator as OWNER
+1. `POST /api/orgs` → creates org + adds creator as OWNER
 2. Validate: name (2-50 chars), slug (lowercase, hyphens, unique)
 3. Write audit event: `org.created`
 
 **0.2.3b: List user's orgs**
-1. `GET /api/orgs` â†’ join `orgs` with `org_members` where user_id matches
+1. `GET /api/orgs` → join `orgs` with `org_members` where user_id matches
 2. Return org + user's role in each
 
 **0.2.3c: Invite / manage members**
-1. `POST /api/orgs/:orgId/members` â†’ add member by email (must be existing user for MVP)
-2. `PATCH /api/orgs/:orgId/members/:userId` â†’ update role
-3. `DELETE /api/orgs/:orgId/members/:userId` â†’ remove (can't remove last OWNER)
+1. `POST /api/orgs/:orgId/members` → add member by email (must be existing user for MVP)
+2. `PATCH /api/orgs/:orgId/members/:userId` → update role
+3. `DELETE /api/orgs/:orgId/members/:userId` → remove (can't remove last OWNER)
 4. Only OWNER/ADMIN can manage members
 
 **Done when:** User can create org, invite another user, change roles, and see audit trail.
@@ -1044,8 +1044,8 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
    MEMBER: create/edit prompts, datasets, evals, runs
    VIEWER: read-only on everything
    ```
-3. Middleware pattern: `rbac('MEMBER')` â†’ checks user's role >= MEMBER for this org
-4. For project routes: look up project â†’ get org_id â†’ check membership
+3. Middleware pattern: `rbac('MEMBER')` → checks user's role >= MEMBER for this org
+4. For project routes: look up project → get org_id → check membership
 5. Return 403 if insufficient permissions
 
 **Done when:** A VIEWER cannot create a prompt (403). A MEMBER can. An outsider gets 403 on any org resource.
@@ -1058,11 +1058,11 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 **Steps:**
 1. Create `apps/api/src/routes/projects.ts`
-2. `POST /api/orgs/:orgId/projects` â†’ create project (requires MEMBER+)
-3. `GET /api/orgs/:orgId/projects` â†’ list projects (requires VIEWER+)
-4. `GET /api/projects/:projectId` â†’ project detail with stats
-5. `PATCH /api/projects/:projectId` â†’ update name/description (requires ADMIN+)
-6. `DELETE /api/projects/:projectId` â†’ soft delete (requires OWNER)
+2. `POST /api/orgs/:orgId/projects` → create project (requires MEMBER+)
+3. `GET /api/orgs/:orgId/projects` → list projects (requires VIEWER+)
+4. `GET /api/projects/:projectId` → project detail with stats
+5. `PATCH /api/projects/:projectId` → update name/description (requires ADMIN+)
+6. `DELETE /api/projects/:projectId` → soft delete (requires OWNER)
 7. Write audit events for all mutations
 
 **Done when:** Full CRUD works with RBAC. Audit events logged.
@@ -1091,7 +1091,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 **0.2.7a: Login page**
 1. Create `apps/web/src/app/(auth)/login/page.tsx`
-2. "Sign in with GitHub" button â†’ redirects to `/api/auth/github`
+2. "Sign in with GitHub" button → redirects to `/api/auth/github`
 3. Clean, branded design (PromptOps logo + tagline)
 
 **0.2.7b: Auth callback page**
@@ -1109,7 +1109,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 2. Check auth on load, redirect to `/login` if not authenticated
 3. Show loading skeleton while checking
 
-**Done when:** Full flow works end-to-end in browser: login â†’ GitHub â†’ back to app â†’ see dashboard.
+**Done when:** Full flow works end-to-end in browser: login → GitHub → back to app → see dashboard.
 
 ---
 
@@ -1121,7 +1121,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 **0.2.8a: Org creation flow**
 1. First-time user sees "Create your organization" page
-2. Form: org name â†’ auto-generates slug
+2. Form: org name → auto-generates slug
 3. After creation, redirect to org page
 
 **0.2.8b: Org switcher**
@@ -1132,16 +1132,16 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 **0.2.8c: Project list page**
 1. Grid/list of projects in current org
 2. "Create Project" button + modal
-3. Click project â†’ navigate to project dashboard
+3. Click project → navigate to project dashboard
 
 **Done when:** User can create org, create project, switch between orgs, and navigate to project pages.
 
 ---
 
-### ðŸš¢ Iteration 0.2 Ship Checkpoint
+### 🚢 Iteration 0.2 Ship Checkpoint
 
 **What you can tweet/post:**
-> "Day X: PromptOps Studio now has GitHub OAuth, multi-tenant orgs with RBAC, project isolation, and a full audit log. Security-first from day one. ðŸ”"
+> "Day X: PromptOps Studio now has GitHub OAuth, multi-tenant orgs with RBAC, project isolation, and a full audit log. Security-first from day one. 🔐"
 
 ---
 
@@ -1149,15 +1149,15 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 **Context:** This is the core entity of the product. Users create prompts, write templates with `{{variables}}`, create immutable versions, see diffs, and release versions. This is what makes PromptOps feel like a real tool.
 
-### Task 0.3.1: Prompt CRUD â€” backend
+### Task 0.3.1: Prompt CRUD — backend
 
 **What:** API endpoints for creating and listing prompts.
 
 **Steps:**
 1. Create `apps/api/src/routes/prompts.ts`
-2. `POST /api/projects/:projectId/prompts` â†’ create prompt (name, description)
-3. `GET /api/projects/:projectId/prompts` â†’ list prompts with latest version info
-4. `GET /api/prompts/:promptId` â†’ prompt detail + list of versions (sorted by version_number desc)
+2. `POST /api/projects/:projectId/prompts` → create prompt (name, description)
+3. `GET /api/projects/:projectId/prompts` → list prompts with latest version info
+4. `GET /api/prompts/:promptId` → prompt detail + list of versions (sorted by version_number desc)
 5. RBAC: MEMBER+ to create, VIEWER+ to read
 6. Audit events on create
 
@@ -1165,7 +1165,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 0.3.2: Prompt version creation â€” backend
+### Task 0.3.2: Prompt version creation — backend
 
 **What:** Create new immutable versions of a prompt.
 
@@ -1198,7 +1198,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 0.3.3: Version release + archive â€” backend
+### Task 0.3.3: Version release + archive — backend
 
 **What:** Mark a version as RELEASED or ARCHIVED.
 
@@ -1215,7 +1215,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 0.3.4: Prompt diff generation â€” backend
+### Task 0.3.4: Prompt diff generation — backend
 
 **What:** Generate a line diff between two prompt versions.
 
@@ -1238,7 +1238,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 0.3.5: Prompt template editor â€” frontend
+### Task 0.3.5: Prompt template editor — frontend
 
 **What:** A code editor for writing prompt templates with variable highlighting.
 
@@ -1247,7 +1247,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 **0.3.5a: Prompt list page**
 1. Create `apps/web/src/app/(dashboard)/[orgSlug]/[projectSlug]/prompts/page.tsx`
 2. Table: prompt name, latest version number, status badge, created date
-3. "New Prompt" button â†’ modal with name + description fields
+3. "New Prompt" button → modal with name + description fields
 
 **0.3.5b: Prompt detail page**
 1. Create `.../prompts/[promptId]/page.tsx`
@@ -1257,7 +1257,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 **0.3.5c: Template editor component**
 1. Create `apps/web/src/components/prompts/TemplateEditor.tsx`
-2. Textarea (or use CodeMirror/Monaco for syntax highlighting â€” CodeMirror is lighter)
+2. Textarea (or use CodeMirror/Monaco for syntax highlighting — CodeMirror is lighter)
 3. Highlight `{{variable_name}}` patterns in a distinct color
 4. Below editor: "Detected Variables" list (auto-parsed from template)
 5. Model config fields: model dropdown, temperature slider, max tokens input
@@ -1271,7 +1271,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 0.3.6: Diff viewer â€” frontend
+### Task 0.3.6: Diff viewer — frontend
 
 **What:** Visual side-by-side or inline diff view showing changes between versions.
 
@@ -1301,10 +1301,10 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### ðŸš¢ Iteration 0.3 Ship Checkpoint
+### 🚢 Iteration 0.3 Ship Checkpoint
 
 **What you can tweet/post:**
-> "PromptOps Studio now has a full prompt editor with {{variable}} templating, immutable versioning, visual diffs, and release management. Treating prompts like code. âœ¨"
+> "PromptOps Studio now has a full prompt editor with {{variable}} templating, immutable versioning, visual diffs, and release management. Treating prompts like code. ✨"
 
 ---
 
@@ -1385,31 +1385,31 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 1. Update GitHub OAuth App with production callback URL
 2. Update frontend env var with production API URL
 
-**Done when:** Full flow works in production: login â†’ create org â†’ create prompt â†’ see versions.
+**Done when:** Full flow works in production: login → create org → create prompt → see versions.
 
 ---
 
-### ðŸš¢ MVP 0 Ship Checkpoint â€” THE BIG ONE
+### 🚢 MVP 0 Ship Checkpoint — THE BIG ONE
 
 **What you can tweet/post:**
-> "ðŸš€ Shipped MVP 0 of PromptOps Studio â€” an open-source LLMOps platform.
+> "🚀 Shipped MVP 0 of PromptOps Studio — an open-source LLMOps platform.
 >
 > What it does today:
-> â€¢ GitHub auth with multi-tenant orgs + RBAC
-> â€¢ Prompt versioning with {{variable}} templates
-> â€¢ Visual diffs between versions
-> â€¢ Release management (promote/rollback)
-> â€¢ Full audit trail
+> • GitHub auth with multi-tenant orgs + RBAC
+> • Prompt versioning with {{variable}} templates
+> • Visual diffs between versions
+> • Release management (promote/rollback)
+> • Full audit trail
 >
 > Live at [URL]. Next up: datasets + eval engine.
 >
-> Building in public â€” star the repo if this interests you â­"
+> Building in public — star the repo if this interests you ⭐"
 
 **Screenshot/GIF ideas:** Diff viewer showing two prompt versions, org switcher dropdown, version list with release badges.
 
 ---
 
-# 9. MVP 1 â€” Core Eval Platform
+# 9. MVP 1 — Core Eval Platform
 
 **Goal:** A user can upload a dataset, configure evaluation rules, run a side-by-side comparison of two prompt versions, and get a clear report showing pass/fail, regressions, and judge scores. This is the core value proposition.
 
@@ -1421,31 +1421,31 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 **Context:** Datasets are collections of test cases. Each item has input variables (to fill the prompt template), optional expected output, and optional rubric (for judge scoring). Users need to create datasets manually or import via JSONL.
 
-### Task 1.1.1: Dataset CRUD â€” backend
+### Task 1.1.1: Dataset CRUD — backend
 
 **What:** API for creating and managing datasets.
 
 **Steps:**
 1. Create `apps/api/src/routes/datasets.ts`
-2. `POST /api/projects/:projectId/datasets` â†’ create dataset (name, description, type)
-3. `GET /api/projects/:projectId/datasets` â†’ list with item_count
-4. `GET /api/datasets/:datasetId` â†’ details + paginated items (limit 50, cursor-based)
-5. `PATCH /api/datasets/:datasetId` â†’ update name/description
-6. `DELETE /api/datasets/:datasetId` â†’ cascade delete items
+2. `POST /api/projects/:projectId/datasets` → create dataset (name, description, type)
+3. `GET /api/projects/:projectId/datasets` → list with item_count
+4. `GET /api/datasets/:datasetId` → details + paginated items (limit 50, cursor-based)
+5. `PATCH /api/datasets/:datasetId` → update name/description
+6. `DELETE /api/datasets/:datasetId` → cascade delete items
 7. Audit events on all mutations
 
 **Done when:** Dataset CRUD fully functional via API.
 
 ---
 
-### Task 1.1.2: Dataset item CRUD â€” backend
+### Task 1.1.2: Dataset item CRUD — backend
 
 **What:** Add, edit, and delete individual test cases.
 
 **Steps:**
-1. `POST /api/datasets/:datasetId/items` â†’ add single item
-2. `PATCH /api/dataset-items/:itemId` â†’ edit item
-3. `DELETE /api/dataset-items/:itemId` â†’ delete item
+1. `POST /api/datasets/:datasetId/items` → add single item
+2. `PATCH /api/dataset-items/:itemId` → edit item
+3. `DELETE /api/dataset-items/:itemId` → delete item
 4. Validate item structure:
    - `input` must be valid JSON object
    - `expected_output` must be valid JSON if provided
@@ -1457,14 +1457,14 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 1.1.3: JSONL bulk import â€” backend
+### Task 1.1.3: JSONL bulk import — backend
 
 **What:** Upload a JSONL file to bulk-add dataset items.
 
 **Sub-tasks:**
 
 **1.1.3a: Multipart upload endpoint**
-1. `POST /api/datasets/:datasetId/items/bulk` â€” accepts multipart/form-data
+1. `POST /api/datasets/:datasetId/items/bulk` — accepts multipart/form-data
 2. Parse the JSONL file from the upload
 
 **1.1.3b: JSONL parser + validator**
@@ -1494,38 +1494,38 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 1.1.4: Dataset UI â€” frontend
+### Task 1.1.4: Dataset UI — frontend
 
 **Sub-tasks:**
 
 **1.1.4a: Dataset list page**
 1. Create `apps/web/src/app/(dashboard)/[orgSlug]/[projectSlug]/datasets/page.tsx`
 2. Table: dataset name, type badge, item count, created date
-3. "New Dataset" button â†’ modal (name, type dropdown, description)
+3. "New Dataset" button → modal (name, type dropdown, description)
 
 **1.1.4b: Dataset detail page**
 1. Create `.../datasets/[datasetId]/page.tsx`
 2. Header: dataset name, type, item count
 3. Table of items: columns depend on dataset type
    - Show `input` (truncated), `expected_output` (truncated), tags
-   - Click row â†’ expand to see full content
+   - Click row → expand to see full content
 4. Pagination (50 items per page)
 
 **1.1.4c: Add item form**
-1. "Add Item" button â†’ slide-over panel
+1. "Add Item" button → slide-over panel
 2. JSON editor for `input` (with validation)
 3. JSON editor for `expected_output` (optional)
 4. Textarea for `rubric` (optional)
 5. Tag input (comma-separated or chip input)
 
 **1.1.4d: Edit item inline**
-1. Click item â†’ opens edit panel (same as add, pre-filled)
+1. Click item → opens edit panel (same as add, pre-filled)
 2. Save/Cancel buttons
 3. Delete button with confirmation
 
 **1.1.4e: JSONL upload UI**
-1. "Import JSONL" button â†’ file picker
-2. Upload â†’ show progress
+1. "Import JSONL" button → file picker
+2. Upload → show progress
 3. Show results: "47 imported, 3 failed" with expandable error details
 4. Provide a sample JSONL template for download
 
@@ -1533,25 +1533,25 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### ðŸš¢ Iteration 1.1 Ship Checkpoint
+### 🚢 Iteration 1.1 Ship Checkpoint
 
 **What you can tweet/post:**
-> "Dataset manager shipped! Import your test cases via JSONL, tag them, edit inline. The foundation for structured prompt evaluation. ðŸ“Š"
+> "Dataset manager shipped! Import your test cases via JSONL, tag them, edit inline. The foundation for structured prompt evaluation. 📊"
 
 ---
 
 ## Iteration 1.2: Eval Config Builder
 
-**Context:** An eval config defines HOW to evaluate â€” which dataset, what checks to run, what thresholds to set, and whether to use LLM-as-judge. This is a form-heavy UI that produces the JSON rules schema.
+**Context:** An eval config defines HOW to evaluate — which dataset, what checks to run, what thresholds to set, and whether to use LLM-as-judge. This is a form-heavy UI that produces the JSON rules schema.
 
-### Task 1.2.1: Eval config CRUD â€” backend
+### Task 1.2.1: Eval config CRUD — backend
 
 **Steps:**
 1. Create `apps/api/src/routes/evals.ts`
-2. `POST /api/projects/:projectId/eval-configs` â†’ create config
-3. `GET /api/projects/:projectId/eval-configs` â†’ list configs
-4. `GET /api/eval-configs/:configId` â†’ config details
-5. `PATCH /api/eval-configs/:configId` â†’ update rules
+2. `POST /api/projects/:projectId/eval-configs` → create config
+3. `GET /api/projects/:projectId/eval-configs` → list configs
+4. `GET /api/eval-configs/:configId` → config details
+5. `PATCH /api/eval-configs/:configId` → update rules
 6. Validate rules JSON against the expected schema (see Section 5)
 7. Audit events
 
@@ -1561,32 +1561,32 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ### Task 1.2.2: Eval config builder UI
 
-**Sub-tasks (complex UI â€” breaking it down):**
+**Sub-tasks (complex UI — breaking it down):**
 
 **1.2.2a: Config list page**
 1. Create `.../evals/page.tsx`
 2. List eval configs: name, linked dataset, number of checks, last run date
 3. "New Eval Config" button
 
-**1.2.2b: Config builder â€” step 1: Select dataset**
+**1.2.2b: Config builder — step 1: Select dataset**
 1. Create `.../evals/new/page.tsx` (wizard-style)
 2. Dropdown to select dataset from project
 3. Show dataset preview (first 3 items)
 
-**1.2.2c: Config builder â€” step 2: Deterministic checks**
+**1.2.2c: Config builder — step 2: Deterministic checks**
 1. Toggle switches for each check:
    - "Output must be valid JSON" (json_valid)
-   - "Output must match JSON schema" (json_schema) â†’ show schema editor
-   - "Output must match regex" (regex_match) â†’ show pattern input
+   - "Output must match JSON schema" (json_schema) → show schema editor
+   - "Output must match regex" (regex_match) → show pattern input
    - "Exact match with expected output" (exact_match)
 2. JSON schema editor: textarea with validation (show error if invalid schema)
 
-**1.2.2d: Config builder â€” step 3: Guardrails**
+**1.2.2d: Config builder — step 3: Guardrails**
 1. Toggle switches:
    - "Detect PII in output" (pii_detection)
    - "Check for prompt injection in input" (prompt_injection_check)
 
-**1.2.2e: Config builder â€” step 4: Judge scoring**
+**1.2.2e: Config builder — step 4: Judge scoring**
 1. Toggle: "Enable LLM-as-judge scoring"
 2. If enabled:
    - Model selection (default: gpt-4o-mini)
@@ -1594,12 +1594,12 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
    - Scale: 1-5 (fixed for MVP)
    - Note: "Uses your BYOK API key for judge calls"
 
-**1.2.2f: Config builder â€” step 5: Thresholds**
+**1.2.2f: Config builder — step 5: Thresholds**
 1. "Minimum judge score to pass": number input (1-5)
 2. "All deterministic checks must pass": checkbox (default: true)
 3. "No guardrail failures": checkbox (default: true)
 
-**1.2.2g: Config builder â€” review + save**
+**1.2.2g: Config builder — review + save**
 1. Summary of all selected rules
 2. JSON preview (collapsible)
 3. Name input for the config
@@ -1609,20 +1609,20 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### ðŸš¢ Iteration 1.2 Ship Checkpoint
+### 🚢 Iteration 1.2 Ship Checkpoint
 
 **What you can tweet/post:**
-> "Eval config builder is live! Pick your dataset, configure JSON schema checks, PII detection, LLM-as-judge rubrics, and set pass/fail thresholds â€” all through a clean wizard UI. ðŸ§ª"
+> "Eval config builder is live! Pick your dataset, configure JSON schema checks, PII detection, LLM-as-judge rubrics, and set pass/fail thresholds — all through a clean wizard UI. 🧪"
 
 ---
 
 ## Iteration 1.3: Eval Runner (The Hard One)
 
-**Context:** This is the most complex part of the system. An eval run takes a config, two prompt versions (base vs candidate), and processes each dataset item â€” rendering templates, getting LLM outputs via BYOK, running checks, optionally scoring with a judge, and computing verdicts. It must be resumable, idempotent, and show progress.
+**Context:** This is the most complex part of the system. An eval run takes a config, two prompt versions (base vs candidate), and processes each dataset item — rendering templates, getting LLM outputs via BYOK, running checks, optionally scoring with a judge, and computing verdicts. It must be resumable, idempotent, and show progress.
 
 **Strategy: Client-orchestrated execution.** Since we're BYOK, the user's browser drives the eval. The backend stores results and computes summaries. This avoids Cloudflare Workers CPU limits entirely.
 
-### Task 1.3.1: Eval run creation â€” backend
+### Task 1.3.1: Eval run creation — backend
 
 **What:** Create an eval run record and return it.
 
@@ -1644,7 +1644,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 1.3.2: Template renderer â€” shared package
+### Task 1.3.2: Template renderer — shared package
 
 **What:** A function that renders a prompt template with input variables.
 
@@ -1655,7 +1655,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 4. Throw error if a required variable is missing
 5. Unit tests:
    - Basic replacement
-   - Missing variable â†’ error
+   - Missing variable → error
    - Multiple variables
    - No variables (passthrough)
 
@@ -1663,7 +1663,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 ---
 
-### Task 1.3.3: Deterministic checks â€” shared package
+### Task 1.3.3: Deterministic checks — shared package
 
 **What:** Functions that run deterministic checks on LLM output.
 
@@ -1700,7 +1700,7 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### Task 1.3.4: Guardrails â€” shared package
+### Task 1.3.4: Guardrails — shared package
 
 **What:** PII detection and prompt injection heuristics.
 
@@ -1732,7 +1732,7 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### Task 1.3.5: Client-side eval orchestrator â€” frontend
+### Task 1.3.5: Client-side eval orchestrator — frontend
 
 **What:** The browser-based engine that drives the eval run. This is the most complex frontend task.
 
@@ -1753,19 +1753,19 @@ function checkJsonValid(output: string): CheckResult {
 3. OpenAI implementation: calls `https://api.openai.com/v1/chat/completions` directly from browser
 4. Anthropic implementation: calls Anthropic API directly
 5. Uses the user's BYOK key (retrieved from project settings)
-6. **Important:** These calls go from browser â†’ provider directly. Never through our backend.
+6. **Important:** These calls go from browser → provider directly. Never through our backend.
 
 **1.3.5b: Eval execution engine**
 1. Create `apps/web/src/lib/eval-engine.ts`
 2. Main function: `runEvaluation(config, items, baseVersion, candidateVersion, llmClient)`
 3. For each dataset item:
-   a. Render base template with input variables â†’ base prompt
-   b. Render candidate template with input variables â†’ candidate prompt
-   c. Call LLM for base prompt â†’ base output + latency
-   d. Call LLM for candidate prompt â†’ candidate output + latency
+   a. Render base template with input variables → base prompt
+   b. Render candidate template with input variables → candidate prompt
+   c. Call LLM for base prompt → base output + latency
+   d. Call LLM for candidate prompt → candidate output + latency
    e. Run deterministic checks on both outputs
    f. Run guardrails on both outputs
-   g. (If judge enabled) Call LLM with judge prompt â†’ scores for both
+   g. (If judge enabled) Call LLM with judge prompt → scores for both
    h. Compute verdict (IMPROVED / REGRESSED / SAME)
    i. Send result to backend: `POST /api/eval-runs/:runId/items`
 4. Concurrency: process 3 items at a time (Promise pool)
@@ -1797,7 +1797,7 @@ function checkJsonValid(output: string): CheckResult {
 1. Before processing an item, check if it already has a result (from a previous partial run)
 2. Skip already-completed items
 3. If browser closes mid-run: run status stays RUNNING
-4. User can re-open and click "Resume" â†’ engine checks which items are done, continues from there
+4. User can re-open and click "Resume" → engine checks which items are done, continues from there
 
 **1.3.5e: Error handling**
 1. If LLM call fails: retry once after 2 seconds
@@ -1809,12 +1809,12 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### Task 1.3.6: Eval run items â€” backend storage
+### Task 1.3.6: Eval run items — backend storage
 
 **What:** API to store individual eval run item results and update progress.
 
 **Steps:**
-1. `POST /api/eval-runs/:runId/items` â†’ store single item result
+1. `POST /api/eval-runs/:runId/items` → store single item result
    ```json
    {
      "datasetItemId": "...",
@@ -1838,7 +1838,7 @@ function checkJsonValid(output: string): CheckResult {
 **What:** When all items are processed, compute summary statistics.
 
 **Steps:**
-1. `PATCH /api/eval-runs/:runId/complete` â€” called by frontend when all items done
+1. `PATCH /api/eval-runs/:runId/complete` — called by frontend when all items done
 2. Compute summary:
    ```json
    {
@@ -1863,10 +1863,10 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### ðŸš¢ Iteration 1.3 Ship Checkpoint
+### 🚢 Iteration 1.3 Ship Checkpoint
 
 **What you can tweet/post:**
-> "The eval engine is ALIVE. ðŸ”¥ PromptOps Studio can now run side-by-side comparisons of prompt versions against your dataset. Client-side execution via BYOK â€” your API key, your costs, our analysis. Deterministic checks + LLM-as-judge + guardrails. Show me the regressions."
+> "The eval engine is ALIVE. 🔥 PromptOps Studio can now run side-by-side comparisons of prompt versions against your dataset. Client-side execution via BYOK — your API key, your costs, our analysis. Deterministic checks + LLM-as-judge + guardrails. Show me the regressions."
 
 ---
 
@@ -1901,7 +1901,7 @@ function checkJsonValid(output: string): CheckResult {
 2. Sortable by: verdict, delta, score
 3. Filterable by: verdict (dropdown), check failures, guardrail failures
 4. Pagination (50 per page)
-5. Click row â†’ expand to see full details
+5. Click row → expand to see full details
 
 **Done when:** Table is sortable, filterable, and paginated.
 
@@ -1940,10 +1940,10 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### ðŸš¢ Iteration 1.4 Ship Checkpoint
+### 🚢 Iteration 1.4 Ship Checkpoint
 
 **What you can tweet/post:**
-> "Eval reports are here. Pass rate comparison, side-by-side outputs, judge rationale, and one-click export. Finally, a clear answer to 'Is my new prompt better?' ðŸ“ˆ"
+> "Eval reports are here. Pass rate comparison, side-by-side outputs, judge rationale, and one-click export. Finally, a clear answer to 'Is my new prompt better?' 📈"
 
 ---
 
@@ -1980,17 +1980,17 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### ðŸš¢ Iteration 1.5 Ship Checkpoint
+### 🚢 Iteration 1.5 Ship Checkpoint
 
 **What you can tweet/post:**
-> "Guardrails are first-class in PromptOps Studio. PII leakage? Schema violations? Prompt injection? Flagged, filterable, and in your face. Ship with confidence. ðŸ›¡ï¸"
+> "Guardrails are first-class in PromptOps Studio. PII leakage? Schema violations? Prompt injection? Flagged, filterable, and in your face. Ship with confidence. 🛡️"
 
 ---
 
-### ðŸš¢ðŸš¢ðŸš¢ MVP 1 Complete Ship
+### 🚢🚢🚢 MVP 1 Complete Ship
 
 **What you can tweet/post:**
-> "MVP 1 of PromptOps Studio is complete. ðŸŽ‰
+> "MVP 1 of PromptOps Studio is complete. 🎉
 >
 > The full eval loop:
 > 1. Version your prompts
@@ -1999,13 +1999,13 @@ function checkJsonValid(output: string): CheckResult {
 > 4. Run v1 vs v2 comparison
 > 5. See exactly what improved, what regressed, and why
 >
-> All BYOK â€” use your own API key. $0 infrastructure cost.
+> All BYOK — use your own API key. $0 infrastructure cost.
 >
 > Try it: [URL] | Star it: [GitHub]"
 
 ---
 
-# 10. MVP 2 â€” Production-Grade Polish
+# 10. MVP 2 — Production-Grade Polish
 
 **Goal:** The product feels complete. SDK for production logging, dashboards for monitoring, demo data for onboarding, and open-source launch readiness. This is what makes it recruiter-friendly and user-retaining.
 
@@ -2013,21 +2013,21 @@ function checkJsonValid(output: string): CheckResult {
 
 ## Iteration 2.1: SDK + Run Logging
 
-**Context:** The SDK lets any application log "runs" (input, output, latency, version) to PromptOps. This creates the observability layer â€” dashboards only work if data flows in.
+**Context:** The SDK lets any application log "runs" (input, output, latency, version) to PromptOps. This creates the observability layer — dashboards only work if data flows in.
 
-### Task 2.1.1: API key management â€” backend
+### Task 2.1.1: API key management — backend
 
 **What:** Project-scoped API keys for SDK authentication.
 
 **Steps:**
 1. Create `apps/api/src/routes/keys.ts`
-2. `POST /api/projects/:projectId/api-keys` â†’ create key
+2. `POST /api/projects/:projectId/api-keys` → create key
    - Generate random key: `po_sk_` + 32 random chars
    - Store SHA-256 hash in `api_keys.key_hash`
    - Store prefix in `api_keys.key_prefix` (first 12 chars for display)
    - Return plaintext key ONCE in response (never again)
-3. `GET /api/projects/:projectId/api-keys` â†’ list keys (prefix, name, last_used_at only)
-4. `DELETE /api/api-keys/:keyId` â†’ revoke key
+3. `GET /api/projects/:projectId/api-keys` → list keys (prefix, name, last_used_at only)
+4. `DELETE /api/api-keys/:keyId` → revoke key
 
 **Done when:** Keys can be created, listed (without secrets), and revoked.
 
@@ -2039,7 +2039,7 @@ function checkJsonValid(output: string): CheckResult {
 
 **Steps:**
 1. Create or update `apps/api/src/middleware/auth.ts`
-2. Check `Authorization: Bearer po_sk_...` â†’ this is an API key, not a JWT
+2. Check `Authorization: Bearer po_sk_...` → this is an API key, not a JWT
 3. Hash the key, look up in `api_keys` table
 4. If found: attach project context to request, update `last_used_at`
 5. If not found: 401
@@ -2058,7 +2058,7 @@ function checkJsonValid(output: string): CheckResult {
 2. Body:
    ```json
    {
-     "promptVersionId": "optional â€” null if not tracking versions",
+     "promptVersionId": "optional — null if not tracking versions",
      "input": { "customer_name": "Alice", "issue": "billing" },
      "output": "I'd be happy to help with your billing issue...",
      "metrics": {
@@ -2141,7 +2141,7 @@ function checkJsonValid(output: string): CheckResult {
 **Steps:**
 1. Create `.../settings/page.tsx`
 2. "API Keys" section
-3. "Create Key" button â†’ name input â†’ shows plaintext key ONCE with copy button + warning
+3. "Create Key" button → name input → shows plaintext key ONCE with copy button + warning
 4. List existing keys: name, prefix (`po_sk_ab12...`), last used, created date
 5. "Revoke" button with confirmation
 
@@ -2149,7 +2149,7 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### ðŸš¢ Iteration 2.1 Ship Checkpoint
+### 🚢 Iteration 2.1 Ship Checkpoint
 
 **What you can tweet/post:**
 > "PromptOps Studio SDK is live. 3 lines of code to log every LLM call to your dashboard:
@@ -2157,7 +2157,7 @@ function checkJsonValid(output: string): CheckResult {
 > const client = new PromptOpsClient({ apiKey: 'po_sk_...' });
 > const output = await client.instrumentedGenerate(() => callOpenAI(prompt), { input });
 > ```
-> Auto-retry, non-blocking, fire-and-forget. npm install from GitHub. ðŸ“¦"
+> Auto-retry, non-blocking, fire-and-forget. npm install from GitHub. 📦"
 
 ---
 
@@ -2165,7 +2165,7 @@ function checkJsonValid(output: string): CheckResult {
 
 **Context:** Dashboards turn logged runs into actionable insights. Tech leads can see quality trends, latency spikes, and guardrail failure rates without digging through individual runs.
 
-### Task 2.2.1: Run stats aggregation â€” backend
+### Task 2.2.1: Run stats aggregation — backend
 
 **What:** API endpoint that computes aggregated stats from runs.
 
@@ -2184,7 +2184,7 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### Task 2.2.2: Project overview dashboard â€” frontend
+### Task 2.2.2: Project overview dashboard — frontend
 
 **What:** The landing page when you enter a project.
 
@@ -2195,7 +2195,7 @@ function checkJsonValid(output: string): CheckResult {
    - Avg latency (ms)
    - P95 latency (ms)
    - Guardrail failures (count, red if > 0)
-3. Charts (use Recharts â€” already available):
+3. Charts (use Recharts — already available):
    - Runs per day (bar chart, last 14 days)
    - Latency trend (line chart, last 14 days)
 4. Quick links:
@@ -2207,7 +2207,7 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### Task 2.2.3: Runs explorer page â€” frontend
+### Task 2.2.3: Runs explorer page — frontend
 
 **What:** Table view of all logged runs with filtering.
 
@@ -2219,7 +2219,7 @@ function checkJsonValid(output: string): CheckResult {
    - Prompt version dropdown
    - Source (SDK / UI / EVAL)
    - Guardrail status (pass / fail)
-4. Click row â†’ expand to see full input/output + metrics
+4. Click row → expand to see full input/output + metrics
 5. Pagination
 
 **Done when:** Runs are browsable, filterable, and expandable.
@@ -2240,10 +2240,10 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### ðŸš¢ Iteration 2.2 Ship Checkpoint
+### 🚢 Iteration 2.2 Ship Checkpoint
 
 **What you can tweet/post:**
-> "Dashboards are live in PromptOps Studio. Latency trends, guardrail failure rates, per-version analytics. Finally, observability for your LLM features. ðŸ“Š"
+> "Dashboards are live in PromptOps Studio. Latency trends, guardrail failure rates, per-version analytics. Finally, observability for your LLM features. 📊"
 
 ---
 
@@ -2282,8 +2282,8 @@ function checkJsonValid(output: string): CheckResult {
 **Steps:**
 1. After first login + org creation: show onboarding modal
 2. Two paths:
-   - "Explore with demo data" â†’ create project + seed demo data
-   - "Start from scratch" â†’ go to empty project
+   - "Explore with demo data" → create project + seed demo data
+   - "Start from scratch" → go to empty project
 3. For "Start from scratch": show a checklist sidebar:
    - [ ] Create your first prompt
    - [ ] Add a dataset
@@ -2338,10 +2338,10 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### ðŸš¢ Iteration 2.3 Ship Checkpoint
+### 🚢 Iteration 2.3 Ship Checkpoint
 
 **What you can tweet/post:**
-> "PromptOps Studio onboarding is âœ¨ smooth. One-click demo data, guided checklist, and a landing page that actually explains what this does. Try it in 60 seconds: [URL]"
+> "PromptOps Studio onboarding is ✨ smooth. One-click demo data, guided checklist, and a landing page that actually explains what this does. Try it in 60 seconds: [URL]"
 
 ---
 
@@ -2382,10 +2382,10 @@ function checkJsonValid(output: string): CheckResult {
 
 **Steps:**
 1. Test all flows end-to-end in production:
-   - Sign up â†’ create org â†’ create project
-   - Create prompt â†’ version â†’ diff â†’ release
-   - Upload dataset â†’ create eval config â†’ run eval â†’ view report
-   - SDK logging â†’ dashboard
+   - Sign up → create org → create project
+   - Create prompt → version → diff → release
+   - Upload dataset → create eval config → run eval → view report
+   - SDK logging → dashboard
    - Guardrail detection
    - RBAC (test with VIEWER role)
 2. Fix any bugs found
@@ -2403,23 +2403,23 @@ function checkJsonValid(output: string): CheckResult {
 
 ---
 
-### ðŸš¢ðŸš¢ðŸš¢ MVP 2 Complete â€” PUBLIC LAUNCH
+### 🚢🚢🚢 MVP 2 Complete — PUBLIC LAUNCH
 
 **What you can tweet/post:**
-> "ðŸš€ PromptOps Studio is officially open source!
+> "🚀 PromptOps Studio is officially open source!
 >
 > A free LLMOps platform for teams shipping AI features:
-> âœ… Prompt versioning with diffs & releases
-> âœ… Dataset-driven evaluation (deterministic + LLM-as-judge)
-> âœ… Guardrails: JSON schema, PII detection, injection heuristics
-> âœ… SDK for production monitoring
-> âœ… Dashboards for quality, latency, and cost
+> ✅ Prompt versioning with diffs & releases
+> ✅ Dataset-driven evaluation (deterministic + LLM-as-judge)
+> ✅ Guardrails: JSON schema, PII detection, injection heuristics
+> ✅ SDK for production monitoring
+> ✅ Dashboards for quality, latency, and cost
 >
-> 100% BYOK â€” your API key, your data, $0 infrastructure.
+> 100% BYOK — your API key, your data, $0 infrastructure.
 >
-> ðŸ”— Try it: [URL]
-> â­ Star it: [GitHub]
-> ðŸ“¹ Demo: [Video]
+> 🔗 Try it: [URL]
+> ⭐ Star it: [GitHub]
+> 📹 Demo: [Video]
 >
 > Built in public from day one. Time to ship with confidence."
 
@@ -2518,8 +2518,8 @@ function checkJsonValid(output: string): CheckResult {
 
 ```jsonl
 {"input": {"invoice_text": "Invoice #1234\nVendor: Acme Corp\nDate: 2024-03-15\nTotal: $1,250.00 USD"}, "expected_output": {"vendor": "Acme Corp", "total": 1250.00, "date": "2024-03-15", "currency": "USD"}}
-{"input": {"invoice_text": "Bill To: TechStart Inc\nFrom: Cloud Services Ltd\nAmount Due: â‚¬890.50\nIssue Date: 01/22/2024"}, "expected_output": {"vendor": "Cloud Services Ltd", "total": 890.50, "date": "2024-01-22", "currency": "EUR"}}
-{"input": {"invoice_text": "INVOICE\nSupplier: Global Widgets\nInvoice Date: March 3, 2024\nGrand Total: Â¥15,000"}, "expected_output": {"vendor": "Global Widgets", "total": 15000, "date": "2024-03-03", "currency": "JPY"}}
+{"input": {"invoice_text": "Bill To: TechStart Inc\nFrom: Cloud Services Ltd\nAmount Due: €890.50\nIssue Date: 01/22/2024"}, "expected_output": {"vendor": "Cloud Services Ltd", "total": 890.50, "date": "2024-01-22", "currency": "EUR"}}
+{"input": {"invoice_text": "INVOICE\nSupplier: Global Widgets\nInvoice Date: March 3, 2024\nGrand Total: ¥15,000"}, "expected_output": {"vendor": "Global Widgets", "total": 15000, "date": "2024-03-03", "currency": "JPY"}}
 ```
 
 ## Support Reply Dataset (sample)
@@ -2581,7 +2581,7 @@ function calculateVerdict(
   if (candidatePassed && !basePassed) return 'IMPROVED';
   if (basePassed && !candidatePassed) return 'REGRESSED';
 
-  // Both passed or both failed â€” compare scores
+  // Both passed or both failed — compare scores
   if (baseMetrics.judgeScore !== null && candidateMetrics.judgeScore !== null) {
     const delta = candidateMetrics.judgeScore - baseMetrics.judgeScore;
     if (delta >= deltaThreshold) return 'IMPROVED';

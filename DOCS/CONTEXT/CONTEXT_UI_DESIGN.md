@@ -1,4 +1,4 @@
-﻿# CONTEXT: UI Design & Styling
+# CONTEXT: UI Design & Styling
 
 > Attach with: PROJECT_OVERVIEW.md
 
@@ -6,7 +6,7 @@
 
 ## Design System
 
-Tailwind CSS + shadcn/ui (Radix + Tailwind). Icons: Lucide React. Charts: Recharts. Font: Inter. Aesthetic: clean, minimal â€” think Linear/Vercel.
+Tailwind CSS + shadcn/ui (Radix + Tailwind). Icons: Lucide React. Charts: Recharts. Font: Inter. Aesthetic: clean, minimal — think Linear/Vercel.
 
 ## Colors
 
@@ -18,7 +18,7 @@ Tailwind CSS + shadcn/ui (Radix + Tailwind). Icons: Lucide React. Charts: Rechar
 
 - Sidebar: 256px desktop, 64px tablet (icons), sheet overlay mobile
 - Content: max-w-6xl centered, px-6
-- Sidebar: Logo â†’ nav items â†’ user avatar at bottom
+- Sidebar: Logo → nav items → user avatar at bottom
 - Top: breadcrumb bar
 
 ## Key Components
@@ -31,7 +31,7 @@ Tailwind CSS + shadcn/ui (Radix + Tailwind). Icons: Lucide React. Charts: Rechar
 
 ## Key Layouts
 
-- Eval report: 4 stat cards â†’ filters â†’ sortable table â†’ expandable side-by-side outputs
+- Eval report: 4 stat cards → filters → sortable table → expandable side-by-side outputs
 - Diff viewer: two columns, red/green/gray lines, version dropdowns
 - Config wizard: step indicators, one step visible, back/next
 

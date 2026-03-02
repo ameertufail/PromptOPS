@@ -1,4 +1,4 @@
-﻿# PromptOps Studio â€” Project Overview
+# PromptOps Studio — Project Overview
 
 > ALWAYS attach this file in every session. Then attach the relevant CONTEXT_*.md.
 
@@ -10,7 +10,7 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 ## Core Decisions
 
-- **BYOK (Bring Your Own Key):** We never proxy LLM inference. Users bring their own API keys. Calls go browser â†’ provider directly.
+- **BYOK (Bring Your Own Key):** We never proxy LLM inference. Users bring their own API keys. Calls go browser → provider directly.
 - **$0 Infrastructure:** Vercel free (frontend), Cloudflare Workers free (API), D1 free (DB), R2 free (storage), GitHub OAuth free (auth).
 - **Client-side eval execution:** Eval runner runs in browser. Backend only stores results.
 - **Open source (MIT) + hosted version** becomes paid product later.
@@ -68,8 +68,8 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 ## Tech Stack
 
-- **Frontend:** Next.js 14 (App Router) + Tailwind + shadcn/ui â†’ Vercel
-- **Backend:** Cloudflare Workers + Hono.js â†’ Cloudflare
+- **Frontend:** Next.js 14 (App Router) + Tailwind + shadcn/ui → Vercel
+- **Backend:** Cloudflare Workers + Hono.js → Cloudflare
 - **Database:** Cloudflare D1 (SQLite)
 - **Storage:** Cloudflare R2
 - **Auth:** GitHub OAuth + JWT
@@ -77,14 +77,14 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 ## Repo Structure
 
-- `apps/web/` â€” Next.js frontend
-- `apps/api/` â€” Cloudflare Workers backend
-- `packages/shared/` â€” Shared types, Zod schemas, template renderer, checks, guardrails
-- `packages/sdk/` â€” PromptOps SDK (Node/TS)
+- `apps/web/` — Next.js frontend
+- `apps/api/` — Cloudflare Workers backend
+- `packages/shared/` — Shared types, Zod schemas, template renderer, checks, guardrails
+- `packages/sdk/` — PromptOps SDK (Node/TS)
 
 ## Core Entities
 
-users â†’ org_members â†’ orgs â†’ projects â†’ (prompts â†’ prompt_versions, datasets â†’ dataset_items, eval_configs â†’ eval_runs â†’ eval_run_items, runs, api_keys, provider_keys, audit_events)
+users → org_members → orgs → projects → (prompts → prompt_versions, datasets → dataset_items, eval_configs → eval_runs → eval_run_items, runs, api_keys, provider_keys, audit_events)
 
 ## RBAC: OWNER > ADMIN > MEMBER > VIEWER
 
@@ -98,25 +98,25 @@ users â†’ org_members â†’ orgs â†’ projects â†’ (prompts â�
 **Last completed:** [Task 1.2 - Architecture guardrails and security baseline lock]
 **Next up:** Task 1.3 - Define delivery governance and handoff protocol
 
-### Phase 1 â€” Scope, Decisions, and Execution Rules
+### Phase 1 — Scope, Decisions, and Execution Rules
 - [x] 1.1 Lock the execution model and success criteria
 - [x] 1.2 Freeze architecture guardrails and security principles
 - [ ] 1.3 Define delivery governance and handoff protocol
 
-### MVP 0 â€” Foundation
+### MVP 0 — Foundation
 - [ ] 0.1 Repo + Dev Environment
 - [ ] 0.2 Auth + Multi-tenancy
 - [ ] 0.3 Prompt Versioning
 - [ ] 0.4 UI Shell + Deploy
 
-### MVP 1 â€” Core Eval Platform
+### MVP 1 — Core Eval Platform
 - [ ] 1.1 Dataset Manager
 - [ ] 1.2 Eval Config Builder
 - [ ] 1.3 Eval Runner
 - [ ] 1.4 Eval Report Page
 - [ ] 1.5 Guardrails Polish
 
-### MVP 2 â€” Production Polish
+### MVP 2 — Production Polish
 - [ ] 2.1 SDK + Run Logging
 - [ ] 2.2 Dashboards
 - [ ] 2.3 Demo Polish

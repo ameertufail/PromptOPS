@@ -18,10 +18,10 @@ How to use this document:
 
 
 ## Phase 1 - Scope, Decisions, and Execution Rules
-1. [ ] Task 1.1: Lock the execution model and success criteria.  
+1. [x] Task 1.1: Lock the execution model and success criteria.  
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [main.md](DOCS/main.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md)  
 Instruction: Confirm browser-orchestrated evals are the primary model, define clear MVP 0/1/2 acceptance criteria, and document non-goals so the team can reject scope creep quickly.
-Completion Summary: Pending.
+Completion Summary: 2026-03-02 - Locked browser-orchestrated evals as primary, defined MVP 0/1/2 acceptance gates, and documented non-goals to prevent scope creep.
 2. [ ] Task 1.2: Freeze architecture guardrails and security principles.  
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
 Instruction: Finalize rules for BYOK, key storage, JWT/cookie usage, RBAC enforcement, and production secret handling so all implementation work follows one security baseline.
@@ -60,10 +60,10 @@ Instruction: Configure automated pipeline for lint, typecheck, and tests, then e
 Completion Summary: Pending.
 
 ## Phase 4 - Local Development and Environment Contracts
-1. [ ] Task 4.1: Define local environment variable contracts for frontend and backend.  
+1. [x] Task 4.1: Define local environment variable contracts for frontend and backend.  
 Read Context: [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)  
 Instruction: Create documented local env templates with descriptions, required/optional markers, and default local URLs for predictable startup.
-Completion Summary: Pending.
+Completion Summary: 2026-03-02 - Added env templates and seeded local env files for web/api, plus .gitignore rules to keep secret files out of git.
 2. [ ] Task 4.2: Validate local runtime startup for both apps and shared dependencies.  
 Read Context: [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)  
 Instruction: Ensure backend and frontend can run independently and together, and confirm expected ports, CORS behavior, and health endpoint responses.

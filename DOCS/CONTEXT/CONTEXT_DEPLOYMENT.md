@@ -133,6 +133,6 @@ For MVP: use default Vercel + Workers subdomains. Later: custom domain via Cloud
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
+- 2026-03-02 - Task 4.1 - Added env example templates, seeded local env files, and added gitignore secret-file rules for web/api development.
 
 

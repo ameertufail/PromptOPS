@@ -74,7 +74,8 @@ Teams can't answer basic questions: Which prompt version is deployed? What's the
 **How it works technically:**
 - User enters their API key in Project Settings
 - Key is stored encrypted in D1 (AES-256)
-- When eval runs execute, the browser (or a Cloudflare Worker acting on behalf of the user) calls the LLM provider directly using the user's key
+- When eval runs execute, the browser orchestrator is the primary path and calls the LLM provider directly using the user's key
+- A thin Cloudflare Worker passthrough is allowed only as an explicit fallback for provider CORS edge cases and is never the default execution path
 - Our backend only receives the outputs for scoring, comparison, and storage
 
 **For judge scoring:**
@@ -711,6 +712,50 @@ MVP 2: Production-Grade Polish
 â”œâ”€â”€ Iteration 2.4: Open Source Launch Prep
 â””â”€â”€ SHIP â†’ "Complete product with SDK, dashboards, demo data, README, and open source"
 ```
+
+---
+
+## 7.1 Execution Model Lock (Phase 1 Task 1.1)
+
+PromptOps Studio officially locks eval execution to a browser-orchestrated model for MVP 0, MVP 1, and MVP 2.
+
+- Primary path: browser renders prompts, calls providers with BYOK keys, runs checks/guardrails/judge logic, and streams item results.
+- Backend responsibilities: run lifecycle endpoints, idempotent result ingestion, aggregate summaries, auth, RBAC, and audit logging.
+- Fallback path: thin Worker passthrough is allowed only when provider CORS blocks direct browser access.
+- Scope control rule: any proposal to make server-side orchestration the default path is out of MVP scope and needs explicit architecture approval.
+
+**Task 1.1 checklist:**
+- [x] Browser-orchestrated eval execution locked as the primary model.
+- [x] MVP 0/1/2 acceptance criteria defined.
+- [x] Non-goals documented to reject scope creep.
+
+## 7.2 MVP Acceptance Criteria (Locked)
+
+### MVP 0 acceptance gate
+- GitHub auth works end-to-end with stable session handling.
+- Users can create orgs/projects with enforced RBAC boundaries.
+- Prompt CRUD + immutable versioning + diff + release/archive basics are functional.
+- Core mutations write audit events and the app can be deployed/used without manual data patching.
+
+### MVP 1 acceptance gate
+- Dataset CRUD and JSONL import are production-usable with line-level validation errors.
+- Eval config creation/editing supports deterministic checks, guardrails, and optional judge rules.
+- Browser orchestrator runs base vs candidate evals with retries, resume behavior, and progress updates.
+- Eval report surfaces verdicts, regressions, pass/fail signals, and score deltas per item.
+
+### MVP 2 acceptance gate
+- API key lifecycle + SDK run logging are available for production instrumentation.
+- Dashboards and run explorer provide trend visibility for latency, volume, and safety outcomes.
+- Onboarding path (demo or scratch) gets users to first value quickly.
+- Open-source launch package is complete (README, contributing guide, license, local setup docs).
+
+## 7.3 Scope Non-Goals (MVP 0-2)
+
+- No default server-side eval orchestration pipeline.
+- No default backend proxying of all provider inference traffic.
+- No model fine-tuning or training job management.
+- No enterprise SSO/SAML/SCIM or advanced billing controls in MVP 0/1/2.
+- No autonomous agent-builder workflows in MVP 0/1/2.
 
 ---
 
@@ -2556,6 +2601,6 @@ function calculateVerdict(
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
+- 2026-03-02 - Task 1.1 - Locked browser-orchestrated eval model, added MVP 0/1/2 acceptance gates, and documented explicit non-goals.
 
 

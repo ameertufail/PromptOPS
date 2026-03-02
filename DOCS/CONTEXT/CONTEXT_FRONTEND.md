@@ -110,6 +110,6 @@ Located at `apps/web/`. Next.js 14 with App Router. Entry: `src/app/`.
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
+- 2026-03-02 - Task 4.1 - Added frontend env template and seeded local `.env.local` with localhost API/app URLs.
 
 

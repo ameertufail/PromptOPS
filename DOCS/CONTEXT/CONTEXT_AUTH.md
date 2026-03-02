@@ -73,6 +73,6 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
+- 2026-03-02 - Task 4.1 - Added backend secrets template and seeded local `.dev.vars` placeholders for JWT, GitHub OAuth, and encryption key.
 
 

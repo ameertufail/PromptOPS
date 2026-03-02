@@ -8,6 +8,15 @@
 
 The eval engine runs ENTIRELY in the browser. This is critical â€” not the backend.
 
+## Execution Model Lock (Phase 1 Task 1.1)
+
+Browser-orchestrated evals are the primary and default execution model for MVP 0/1/2.
+
+- Frontend owns prompt rendering, provider calls (BYOK), checks, guardrails, judge scoring, and progress orchestration.
+- Backend owns run lifecycle endpoints, idempotent item result storage, summaries, auth, and audit records.
+- Thin Worker passthrough is allowed only as a fallback for provider CORS restrictions and must not become the default route.
+- Any change to server-orchestrated evals as a default path is out of MVP scope and requires explicit architecture approval.
+
 **Flow per eval run:**
 1. User clicks "Run Eval" in the UI
 2. Frontend calls POST /api/eval-runs to create a run record (status: RUNNING)
@@ -101,6 +110,14 @@ After all items complete, backend computes: totalItems, basePassRate, candidateP
 
 ---
 
+## Phase 1 Scope Lock Checklist
+
+- [x] Browser-orchestrated eval execution confirmed as the primary path.
+- [x] Backend eval scope constrained to lifecycle APIs, persistence, and summary computation.
+- [x] Server-side orchestration and default provider proxying documented as non-goals for MVP 0/1/2.
+
+---
+
 ## Eval Engine Progress
 
 **Shared Package (packages/shared):**
@@ -136,6 +153,6 @@ After all items complete, backend computes: totalItems, basePassRate, candidateP
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
+- 2026-03-02 - Task 1.1 - Confirmed browser-first eval execution and added scope-lock/non-goal guardrails for eval architecture.
 
 

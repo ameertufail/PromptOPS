@@ -15,6 +15,41 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 - **Client-side eval execution:** Eval runner runs in browser. Backend only stores results.
 - **Open source (MIT) + hosted version** becomes paid product later.
 
+## Execution Model Lock (Phase 1 Task 1.1)
+
+- Browser-orchestrated eval execution is the primary and default model for MVP 0/1/2.
+- Backend scope for evals is limited to run lifecycle APIs, idempotent result persistence, summaries, auth, and audit.
+- Thin Worker passthrough for provider CORS edge cases is an explicit fallback only, never the default path.
+- Any proposal that makes server-side orchestration the default must be treated as post-MVP scope and require explicit architecture sign-off.
+
+## MVP Acceptance Criteria (Locked)
+
+**MVP 0 is accepted only when all are true:**
+- GitHub login and session flow works end-to-end.
+- Org/project tenancy and RBAC boundaries are enforced.
+- Prompt CRUD, immutable versioning, diffing, and release/archive basics are usable.
+- Core actions create audit events and the deployed app is usable by a new developer without manual DB edits.
+
+**MVP 1 is accepted only when all are true:**
+- Dataset CRUD plus JSONL import work with clear validation failures.
+- Eval config can be created and edited with checks/guardrails/judge settings.
+- Browser orchestrator can execute evals against dataset items with retries/resume and stream progress.
+- Reports show pass/fail, verdict distribution, regressions, and judge/check/guardrail outputs per item.
+
+**MVP 2 is accepted only when all are true:**
+- API key lifecycle + SDK run logging are production-usable.
+- Dashboards and run explorer surface latency/volume/guardrail trends and filters.
+- Onboarding flow and demo data deliver first value quickly.
+- Open-source launch assets are complete (README, contributing docs, license, local setup guide).
+
+## Scope Non-Goals (MVP 0-2)
+
+- No default server-side eval orchestration or default inference proxy architecture.
+- No model fine-tuning/training pipeline management.
+- No autonomous agent workflow builder.
+- No enterprise-only features (SSO/SAML/SCIM/advanced billing) in MVP 0/1/2.
+- No native mobile app before web MVPs are complete.
+
 ## Tech Stack
 
 - **Frontend:** Next.js 14 (App Router) + Tailwind + shadcn/ui â†’ Vercel
@@ -43,9 +78,14 @@ users â†’ org_members â†’ orgs â†’ projects â†’ (prompts â�
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [NOT STARTED]
-**Last completed:** [NOTHING YET]
-**Next up:** Iteration 0.1 â€” Repo + Dev Environment
+**Currently working on:** [Task 1.2 - Freeze architecture guardrails and security principles]
+**Last completed:** [Task 1.1 - Execution model and success criteria lock]
+**Next up:** Task 1.2 - Freeze architecture guardrails and security principles
+
+### Phase 1 â€” Scope, Decisions, and Execution Rules
+- [x] 1.1 Lock the execution model and success criteria
+- [ ] 1.2 Freeze architecture guardrails and security principles
+- [ ] 1.3 Define delivery governance and handoff protocol
 
 ### MVP 0 â€” Foundation
 - [ ] 0.1 Repo + Dev Environment
@@ -90,6 +130,7 @@ After completing a task, tell Claude: "Mark [task] as complete in the context fi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
+- 2026-03-02 - Task 1.1 - Locked browser-first eval execution, defined MVP 0/1/2 acceptance criteria, and documented scope non-goals.
+- 2026-03-02 - Task 4.1 - Added env example files, seeded local env files for web/api, and added gitignore rules for secret files.
 
 

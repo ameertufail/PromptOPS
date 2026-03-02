@@ -1,0 +1,6 @@
+﻿# Backend local development secrets for Wrangler
+# Copy this file to .dev.vars and replace placeholders.
+JWT_SECRET=replace_with_random_dev_secret
+GITHUB_CLIENT_ID=replace_with_github_oauth_client_id
+GITHUB_CLIENT_SECRET=replace_with_github_oauth_client_secret
+ENCRYPTION_KEY=replace_with_32+_byte_key_material

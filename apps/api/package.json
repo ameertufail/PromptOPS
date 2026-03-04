@@ -5,7 +5,10 @@
   "description": "PromptOps Studio backend API on Cloudflare Workers",
   "scripts": {
     "dev": "wrangler dev",
+    "build": "tsc --noEmit",
     "deploy": "wrangler deploy",
+    "lint": "tsc --noEmit",
+    "test": "echo No tests configured for @promptops/api yet",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

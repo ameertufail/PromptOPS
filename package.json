@@ -3,6 +3,15 @@
   "private": true,
   "version": "0.0.0",
   "description": "PromptOps Studio monorepo",
+  "scripts": {
+    "install:deps": "corepack pnpm install",
+    "install:ci": "corepack pnpm install --frozen-lockfile",
+    "dev": "corepack pnpm -r --parallel dev",
+    "build": "corepack pnpm -r build",
+    "lint": "corepack pnpm -r lint",
+    "typecheck": "corepack pnpm -r typecheck",
+    "test": "corepack pnpm -r test"
+  },
   "packageManager": "pnpm@10.2.0",
   "engines": {
     "node": ">=20.0.0"

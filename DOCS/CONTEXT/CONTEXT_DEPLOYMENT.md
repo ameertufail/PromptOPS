@@ -13,7 +13,7 @@
 
 ## Vercel (Frontend)
 
-**Setup:** Create Vercel account → import GitHub repo → set root directory to `apps/web` → set build command to `cd ../.. && pnpm turbo build --filter=web`. Auto-deploys on every push to main. PRs get preview deploys.
+**Setup:** Create Vercel account → import GitHub repo → set root directory to `apps/web` → set build command to `cd ../.. && npm run build`. Auto-deploys on every push to main. PRs get preview deploys.
 
 **Env vars (set in Vercel dashboard):**
 - NEXT_PUBLIC_API_URL = https://promptops-api.your-sub.workers.dev
@@ -35,12 +35,12 @@
 
 ## Local Development
 
-**Prerequisites:** Node.js 20+, pnpm, Wrangler
+**Prerequisites:** Node.js 20+, npm, Wrangler
 
 **Run locally:**
-- Backend: `cd apps/api && pnpm wrangler dev` (port 8787)
-- Frontend: `cd apps/web && pnpm dev` (port 3000)
-- Or both: `pnpm turbo dev` from root
+- Backend: `cd apps/api && npm run dev` (port 8787)
+- Frontend: `cd apps/web && npm run dev` (port 3000)
+- Or both: `npm run dev` from root
 
 **Local D1:** Created automatically by Wrangler. Apply migrations with `--local` flag. SQLite file in `.wrangler/state/d1/`.
 
@@ -50,7 +50,7 @@
 
 ## CI Pipeline
 
-GitHub Actions on push/PR: checkout → pnpm install → turbo lint → turbo typecheck → turbo test. On main branch merge: also deploy Worker using CLOUDFLARE_API_TOKEN secret.
+GitHub Actions on push/PR: checkout → `npm run install:ci` → `npm run lint` → `npm run typecheck` → `npm run test`. On main branch merge: also deploy Worker using CLOUDFLARE_API_TOKEN secret.
 
 **GitHub Secrets needed:** CLOUDFLARE_API_TOKEN (create at Cloudflare Dashboard → API Tokens with Workers Scripts:Edit + D1:Edit permissions)
 
@@ -135,6 +135,7 @@ For MVP: use default Vercel + Workers subdomains. Later: custom domain via Cloud
 - [ ] Verify full OAuth flow in production
 
 **CI/CD:**
+- [x] Root workspace command contract (`install:deps`, `install:ci`, `dev`, `build`, `lint`, `typecheck`, `test`)
 - [ ] GitHub Actions workflow (lint, typecheck, test)
 - [ ] Auto-deploy Worker on main merge
 - [ ] CLOUDFLARE_API_TOKEN set in GitHub secrets
@@ -151,7 +152,6 @@ For MVP: use default Vercel + Workers subdomains. Later: custom domain via Cloud
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 2.2 - Standardized root install/dev/build/lint/typecheck/test commands and aligned deployment/CI command references to the root script contract.
 - 2026-03-02 - Task 1.2 - Finalized production secret-handling rules for approved stores, env separation, rotation, and log redaction.
 - 2026-03-02 - Task 4.1 - Added env example templates, seeded local env files, and added gitignore secret-file rules for web/api development.
-
-

@@ -965,12 +965,12 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
        runs-on: ubuntu-latest
        steps:
          - uses: actions/checkout@v4
-         - uses: pnpm/action-setup@v2
          - uses: actions/setup-node@v4
            with: { node-version: 20 }
-         - run: pnpm install --frozen-lockfile
-         - run: pnpm turbo lint
-         - run: pnpm turbo typecheck
+         - run: npm run install:ci
+         - run: npm run lint
+         - run: npm run typecheck
+         - run: npm run test
    ```
 2. Push to GitHub, verify CI runs green
 
@@ -2635,6 +2635,7 @@ function calculateVerdict(
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 2.2 - Added a root workspace command contract for install/dev/build/lint/typecheck/test and aligned CI examples to use those root scripts.
 - 2026-03-02 - Task 2.1 - Scaffolded monorepo boundaries for `apps/web`, `apps/api`, `packages/shared`, and `packages/sdk` with shared-contract import guardrails.
 - 2026-03-02 - Task 1.3 - Added delivery governance rules covering branch strategy, PR review gates, definition of done, and mandatory documentation writebacks.
 - 2026-03-02 - Task 1.1 - Locked browser-orchestrated eval model, added MVP 0/1/2 acceptance gates, and documented explicit non-goals.

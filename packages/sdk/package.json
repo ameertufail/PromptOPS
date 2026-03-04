@@ -9,6 +9,9 @@
   "types": "./src/index.ts",
   "sideEffects": false,
   "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "test": "echo No tests configured for @promptops/sdk yet",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

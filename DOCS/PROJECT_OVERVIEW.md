@@ -127,9 +127,9 @@ users → org_members → orgs → projects → (prompts → prompt_versions, da
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 2.2 - Configure workspace package management and root scripts]
-**Last completed:** [Task 2.1 - Initialize the monorepo structure and package boundaries]
-**Next up:** Task 2.2 - Configure workspace package management and root scripts
+**Currently working on:** [Task 2.3 - Add baseline repository documentation for contributors]
+**Last completed:** [Task 2.2 - Configure workspace package management and root scripts]
+**Next up:** Task 2.3 - Add baseline repository documentation for contributors
 
 ### Phase 1 — Scope, Decisions, and Execution Rules
 - [x] 1.1 Lock the execution model and success criteria
@@ -138,7 +138,7 @@ users → org_members → orgs → projects → (prompts → prompt_versions, da
 
 ### Phase 2 — Monorepo and Workspace Scaffolding
 - [x] 2.1 Initialize the monorepo structure and package boundaries
-- [ ] 2.2 Configure workspace package management and root scripts
+- [x] 2.2 Configure workspace package management and root scripts
 - [ ] 2.3 Add baseline repository documentation for contributors
 
 ### MVP 0 — Foundation
@@ -184,6 +184,7 @@ After completing a task, tell Claude: "Mark [task] as complete in the context fi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-02 - Task 2.2 - Standardized root workspace install/dev/build/lint/typecheck/test scripts and synchronized package-level script entries for consistent monorepo execution.
 - 2026-03-02 - Task 2.1 - Initialized apps/packages monorepo boundaries with shared contract entrypoints, starter app skeletons, and ownership guardrails.
 - 2026-03-02 - Task 1.3 - Added branch strategy, PR review checklist, definition of done, and mandatory handoff/writeback governance.
 - 2026-03-02 - Task 1.2 - Frozen architecture guardrails and security baseline for BYOK, key storage, JWT sessions, RBAC enforcement, and production secrets.

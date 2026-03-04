@@ -36,10 +36,10 @@ Completion Summary: 2026-03-02 - Defined branch and PR governance, formalized de
 Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [main.md](DOCS/main.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
 Instruction: Create `apps/web`, `apps/api`, `packages/shared`, and `packages/sdk` with clear ownership and avoid cross-imports that bypass shared contracts.
 Completion Summary: 2026-03-02 - Scaffolded apps/packages workspace boundaries with shared-contract imports, starter app/package entrypoints, and monorepo ownership docs.
-2. [ ] Task 2.2: Configure workspace package management and root scripts.  
+2. [x] Task 2.2: Configure workspace package management and root scripts.  
 Read Context: [main.md](DOCS/main.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
 Instruction: Standardize install, dev, build, lint, typecheck, and test commands at root so every developer and CI job uses the same execution path.
-Completion Summary: Pending.
+Completion Summary: 2026-03-02 - Added root workspace install/dev/build/lint/typecheck/test scripts, aligned package-level script coverage, and updated deployment/CI command references to the shared root path.
 3. [ ] Task 2.3: Add baseline repository documentation for contributors.  
 Read Context: [main.md](DOCS/main.md), [CONTEXT/README.md](DOCS/CONTEXT/README.md)  
 Instruction: Add a concise contribution guide, folder map, and setup summary so new contributors can start without reverse-engineering project intent.

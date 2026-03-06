@@ -7,8 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit",
-    "test": "echo No tests configured for @promptops/web yet",
+    "lint": "eslint src --ext .ts,.tsx --max-warnings=0",
+    "test": "vitest run apps/web/src --config vitest.config.ts --root ../../",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

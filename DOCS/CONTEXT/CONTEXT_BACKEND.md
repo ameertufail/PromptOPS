@@ -1,6 +1,6 @@
 # CONTEXT: Backend API
 
-> Attach with: PROJECT_OVERVIEW.md
+> Attach with `PROJECT_OVERVIEW.md`.
 
 ---
 
@@ -10,51 +10,69 @@ Hono.js on Cloudflare Workers. Location: `apps/api/`.
 
 ## Structure
 
-- `src/index.ts` — Entry, route registration, CORS, logging
-- `src/routes/` — auth, orgs, projects, prompts, datasets, evals, runs, keys, demo
-- `src/middleware/` — auth, rbac, audit, rateLimit
-- `src/services/` — guardrails, diff, summary computation
-- `src/db/` — migrations/ and queries.ts
-- `src/lib/` — crypto, ulid, errors, validation
+- `src/index.ts` - entrypoint, health route, and CORS defaults
+- `src/routes/` - auth, orgs, projects, prompts, datasets, evals, runs, keys, demo
+- `src/middleware/` - auth, rbac, audit, rateLimit
+- `src/services/` - guardrails, diff, summary computation
+- `src/db/` - migrations and typed queries
+- `src/lib/` - crypto, ULID, errors, validation
 
 ## Worker Bindings
 
-DB (D1), STORAGE (R2), secrets: JWT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, ENCRYPTION_KEY
+Current local baseline:
+
+- `FRONTEND_URL`
+- `ENVIRONMENT`
+
+Future phases add:
+
+- `DB` (D1)
+- `STORAGE` (R2)
+- `JWT_SECRET`
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+- `ENCRYPTION_KEY`
 
 ## Route Pattern
 
-Every route: validate with Zod → RBAC middleware → business logic → audit event → JSON response. Error format: `{ error, message, details }`.
+Every route should follow: validate with Zod -> RBAC middleware -> business logic -> audit event -> JSON response. Error format stays `{ error, message, details }`.
 
-## All Endpoints
+## Current Runtime Contract
 
-**Auth:** GET github, GET callback, GET me, POST logout
+- `GET /api/health` returns `{ environment, status, service, timestamp }`
+- Local CORS allows `http://localhost:3000`, `http://127.0.0.1:3000`, and the configured `FRONTEND_URL`
+- Untrusted origins do not receive allow headers
 
-**Orgs:** POST create, GET list, GET detail, POST/PATCH/DELETE members, GET audit-events
+## Planned Endpoints
 
-**Projects:** POST create [MEMBER+], GET list [VIEWER+], GET detail [VIEWER+], PATCH update [ADMIN+], DELETE [OWNER], POST seed-demo [MEMBER+]
+**Auth:** `GET /github`, `GET /callback`, `GET /me`, `POST /logout`
 
-**Prompts:** POST create [MEMBER+], GET list [VIEWER+], GET detail+versions [VIEWER+], POST version [MEMBER+], PATCH release [ADMIN+], PATCH archive [MEMBER+], GET diff [VIEWER+]
+**Orgs:** create, list, detail, membership changes, audit-events
 
-**Datasets:** POST create [MEMBER+], GET list [VIEWER+], GET detail+items [VIEWER+], PATCH update [MEMBER+], DELETE [ADMIN+], POST item [MEMBER+], POST bulk JSONL [MEMBER+], PATCH/DELETE item [MEMBER+]
+**Projects:** create, list, detail, update, delete, `POST /seed-demo`
 
-**Evals:** POST config [MEMBER+], GET configs [VIEWER+], GET/PATCH config [MEMBER+], POST run [MEMBER+], GET run status [VIEWER+], POST run item [MEMBER+], PATCH run complete [MEMBER+], GET run items [VIEWER+]
+**Prompts:** create, list, detail+versions, version creation, release, archive, diff
 
-**SDK Runs (API key auth):** POST /runs, GET project runs [VIEWER+], GET project stats [VIEWER+]
+**Datasets:** create, list, detail+items, update, delete, item CRUD, JSONL import
 
-**Keys:** POST/GET/DELETE api-keys [ADMIN+], POST/GET/DELETE provider-keys [ADMIN+]
+**Evals:** config create/list/detail/update, run create/status/items/complete
+
+**SDK Runs:** `POST /runs`, project runs list, project stats
+
+**Keys:** api-key CRUD and provider-key CRUD
 
 ## Key Patterns
 
-- Audit convention: `entity.action` (e.g., prompt.created, eval_run.started)
-- Rate limiting: in-memory, 100 req/min per API key on SDK endpoint
-- JSONL import: parse line-by-line, validate, batch insert (20/tx), return imported/failed counts
-
----
+- Audit convention: `entity.action` (example: `prompt.created`, `eval_run.started`)
+- Rate limiting: in-memory, 100 req/min per API key on SDK endpoints
+- JSONL import: parse line-by-line, validate, batch insert (20/transaction), return imported/failed counts
 
 ## Task Progress
 
-- [x] Hono app setup (index.ts, CORS, bindings)
+- [x] Hono app setup (entrypoint, health route, local CORS baseline)
 - [x] API workspace boundary scaffold and shared contract import baseline
+- [x] Local backend runtime validated on `localhost:8787`
+- [x] Backend smoke tests added for the health endpoint and CORS contract
 - [ ] Auth routes
 - [ ] Auth middleware (JWT + API key)
 - [ ] RBAC middleware
@@ -78,10 +96,10 @@ Every route: validate with Zod → RBAC middleware → business logic → audit 
 - [ ] Provider key routes
 - [ ] Demo seed endpoint
 
-
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- 2026-03-02 - Task 2.1 - Scaffolded `apps/api` workspace boundary files and initialized Hono entrypoint using shared contract constants.
-
+- 2026-03-06 - Task 4.2 - Validated backend startup on port 8787 and documented the local health/CORS runtime contract.
+- 2026-03-06 - Task 3.2 - Added backend smoke coverage for the health endpoint and documented the future integration-test targets.
+- 2026-03-02 - Task 2.1 - Scaffolded `apps/api` workspace boundary files and initialized the Hono entrypoint using shared contract constants.

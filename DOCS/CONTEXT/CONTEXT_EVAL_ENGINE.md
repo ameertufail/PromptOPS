@@ -1,12 +1,12 @@
 # CONTEXT: Eval Engine, Checks, Judge & Guardrails
 
-> Attach with PROJECT_OVERVIEW.md when working on: Eval runner, deterministic checks, LLM-as-judge, guardrails (PII, injection), verdict logic, template rendering
+> Attach with `PROJECT_OVERVIEW.md` when working on the eval runner, deterministic checks, LLM-as-judge, guardrails, verdict logic, or template rendering.
 
 ---
 
 ## Architecture: Client-Side Execution
 
-The eval engine runs ENTIRELY in the browser. This is critical — not the backend.
+The eval engine runs entirely in the browser. This is a locked architecture choice, not a temporary scaffold.
 
 ## Execution Model Lock (Phase 1 Task 1.1)
 
@@ -15,144 +15,129 @@ Browser-orchestrated evals are the primary and default execution model for MVP 0
 - Frontend owns prompt rendering, provider calls (BYOK), checks, guardrails, judge scoring, and progress orchestration.
 - Backend owns run lifecycle endpoints, idempotent item result storage, summaries, auth, and audit records.
 - Thin Worker passthrough is allowed only as a fallback for provider CORS restrictions and must not become the default route.
-- Any change to server-orchestrated evals as a default path is out of MVP scope and requires explicit architecture approval.
+- Any change to server-orchestrated evals as the default path is out of MVP scope without explicit architecture approval.
 
-**Flow per eval run:**
-1. User clicks "Run Eval" in the UI
-2. Frontend calls POST /api/eval-runs to create a run record (status: RUNNING)
-3. Backend returns: eval config + rules + all dataset items + both prompt versions
-4. Frontend's eval engine processes each item (concurrency: 3 at a time):
-   a. Render base template with item's input variables → base prompt
-   b. Render candidate template with item's input variables → candidate prompt
-   c. Call LLM via BYOK (browser → provider directly) for base → base output + latency
-   d. Call LLM via BYOK for candidate → candidate output + latency
-   e. Run deterministic checks on both outputs
-   f. Run guardrails on both outputs
-   g. If judge enabled: call LLM with judge prompt → scores for both
-   h. Calculate verdict (IMPROVED/REGRESSED/SAME)
-   i. POST result to backend: /api/eval-runs/:id/items (idempotent)
-5. When all items done: PATCH /api/eval-runs/:id/complete → backend computes summary
+## Flow Per Eval Run
 
-**Why client-side:** BYOK keys stay in browser (security), no Workers CPU limits, backend stays cheap, user sees real-time progress.
+1. User clicks "Run Eval" in the UI.
+2. Frontend calls `POST /api/eval-runs` to create a run record (`RUNNING`).
+3. Backend returns the eval config, rules, dataset items, and both prompt versions.
+4. Frontend processes items with controlled concurrency:
+   - Render base and candidate templates
+   - Call the provider directly from the browser
+   - Run deterministic checks and guardrails
+   - Optionally call the judge
+   - Calculate the verdict
+   - Persist the item result to the backend
+5. Frontend calls `PATCH /api/eval-runs/:id/complete` and the backend computes the summary.
 
-## Template Rendering
-
-Located in `packages/shared/`. Simple Mustache-style: replaces `{{variable_name}}` with values from the input object. Throws error if required variable is missing. Also has an extractVariables function that parses variable names from a template.
-
-## Deterministic Checks
-
-Located in `packages/shared/`. Each returns { pass: boolean, error?: string, details?: any }.
-
-- **JSON validity:** Try JSON.parse. Pass/fail.
-- **JSON schema validation:** Parse output, validate against provided JSON Schema using ajv library. Returns invalid paths on failure.
-- **Regex match:** Test output against provided regex pattern.
-- **Exact match:** Normalize whitespace, compare output to expected_output.
-- **runChecks function:** Takes output + config, runs all enabled checks, returns results keyed by check name.
-
-## Guardrails
+## Shared Utilities
 
 Located in `packages/shared/`.
 
-**PII detection (regex-based):**
-- Patterns for: email, US phone, SSN, credit card, IP address
-- Returns: { detected: boolean, findings: [{ type, redacted, position }] }
-- Redaction: shows partial value (first char + *** for email, last 4 for SSN/CC)
+### Template Rendering
 
-**Prompt injection heuristics:**
-- Checks INPUT (not output) for suspicious phrases: "ignore previous instructions", "you are now", "system prompt", "disregard", "forget everything", "pretend you are", etc.
-- Returns: { detected: boolean, patterns: string[] }
+- Mustache-style variable replacement
+- Missing required variables should throw
+- `extractVariables()` parses placeholders from the template
 
-## LLM-as-Judge Scoring
+### Deterministic Checks
 
-Located in `apps/web/src/lib/judge.ts` (browser-side, uses BYOK key).
+- JSON validity
+- JSON schema validation
+- Regex match
+- Exact match
+- Aggregated `runChecks()` wrapper
 
-Judge receives: the original input, the LLM output to evaluate, expected output (if any), and the rubric. Uses a structured prompt asking for JSON response: { score: 1-5, reasons: string[], fails: string[] }.
+### Guardrails
 
-- Low temperature (0.1) for consistency
-- Retry once if JSON parse fails
-- Fallback score of 0 with error reason if both attempts fail
-- Score scale: 1 (completely wrong) to 5 (excellent)
+- PII detection (email, phone, SSN, credit card, IP)
+- Prompt injection heuristics against the input payload
 
-Rubric can come from: per-item rubric in dataset_items, or global rubric in eval config rules.
-
-## BYOK LLM Client
-
-Located in `apps/web/src/lib/llm-client.ts`. Abstraction with generate(prompt, config) method returning { output, latencyMs, tokenCount }.
-
-Implementations for OpenAI (chat completions API) and Anthropic (messages API). Calls go directly from browser to provider — never through our backend. User's decrypted provider key used.
-
-**CORS note:** OpenAI allows browser requests. Anthropic requires `anthropic-dangerous-direct-browser-access` header. If CORS blocks, fallback is a thin proxy Worker endpoint that adds user's key and forwards.
-
-## Verdict Calculation
+### Verdict Calculation
 
 Priority order:
-1. If candidate passes all checks + guardrails but base doesn't → IMPROVED
-2. If base passes but candidate doesn't → REGRESSED
-3. If both pass or both fail, compare judge scores: delta >= threshold → IMPROVED, delta <= -threshold → REGRESSED
-4. Otherwise → SAME
 
-Default delta threshold: 0.5 (configurable in eval config rules).
+1. Candidate passes checks/guardrails while base does not -> `IMPROVED`
+2. Base passes checks/guardrails while candidate does not -> `REGRESSED`
+3. If both are comparable, use judge-score delta
+4. Otherwise -> `SAME`
+
+## Browser-Side Utilities
+
+Located in `apps/web/src/lib/`.
+
+- LLM client abstraction
+- OpenAI and Anthropic adapters
+- Judge scoring helper
+- Eval orchestrator with retries, resume, and progress updates
 
 ## Resumability
 
-Before processing, the engine checks which items already have results (from a prior partial run). Skips completed items, continues from where it left off. If browser closes mid-run: run stays in RUNNING status. User can reopen and click "Resume".
+Before processing, the engine checks which items already have results. Completed items are skipped so interrupted runs can resume from the point of failure.
 
 ## Error Handling
 
-- LLM call fails: retry once after 2 seconds
-- Retry fails: mark item as ERROR verdict, continue with next
-- 5+ consecutive errors: pause and show error to user
-- All errors stored in item metrics
+- LLM call fails -> retry once after 2 seconds
+- Retry fails -> mark the item as `ERROR` and continue
+- 5+ consecutive errors -> pause and surface an error in the UI
+- Persist item-level errors in the stored metrics
 
-## Eval Summary (Computed by Backend)
+## Eval Summary (Backend Computed)
 
-After all items complete, backend computes: totalItems, basePassRate, candidatePassRate, baseAvgScore, candidateAvgScore, improved/regressed/same counts, top 10 regressions sorted by score delta. Stored as JSON in eval_runs.summary.
+When a run completes, the backend computes and stores:
 
----
+- `totalItems`
+- `basePassRate`
+- `candidatePassRate`
+- `baseAvgScore`
+- `candidateAvgScore`
+- `improved/regressed/same` counts
+- top regressions sorted by score delta
 
 ## Phase 1 Scope Lock Checklist
 
-- [x] Browser-orchestrated eval execution confirmed as the primary path.
-- [x] Backend eval scope constrained to lifecycle APIs, persistence, and summary computation.
-- [x] Server-side orchestration and default provider proxying documented as non-goals for MVP 0/1/2.
-
----
+- [x] Browser-orchestrated eval execution confirmed as the primary path
+- [x] Backend eval scope constrained to lifecycle APIs, persistence, and summary computation
+- [x] Server-side orchestration and default provider proxying documented as non-goals for MVP 0/1/2
 
 ## Eval Engine Progress
 
-**Shared Package (packages/shared):**
-- [ ] Template renderer (renderTemplate + extractVariables)
+**Shared Package (`packages/shared`):**
+
+- [x] Workspace smoke-test baseline in place for shared contracts
+- [ ] Template renderer (`renderTemplate` + `extractVariables`)
 - [ ] JSON validity check
-- [ ] JSON schema validation check (with ajv)
+- [ ] JSON schema validation check (Ajv)
 - [ ] Regex match check
 - [ ] Exact match check
-- [ ] runChecks wrapper function
-- [ ] PII regex detection (email, phone, SSN, CC, IP)
-- [ ] Prompt injection heuristic detection
-- [ ] Verdict calculation function
+- [ ] `runChecks()` wrapper
+- [ ] PII detection
+- [ ] Prompt injection detection
+- [ ] Verdict calculation
 - [ ] Unit tests for all checks and guardrails
 
-**Browser-Side (apps/web):**
-- [ ] LLM client abstraction (interface)
+**Browser-Side (`apps/web`):**
+
+- [ ] LLM client abstraction
 - [ ] OpenAI client implementation
 - [ ] Anthropic client implementation
-- [ ] Client factory (createLLMClient by provider)
-- [ ] Judge scoring function (structured prompt, JSON parse, retry)
-- [ ] Eval engine orchestrator (concurrency pool, progress callback, resume logic)
-- [ ] Error handling (retry, consecutive error pause)
-- [ ] Integration with eval run UI (start, progress bar, results streaming)
+- [ ] Client factory
+- [ ] Judge scoring function
+- [ ] Eval engine orchestrator
+- [ ] Error handling
+- [ ] Integration with the eval run UI
 
 **Backend:**
-- [ ] Create eval run endpoint (return config + items)
-- [ ] Store eval run item endpoint (idempotent)
-- [ ] Complete eval run endpoint (compute + store summary)
-- [ ] Summary computation service
 
+- [ ] Create eval run endpoint
+- [ ] Store eval run item endpoint
+- [ ] Complete eval run endpoint
+- [ ] Summary computation service
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-06 - Task 3.2 - Added a shared-package smoke-test baseline and documented the immediate eval-utility unit-test targets.
 - 2026-03-02 - Task 1.1 - Confirmed browser-first eval execution and added scope-lock/non-goal guardrails for eval architecture.
-
-

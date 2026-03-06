@@ -7,6 +7,7 @@
 ## How Auth Works
 
 Two methods:
+
 1. **JWT (cookie):** Dashboard users. GitHub OAuth → backend issues JWT → HttpOnly cookie `po_session`. 7-day expiry.
 2. **API Key (header):** SDK only. Format `po_sk_` + 32 chars. Sent as `Authorization: Bearer po_sk_...`. Project-scoped.
 
@@ -18,13 +19,13 @@ Secrets needed: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, JWT_SECRET (Wrangler sec
 
 ## RBAC
 
-| Action | OWNER | ADMIN | MEMBER | VIEWER |
-|--------|-------|-------|--------|--------|
-| Read anything | ✅ | ✅ | ✅ | ✅ |
-| Create/edit prompts, datasets | ✅ | ✅ | ✅ | ❌ |
-| Release prompt versions | ✅ | ✅ | ❌ | ❌ |
-| Manage members, API keys | ✅ | ✅ | ❌ | ❌ |
-| Delete project/org | ✅ | ❌ | ❌ | ❌ |
+| Action                        | OWNER | ADMIN | MEMBER | VIEWER |
+| ----------------------------- | ----- | ----- | ------ | ------ |
+| Read anything                 | ✅    | ✅    | ✅     | ✅     |
+| Create/edit prompts, datasets | ✅    | ✅    | ✅     | ❌     |
+| Release prompt versions       | ✅    | ✅    | ❌     | ❌     |
+| Manage members, API keys      | ✅    | ✅    | ❌     | ❌     |
+| Delete project/org            | ✅    | ❌    | ❌     | ❌     |
 
 Resolution: request → look up project → get org_id → check org_members for role → 403 if insufficient.
 
@@ -58,6 +59,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 - **Route auth boundary:** `po_sk_*` API keys are accepted only for SDK run logging routes; dashboard/session routes require JWT cookie auth.
 
 ### Phase 1 Security Checklist
+
 - [x] BYOK execution boundary documented
 - [x] Key encryption/hashing requirements documented
 - [x] JWT/cookie policy documented
@@ -85,12 +87,9 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 - [ ] API key management UI
 - [ ] Provider key management UI
 
-
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
 - 2026-03-02 - Task 1.2 - Locked auth guardrails for BYOK boundaries, encrypted/hashed keys, JWT cookie policy, and deny-by-default RBAC.
 - 2026-03-02 - Task 4.1 - Added backend secrets template and seeded local `.dev.vars` placeholders for JWT, GitHub OAuth, and encryption key.
-
-

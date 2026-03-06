@@ -1,80 +1,94 @@
 # CONTEXT: Database & Data Model
 
-> Attach with: PROJECT_OVERVIEW.md
+> Attach with `PROJECT_OVERVIEW.md`.
 
 ---
 
 ## Database: Cloudflare D1 (SQLite)
 
-Free tier: 5M reads/day, 100K writes/day, 5GB. Location: `apps/api/src/db/`.
+Free tier: 5M reads/day, 100K writes/day, 5GB. Database code lives under `apps/api/src/db/`.
 
 ## D1 Rules
 
-- SQLite syntax (not PostgreSQL)
-- TEXT PRIMARY KEY with ULIDs (no auto-increment)
-- Dates as TEXT (ISO 8601, `datetime('now')`)
-- JSON as TEXT columns (query with `json_extract()`)
-- Atomic ops via `db.batch([...statements])`
-- No triggers/stored procedures
+- SQLite syntax, not PostgreSQL
+- `TEXT PRIMARY KEY` with ULIDs (no auto-increment)
+- Dates stored as ISO-8601 `TEXT`
+- JSON stored as `TEXT` and queried with `json_extract()`
+- Atomic batches via `db.batch([...])`
+- No triggers or stored procedures
 
-## All Tables (15)
+## All Tables
 
-**users** — id, github_id (unique), email, name, avatar_url, created_at
-
-**orgs** — id, name, slug (unique), created_at
-
-**org_members** — org_id+user_id (PK), role (OWNER/ADMIN/MEMBER/VIEWER), created_at
-
-**projects** — id, org_id, name, slug, description, created_at. Unique(org_id, slug)
-
-**prompts** — id, project_id, name, description, created_by, created_at
-
-**prompt_versions** — id, prompt_id, version_number, content (template), variables_schema (JSON), model_config (JSON), status (DRAFT/RELEASED/ARCHIVED), created_by, created_at. Unique(prompt_id, version_number). Immutable.
-
-**datasets** — id, project_id, name, description, type (GENERATION/EXTRACTION/CLASSIFICATION), item_count (denormalized), created_by, created_at
-
-**dataset_items** — id, dataset_id, input (JSON), expected_output (JSON, nullable), rubric (nullable), tags (JSON array, nullable), sort_order, created_at
-
-**eval_configs** — id, project_id, name, dataset_id, rules (JSON — checks, guardrails, judge, thresholds, comparison settings), created_by, created_at
-
-**eval_runs** — id, eval_config_id, base_version_id, candidate_version_id, status (QUEUED/RUNNING/COMPLETED/FAILED), progress_current, progress_total, summary (JSON), error_message, created_by, created_at, finished_at
-
-**eval_run_items** — id, eval_run_id, dataset_item_id, base_output, candidate_output, base_metrics (JSON), candidate_metrics (JSON), delta (JSON), verdict (IMPROVED/REGRESSED/SAME/UNKNOWN), created_at
-
-**runs** — id, project_id, prompt_version_id (nullable), input (JSON), output, metrics (JSON), source (SDK/UI/EVAL), created_at
-
-**api_keys** — id, project_id, name, key_hash, key_prefix, last_used_at, created_by, created_at
-
-**provider_keys** — id, project_id, provider, encrypted_key, key_hint, created_by, created_at. Unique(project_id, provider)
-
-**audit_events** — id, org_id, actor_user_id, action, entity_type, entity_id, metadata (JSON), created_at
+- `users`
+- `orgs`
+- `org_members`
+- `projects`
+- `prompts`
+- `prompt_versions`
+- `datasets`
+- `dataset_items`
+- `eval_configs`
+- `eval_runs`
+- `eval_run_items`
+- `runs`
+- `api_keys`
+- `provider_keys`
+- `audit_events`
 
 ## Key JSON Fields
 
-**model_config:** model, temperature, max_tokens, top_p, frequency/presence_penalty
-
-**eval_configs.rules:** checks (json_valid, json_schema, regex_match, exact_match), guardrails (pii_detection, prompt_injection_check), judge (enabled, provider, model, rubric, scale, temperature), thresholds (min_judge_score, all_checks_pass, no_guardrail_failures), comparison (delta_threshold, sample_size)
-
-**metrics (eval items):** latencyMs, checks results, guardrails results, judgeScore, judgeReasons, judgeFails
-
-**runs.metrics:** latencyMs, tokenCount, costEstimate, guardrail results
+- `model_config` - model, temperature, max tokens, top-p, penalties
+- `eval_configs.rules` - checks, guardrails, judge, thresholds, comparison settings
+- eval item metrics - latency, check results, guardrail results, judge score, reasons, failures
+- `runs.metrics` - latency, token count, cost estimate, guardrail results
 
 ## Indexes
 
-On: org_members(user_id), projects(org_id), prompts(project_id), prompt_versions(prompt_id), datasets(project_id), dataset_items(dataset_id), eval_configs(project_id), eval_runs(eval_config_id), eval_runs(status), eval_run_items(eval_run_id), eval_run_items(verdict), runs(project_id), runs(prompt_version_id), runs(created_at), api_keys(key_hash), audit_events(org_id), audit_events(entity_type+entity_id), audit_events(created_at)
+Required indexes include:
+
+- `org_members(user_id)`
+- `projects(org_id)`
+- `prompts(project_id)`
+- `prompt_versions(prompt_id)`
+- `datasets(project_id)`
+- `dataset_items(dataset_id)`
+- `eval_configs(project_id)`
+- `eval_runs(eval_config_id)`
+- `eval_runs(status)`
+- `eval_run_items(eval_run_id)`
+- `eval_run_items(verdict)`
+- `runs(project_id)`
+- `runs(prompt_version_id)`
+- `runs(created_at)`
+- `api_keys(key_hash)`
+- `audit_events(org_id)`
+- `audit_events(entity_type, entity_id)`
+- `audit_events(created_at)`
 
 ## Performance Rules
 
-Batch inserts (20/transaction). Denormalized counts. Cursor-based pagination. Avoid json_extract in WHERE on large tables. Keep JSON under 1MB.
+- Batch inserts (20/transaction)
+- Denormalized counts where read paths justify them
+- Cursor-based pagination
+- Avoid large `json_extract()` filters on hot list endpoints
+- Keep JSON payloads under 1MB
 
 ## Migration Strategy
 
-Numbered SQL files. Test with `--local`, apply with `--remote`. Track in `_migrations` table.
+- Numbered SQL files
+- Validate locally with `--local`
+- Promote with `--remote`
+- Track applied files in `_migrations`
 
----
+## Testing Expectations
+
+- Migration idempotency must be verified locally before production use
+- Typed query helpers need unit coverage once implemented
+- Integration tests must cover tenant lookups, membership resolution, and project-scoped reads before release
 
 ## Task Progress
 
+- [x] Database testing targets documented for migrations and typed query helpers
 - [ ] Migration 001: users, orgs, org_members, projects
 - [ ] Migration 002: prompts, prompt_versions
 - [ ] Migration 003: datasets, dataset_items
@@ -86,11 +100,8 @@ Numbered SQL files. Test with `--local`, apply with `--remote`. Track in `_migra
 - [ ] Test migrations locally
 - [ ] Apply to production D1
 
-
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
-
-
+- 2026-03-06 - Task 3.2 - Documented the migration/query-helper test strategy and the integration coverage expectations for database-backed flows.

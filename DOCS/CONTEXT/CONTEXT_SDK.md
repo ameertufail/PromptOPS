@@ -13,6 +13,7 @@ Flow: User's app calls SDK → SDK sends POST /api/runs with API key → Backend
 ## SDK Package
 
 Located at `packages/sdk/`. Contains:
+
 - Client class (PromptOpsClient) — main entry point
 - Retry logic with exponential backoff + jitter
 - Type definitions
@@ -51,6 +52,7 @@ A simple script in `packages/sdk/examples/` that: initializes PromptOpsClient, s
 ## SDK Progress
 
 **SDK Package:**
+
 - [ ] Package scaffold (package.json, tsconfig, entry point)
 - [ ] Type definitions (SDKConfig, LogRunParams, LogRunResponse)
 - [ ] Retry utility (exponential backoff + jitter)
@@ -62,6 +64,7 @@ A simple script in `packages/sdk/examples/` that: initializes PromptOpsClient, s
 - [ ] SDK README with installation + usage docs
 
 **Backend:**
+
 - [ ] API key creation endpoint (generate, hash, store, return plaintext once)
 - [ ] API key list endpoint (prefix only, never full key)
 - [ ] API key revoke endpoint
@@ -71,15 +74,13 @@ A simple script in `packages/sdk/examples/` that: initializes PromptOpsClient, s
 - [ ] Run stats aggregation endpoint
 
 **Frontend:**
+
 - [ ] API key management UI in settings page
 - [ ] Runs explorer page
 - [ ] Dashboard stats cards + charts
-
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
 - (no completed tasks yet)
-
-

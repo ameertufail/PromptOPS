@@ -1,57 +1,65 @@
 # CONTEXT: Frontend (Next.js)
 
-> Attach with PROJECT_OVERVIEW.md when working on: Pages, routing, data fetching, state management, API client, React component logic
+> Attach with `PROJECT_OVERVIEW.md` when working on pages, routing, data fetching, state management, API client behavior, or React component logic.
 
 ---
 
 ## Frontend Structure
 
-Located at `apps/web/`. Next.js 14 with App Router. Entry: `src/app/`.
+Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 
 **Key folders:**
-- `src/app/(auth)/` — Public auth pages (login, callback). Minimal layout, no sidebar.
-- `src/app/(dashboard)/` — Protected pages. Layout has sidebar + auth check.
-- `src/app/(dashboard)/[orgSlug]/[projectSlug]/` — All project-level pages nested here.
-- `src/components/` — Reusable components grouped by domain (ui/, layout/, prompts/, datasets/, evals/, runs/)
-- `src/lib/` — API client, auth helpers, LLM client, eval engine, utilities
-- `src/hooks/` — Custom React hooks
 
-## Routing (URL → Page)
+- `src/app/(auth)/` - public auth pages (login, callback)
+- `src/app/(dashboard)/` - protected pages with the shared shell
+- `src/app/(dashboard)/[orgSlug]/[projectSlug]/` - project-level routes
+- `src/components/` - reusable components grouped by domain
+- `src/lib/` - API client, auth helpers, LLM client, eval engine, utilities
+- `src/hooks/` - custom React hooks
 
-- `/` → Public landing page
-- `/login` → GitHub OAuth login button
-- `/callback` → OAuth callback handler
-- `/[orgSlug]` → Org overview (project list)
-- `/[orgSlug]/[projectSlug]` → Project dashboard (stats, quick links)
-- `/[orgSlug]/[projectSlug]/prompts` → Prompt list
-- `/[orgSlug]/[projectSlug]/prompts/[promptId]` → Prompt detail (versions, editor, diff)
-- `/[orgSlug]/[projectSlug]/datasets` → Dataset list
-- `/[orgSlug]/[projectSlug]/datasets/[datasetId]` → Dataset items table
-- `/[orgSlug]/[projectSlug]/evals` → Eval config list
-- `/[orgSlug]/[projectSlug]/evals/new` → Eval config wizard
-- `/[orgSlug]/[projectSlug]/evals/[configId]/runs/[runId]` → Eval report
-- `/[orgSlug]/[projectSlug]/runs` → SDK runs explorer
-- `/[orgSlug]/[projectSlug]/settings` → API keys, provider keys
+## Routing (URL -> Page)
+
+- `/` - public landing page
+- `/login` - GitHub OAuth login button
+- `/callback` - OAuth callback handler
+- `/[orgSlug]` - org overview
+- `/[orgSlug]/[projectSlug]` - project dashboard
+- `/[orgSlug]/[projectSlug]/prompts` - prompt list
+- `/[orgSlug]/[projectSlug]/prompts/[promptId]` - prompt detail
+- `/[orgSlug]/[projectSlug]/datasets` - dataset list
+- `/[orgSlug]/[projectSlug]/datasets/[datasetId]` - dataset detail
+- `/[orgSlug]/[projectSlug]/evals` - eval config list
+- `/[orgSlug]/[projectSlug]/evals/new` - eval config wizard
+- `/[orgSlug]/[projectSlug]/evals/[configId]/runs/[runId]` - eval report
+- `/[orgSlug]/[projectSlug]/runs` - SDK runs explorer
+- `/[orgSlug]/[projectSlug]/settings` - API keys and provider keys
 
 ## Key Architecture Decisions
 
-- Route groups: `(auth)` = public/no sidebar, `(dashboard)` = protected/sidebar
-- API client: fetch wrapper, auto-includes cookies, handles 401→login redirect, 403→toast
-- State: React Context for auth/org/project, useState for page data, URL params for nav. No Redux/Zustand needed.
-- Context hierarchy: AuthProvider → OrgProvider → ProjectProvider → DashboardLayout → page
-- Data fetching: Client components with useEffect + api.get(). Skeletons while loading. Empty states when no data.
-- Polling: For eval run progress, poll every 3 seconds until COMPLETED/FAILED
-- Env vars: NEXT_PUBLIC_API_URL (backend), NEXT_PUBLIC_APP_URL (frontend, for OAuth)
+- Route groups: `(auth)` is public, `(dashboard)` is protected
+- API client: fetch wrapper that includes credentials, redirects `401` to login, and surfaces `403`
+- State: React Context for auth/org/project, local state for page data, URL params for navigation
+- Context hierarchy: `AuthProvider -> OrgProvider -> ProjectProvider -> DashboardLayout -> page`
+- Data fetching: client components with `useEffect` plus page-level loading/empty/error states
+- Polling: eval run progress polls every 3 seconds until `COMPLETED` or `FAILED`
+- Env vars: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_URL`
 
----
+## Current Runtime Contract
+
+- The local web app serves on `http://localhost:3000`
+- The scaffold landing page renders successfully without the protected app shell in place yet
+- The frontend env template points to the local Worker API at `http://localhost:8787`
 
 ## Frontend Progress
 
 **Workspace Foundation:**
-- [x] `apps/web` scaffolded with Next.js package boundary files (`package.json`, `tsconfig`, `src/app` entrypoints).
-- [x] Frontend import boundary documented to consume shared contracts through `@promptops/shared`.
+
+- [x] `apps/web` scaffolded with Next.js package boundary files (`package.json`, `tsconfig`, `src/app` entrypoints)
+- [x] Frontend import boundary documented to consume shared contracts through `@promptops/shared`
+- [x] Local frontend startup validated on `localhost:3000`
 
 **Layout & Navigation:**
+
 - [ ] Root layout (providers, fonts)
 - [ ] Auth layout (minimal)
 - [ ] Dashboard layout (sidebar + auth check)
@@ -59,61 +67,67 @@ Located at `apps/web/`. Next.js 14 with App Router. Entry: `src/app/`.
 - [ ] Breadcrumb component
 
 **Auth Pages:**
+
 - [ ] Login page
 - [ ] Callback page
-- [ ] Auth context + useAuth hook
+- [ ] Auth context + `useAuth`
 - [ ] API client with auto-auth
 
 **Org & Project:**
-- [ ] Org overview page (project list)
+
+- [ ] Org overview page
 - [ ] Create org flow
 - [ ] Org switcher
 - [ ] Create project modal
 - [ ] Project dashboard page
 
 **Prompts:**
+
 - [ ] Prompt list page
 - [ ] Create prompt modal
-- [ ] Prompt detail page (versions + editor)
+- [ ] Prompt detail page
 - [ ] Template editor with variable highlighting
 - [ ] Variables schema editor
 - [ ] Model config form
-- [ ] Diff viewer (side-by-side)
+- [ ] Diff viewer
 - [ ] Release/archive buttons
 
 **Datasets:**
+
 - [ ] Dataset list page
 - [ ] Create dataset modal
-- [ ] Dataset detail page (paginated items table)
+- [ ] Dataset detail page
 - [ ] Add/edit item panel
 - [ ] JSONL upload UI
 
 **Evals:**
+
 - [ ] Config list page
-- [ ] Config wizard (5 steps: dataset, checks, guardrails, judge, thresholds)
-- [ ] Run execution UI (start, progress, cancel)
-- [ ] Report — summary cards
-- [ ] Report — results table (sortable, filterable)
-- [ ] Report — side-by-side output comparison
-- [ ] Report — export (JSON/CSV)
+- [ ] Config wizard
+- [ ] Run execution UI
+- [ ] Report summary cards
+- [ ] Report results table
+- [ ] Report side-by-side comparison
+- [ ] Report export
 
 **Runs & Dashboard:**
+
 - [ ] Runs explorer page
 - [ ] Dashboard stats cards + charts
 - [ ] Per-version analytics
 
 **Settings & Polish:**
+
 - [ ] API key management page
 - [ ] Provider key management page
 - [ ] Empty states for all sections
 - [ ] Onboarding flow
 - [ ] Public landing page
 
-
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-06 - Task 4.2 - Validated frontend startup on port 3000 and documented the local runtime contract against the Worker API scaffold.
+- 2026-03-02 - Task 4.1 - Added the frontend env template and seeded local `.env.local` with localhost API/app URLs.
 - 2026-03-02 - Task 2.1 - Scaffolded `apps/web` workspace boundaries and wired frontend shared-contract usage via `@promptops/shared`.
-- 2026-03-02 - Task 4.1 - Added frontend env template and seeded local `.env.local` with localhost API/app URLs.
-

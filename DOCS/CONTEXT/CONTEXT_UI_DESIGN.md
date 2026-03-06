@@ -67,7 +67,6 @@ Implementation rule: Initialize shadcn in `apps/web`, install the required compo
 - [ ] Responsive sidebar
 - [ ] Skeleton loading, toast setup, chart config
 
-
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`

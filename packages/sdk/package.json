@@ -10,8 +10,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc --noEmit",
-    "lint": "tsc --noEmit",
-    "test": "echo No tests configured for @promptops/sdk yet",
+    "lint": "eslint src --ext .ts --max-warnings=0",
+    "test": "vitest run packages/sdk/src --config vitest.config.ts --root ../../",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

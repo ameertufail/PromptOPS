@@ -1,4 +1,8 @@
-import { SDK_DEFAULT_BASE_URL, type LogRunRequest, type LogRunResponse } from "@promptops/shared";
+import {
+  SDK_DEFAULT_BASE_URL,
+  type LogRunRequest,
+  type LogRunResponse
+} from "@promptops/shared";
 
 export type PromptOpsClientConfig = {
   apiKey: string;

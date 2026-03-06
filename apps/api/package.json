@@ -7,8 +7,8 @@
     "dev": "wrangler dev",
     "build": "tsc --noEmit",
     "deploy": "wrangler deploy",
-    "lint": "tsc --noEmit",
-    "test": "echo No tests configured for @promptops/api yet",
+    "lint": "eslint src --ext .ts --max-warnings=0",
+    "test": "vitest run apps/api/src --config vitest.config.ts --root ../../",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

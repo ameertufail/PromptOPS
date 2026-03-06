@@ -9,11 +9,22 @@
     "dev": "corepack pnpm -r --parallel dev",
     "build": "corepack pnpm -r build",
     "lint": "corepack pnpm -r lint",
+    "format": "corepack pnpm exec prettier --write .",
+    "format:check": "corepack pnpm exec prettier --check .",
     "typecheck": "corepack pnpm -r typecheck",
     "test": "corepack pnpm -r test"
   },
   "packageManager": "pnpm@10.2.0",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
+    "eslint": "^9.20.0",
+    "globals": "^15.15.0",
+    "prettier": "^3.5.2",
+    "vitest": "^3.0.8"
   }
 }

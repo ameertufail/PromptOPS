@@ -51,6 +51,9 @@ Local CORS is limited to `http://localhost:3000` and `http://127.0.0.1:3000`, pl
 
 - `pnpm dev` - run all workspace dev servers in parallel
 - `pnpm build` - type-safe build checks for all workspaces
+- `pnpm build:web` - build the Next.js app from the monorepo root
+- `pnpm deploy:api` - deploy the Cloudflare Worker using the `production` Wrangler environment
+- `pnpm tail:api` - tail Cloudflare Worker logs for the `production` environment
 - `pnpm lint` - run ESLint in every workspace
 - `pnpm format:check` - verify Prettier formatting
 - `pnpm typecheck` - run TypeScript checks in every workspace
@@ -61,4 +64,5 @@ Local CORS is limited to `http://localhost:3000` and `http://127.0.0.1:3000`, pl
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) - branch strategy, validation rules, and documentation writeback requirements
 - [`TESTING.md`](TESTING.md) - unit/integration test strategy and current coverage baseline
 - [`DOCS/LOCAL_DEVELOPMENT.md`](DOCS/LOCAL_DEVELOPMENT.md) - local startup, verification steps, and troubleshooting
+- [`DOCS/DEPLOYMENT_RUNBOOK.md`](DOCS/DEPLOYMENT_RUNBOOK.md) - manual Cloudflare, GitHub OAuth, and Vercel provisioning steps for Phase 5
 - [`DOCS/PROJECT_OVERVIEW.md`](DOCS/PROJECT_OVERVIEW.md) - project status and phase tracker

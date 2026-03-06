@@ -86,7 +86,7 @@ How to use this document:
        Completion Summary: Pending.
 2. [ ] Task 5.2: Configure production secrets and OAuth provider setup.  
         Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
-        Instruction: Register GitHub OAuth app, set callback URLs for dev/prod, and store JWT/encryption/client secrets only in secure platform secret stores.
+        Instruction: Register separate GitHub OAuth apps for local and production, point both at the backend callback route, and store JWT/encryption/client secrets only in secure platform secret stores.
        Completion Summary: Pending.
 3. [ ] Task 5.3: Provision Vercel project and environment mapping.  
         Read Context: [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)  

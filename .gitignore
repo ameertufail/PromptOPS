@@ -19,3 +19,7 @@ dist/
 .turbo/
 coverage/
 *.tsbuildinfo
+
+
+#Misc
+D1DB.txt

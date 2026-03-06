@@ -11,8 +11,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc --noEmit",
-    "lint": "tsc --noEmit",
-    "test": "echo No tests configured for @promptops/shared yet",
+    "lint": "eslint src --ext .ts --max-warnings=0",
+    "test": "vitest run packages/shared/src --config vitest.config.ts --root ../../",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -136,9 +136,9 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 5.1 - Provision Cloudflare resources and map bindings]
-**Last completed:** [Task 4.3 - Document local troubleshooting and common failure recovery]
-**Next up:** Task 5.1 - Provision Cloudflare resources and map bindings
+**Currently working on:** [Task 7.1 - Implement migrations for prompts, versions, datasets, eval entities, runs, keys, and audit events]
+**Last completed:** [Task 6.3 - Implement typed query helpers for tenancy reads/writes]
+**Next up:** Task 7.1 - Implement migrations for prompts, versions, datasets, eval entities, runs, keys, and audit events
 
 ### Phase 1 - Scope, Decisions, and Execution Rules
 
@@ -163,6 +163,12 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 - [x] 4.1 Define local environment variable contracts for frontend and backend
 - [x] 4.2 Validate local runtime startup for both apps and shared dependencies
 - [x] 4.3 Document local troubleshooting and common failure recovery
+
+### Phase 5 - Cloud Provisioning and Infrastructure Bootstrap
+
+- [x] 5.1 Provision Cloudflare resources and map bindings
+- [x] 5.2 Configure production secrets and OAuth provider setup
+- [x] 5.3 Provision Vercel project and environment mapping
 
 ### MVP 0 - Foundation
 
@@ -209,6 +215,12 @@ After completing a task, tell Codex: "Mark [task] as complete in the context fil
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-07 - Task 6.3 - Added typed tenancy query helpers and tests so the backend can upsert users and resolve org/project access consistently.
+- 2026-03-07 - Task 6.2 - Validated the core tenancy migration locally with deterministic clean-state and replay checks.
+- 2026-03-07 - Task 6.1 - Added the first D1 migration for the tenancy tables and wired `_migrations` bookkeeping into the schema bootstrap.
+- 2026-03-06 - Task 5.3 - Connected Vercel, mapped the deployed Worker/frontend URLs into public env vars, and documented the current production endpoints.
+- 2026-03-06 - Task 5.2 - Registered local/production GitHub OAuth apps and stored the production GitHub, JWT, and encryption secrets in Cloudflare.
+- 2026-03-06 - Task 5.1 - Provisioned the Cloudflare Worker resources and bound the production D1 and R2 resources in Wrangler.
 - 2026-03-06 - Task 4.3 - Added a local development troubleshooting guide covering dependency, OAuth callback, secret, D1 migration, and CORS recovery steps.
 - 2026-03-06 - Task 4.2 - Validated local web and API startup on ports 3000/8787, confirmed `/api/health` output, and documented the local CORS contract.
 - 2026-03-06 - Task 3.3 - Added a GitHub Actions CI workflow and documented `CI / validate` as the required branch-protection check.

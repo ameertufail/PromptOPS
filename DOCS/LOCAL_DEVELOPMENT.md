@@ -69,9 +69,10 @@ Invoke-WebRequest http://localhost:8787/api/health
 
 This becomes relevant once the OAuth routes are enabled.
 
-- Confirm the GitHub OAuth app callback URL matches the frontend/app URL pair used locally.
+- Confirm the local GitHub OAuth app callback URL is `http://localhost:8787/api/auth/callback`.
 - Keep `NEXT_PUBLIC_APP_URL=http://localhost:3000`.
-- Update the GitHub OAuth app to include the local callback URL before retrying sign-in.
+- Keep `FRONTEND_URL=http://localhost:3000` in `apps/api/wrangler.toml`.
+- Use a separate production GitHub OAuth app instead of reusing local credentials.
 
 ### Missing secrets in `apps/api/.dev.vars`
 

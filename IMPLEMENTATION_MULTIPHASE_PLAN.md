@@ -80,33 +80,33 @@ How to use this document:
 
 ## Phase 5 - Cloud Provisioning and Infrastructure Bootstrap
 
-1. [ ] Task 5.1: Provision Cloudflare resources and map bindings.  
+1. [x] Task 5.1: Provision Cloudflare resources and map bindings.  
         Read Context: [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
         Instruction: Create Worker app, D1 database, and R2 bucket, then bind resources in Wrangler configuration with non-placeholder production IDs.
-       Completion Summary: Pending.
-2. [ ] Task 5.2: Configure production secrets and OAuth provider setup.  
+       Completion Summary: 2026-03-06 - Provisioned the Cloudflare Worker resources, created the production D1/R2 bindings, and wrote the real production IDs into Wrangler config.
+2. [x] Task 5.2: Configure production secrets and OAuth provider setup.  
         Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
         Instruction: Register separate GitHub OAuth apps for local and production, point both at the backend callback route, and store JWT/encryption/client secrets only in secure platform secret stores.
-       Completion Summary: Pending.
-3. [ ] Task 5.3: Provision Vercel project and environment mapping.  
+       Completion Summary: 2026-03-06 - Registered local and production GitHub OAuth apps and stored the production GitHub/JWT/encryption secrets in Cloudflare's secret store.
+3. [x] Task 5.3: Provision Vercel project and environment mapping.  
         Read Context: [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)  
         Instruction: Connect repo, configure build settings and public env vars, and verify preview/production deployment channels are correctly separated.
-       Completion Summary: Pending.
+       Completion Summary: 2026-03-06 - Connected the repo to Vercel, mapped the deployed Worker/app URLs into public env vars, and documented the preview/production deployment setup.
 
 ## Phase 6 - Database Foundation (Core Tenancy)
 
-1. [ ] Task 6.1: Implement migration set for users, orgs, org_members, and projects.  
+1. [x] Task 6.1: Implement migration set for users, orgs, org_members, and projects.  
         Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)  
         Instruction: Build core tenancy schema with ULID keys, slug uniqueness, role constraints, and foreign key relationships required by RBAC.
-       Completion Summary: Pending.
-2. [ ] Task 6.2: Validate migration idempotency and rollback safety locally.  
+       Completion Summary: 2026-03-07 - Added the core tenancy D1 migration with ULID-backed tables, ISO-8601 timestamps, RBAC role constraints, and `_migrations` bookkeeping.
+2. [x] Task 6.2: Validate migration idempotency and rollback safety locally.  
         Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
         Instruction: Reapply migrations on clean local databases multiple times to verify deterministic outcomes and prevent production migration surprises.
-       Completion Summary: Pending.
-3. [ ] Task 6.3: Implement typed query helpers for tenancy reads/writes.  
+       Completion Summary: 2026-03-07 - Added a repeatable local D1 replay validator and verified deterministic migration runs on clean and already-migrated state.
+3. [x] Task 6.3: Implement typed query helpers for tenancy reads/writes.  
         Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
         Instruction: Add query functions for user upsert, org membership resolution, and project lookup with strict parameter typing and transaction safety.
-       Completion Summary: Pending.
+       Completion Summary: 2026-03-07 - Added typed tenancy query helpers plus unit coverage for user upsert, org membership resolution, org/project creation, and project access lookup.
 
 ## Phase 7 - Database Domain Model Completion
 

@@ -24,7 +24,7 @@ Current local baseline:
 - `FRONTEND_URL`
 - `ENVIRONMENT`
 
-Future phases add:
+Production provisioning baseline:
 
 - `DB` (D1)
 - `STORAGE` (R2)
@@ -42,6 +42,8 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 - `GET /api/health` returns `{ environment, status, service, timestamp }`
 - Local CORS allows `http://localhost:3000`, `http://127.0.0.1:3000`, and the configured `FRONTEND_URL`
 - Untrusted origins do not receive allow headers
+- Production Worker URL: `https://promptops-api-production.promptops-ameer.workers.dev`
+- Production `FRONTEND_URL`: `https://prompt-ops-web.vercel.app`
 
 ## Planned Endpoints
 
@@ -73,6 +75,7 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 - [x] API workspace boundary scaffold and shared contract import baseline
 - [x] Local backend runtime validated on `localhost:8787`
 - [x] Backend smoke tests added for the health endpoint and CORS contract
+- [x] Production Worker deployed with `DB`, `STORAGE`, and production env bindings
 - [ ] Auth routes
 - [ ] Auth middleware (JWT + API key)
 - [ ] RBAC middleware
@@ -100,6 +103,8 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-07 - Task 6.3 - Added typed tenancy query helpers plus unit tests in `apps/api/src/db` for user upsert, membership resolution, and project access lookups.
+- 2026-03-06 - Task 5.1 - Provisioned the production Worker bindings and deployed the backend on Cloudflare with D1/R2 attached.
 - 2026-03-06 - Task 4.2 - Validated backend startup on port 8787 and documented the local health/CORS runtime contract.
 - 2026-03-06 - Task 3.2 - Added backend smoke coverage for the health endpoint and documented the future integration-test targets.
 - 2026-03-02 - Task 2.1 - Scaffolded `apps/api` workspace boundary files and initialized the Hono entrypoint using shared contract constants.

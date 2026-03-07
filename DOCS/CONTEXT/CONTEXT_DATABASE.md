@@ -8,6 +8,8 @@
 
 Free tier: 5M reads/day, 100K writes/day, 5GB. Database code lives under `apps/api/src/db/`.
 
+Current provisioned production database: `promptops-db`, bound in Wrangler as `DB`.
+
 ## D1 Rules
 
 - SQLite syntax, not PostgreSQL
@@ -77,6 +79,7 @@ Required indexes include:
 
 - Numbered SQL files
 - Validate locally with `--local`
+- Use `pnpm --filter @promptops/api db:validate:core` to replay the core tenancy migration against clean and already-migrated local D1 state
 - Promote with `--remote`
 - Track applied files in `_migrations`
 
@@ -89,19 +92,24 @@ Required indexes include:
 ## Task Progress
 
 - [x] Database testing targets documented for migrations and typed query helpers
-- [ ] Migration 001: users, orgs, org_members, projects
+- [x] Production D1 database provisioned and bound in Wrangler
+- [x] Migration 001: users, orgs, org_members, projects
 - [ ] Migration 002: prompts, prompt_versions
 - [ ] Migration 003: datasets, dataset_items
 - [ ] Migration 004: eval_configs, eval_runs, eval_run_items
 - [ ] Migration 005: runs, api_keys, provider_keys
 - [ ] Migration 006: audit_events
 - [ ] Migration 007: all indexes
-- [ ] Typed query helpers
-- [ ] Test migrations locally
+- [x] Typed query helpers
+- [x] Test migrations locally
 - [ ] Apply to production D1
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-07 - Task 6.3 - Added typed tenancy query helpers and unit tests for user upsert, membership resolution, and project-scoped access reads.
+- 2026-03-07 - Task 6.2 - Added a local D1 replay validator and confirmed repeated core-tenancy migration runs stay deterministic.
+- 2026-03-07 - Task 6.1 - Added the core tenancy migration for users, orgs, org_members, and projects with `_migrations` tracking.
+- 2026-03-06 - Task 5.1 - Provisioned the production D1 database and recorded the `DB` binding in Wrangler.
 - 2026-03-06 - Task 3.2 - Documented the migration/query-helper test strategy and the integration coverage expectations for database-backed flows.

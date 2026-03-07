@@ -15,7 +15,16 @@ Two methods:
 
 User clicks login → backend redirects to GitHub (with CSRF state param) → GitHub redirects back with code → backend exchanges code for token → fetches profile → upserts user → issues JWT cookie.
 
-Secrets needed: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, JWT_SECRET (Wrangler secrets)
+GitHub OAuth Apps support one callback base URL, so keep one app for local development and a separate app for production.
+
+The GitHub provider callback URL should target the backend route, not the frontend route:
+
+- Local: `http://localhost:8787/api/auth/callback`
+- Production: `https://promptops-api-production.promptops-ameer.workers.dev/api/auth/callback`
+
+The frontend `/callback` route is the post-auth app landing page, not the GitHub provider callback target.
+
+Secrets needed: environment-specific `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `JWT_SECRET` values in Wrangler secrets.
 
 ## RBAC
 
@@ -71,7 +80,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 ## Task Progress
 
 - [x] Security baseline frozen for BYOK, key handling, JWT/cookie policy, and RBAC enforcement
-- [ ] GitHub OAuth App registered (dev + prod)
+- [x] GitHub OAuth apps registered (local + production)
 - [ ] OAuth flow backend (redirect, callback, token exchange, upsert)
 - [ ] JWT issuance and cookie handling
 - [ ] Auth middleware (JWT + API key)
@@ -91,5 +100,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-07 - Task 6.1 - Added the core tenancy tables and RBAC membership constraints that the OAuth upsert and role-resolution flow will rely on.
+- 2026-03-06 - Task 5.2 - Registered separate local and production GitHub OAuth apps and stored the production auth secrets in Cloudflare.
 - 2026-03-02 - Task 1.2 - Locked auth guardrails for BYOK boundaries, encrypted/hashed keys, JWT cookie policy, and deny-by-default RBAC.
 - 2026-03-02 - Task 4.1 - Added backend secrets template and seeded local `.dev.vars` placeholders for JWT, GitHub OAuth, and encryption key.

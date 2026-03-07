@@ -21,7 +21,7 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 
 - `/` - public landing page
 - `/login` - GitHub OAuth login button
-- `/callback` - OAuth callback handler
+- `/callback` - post-auth client landing page after the backend session is created
 - `/[orgSlug]` - org overview
 - `/[orgSlug]/[projectSlug]` - project dashboard
 - `/[orgSlug]/[projectSlug]/prompts` - prompt list
@@ -43,12 +43,15 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 - Data fetching: client components with `useEffect` plus page-level loading/empty/error states
 - Polling: eval run progress polls every 3 seconds until `COMPLETED` or `FAILED`
 - Env vars: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_URL`
+- GitHub's provider callback targets the backend Worker at `/api/auth/callback`; `/callback` is the frontend handoff route after session initialization
 
 ## Current Runtime Contract
 
 - The local web app serves on `http://localhost:3000`
 - The scaffold landing page renders successfully without the protected app shell in place yet
 - The frontend env template points to the local Worker API at `http://localhost:8787`
+- The production frontend is deployed at `https://prompt-ops-web.vercel.app`
+- The production public API URL maps to `https://promptops-api-production.promptops-ameer.workers.dev`
 
 ## Frontend Progress
 
@@ -57,6 +60,7 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 - [x] `apps/web` scaffolded with Next.js package boundary files (`package.json`, `tsconfig`, `src/app` entrypoints)
 - [x] Frontend import boundary documented to consume shared contracts through `@promptops/shared`
 - [x] Local frontend startup validated on `localhost:3000`
+- [x] Vercel project provisioned with public app/API URL env mapping
 
 **Layout & Navigation:**
 
@@ -128,6 +132,7 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-06 - Task 5.3 - Provisioned the Vercel project and mapped the deployed Worker/frontend URLs into the frontend env contract.
 - 2026-03-06 - Task 4.2 - Validated frontend startup on port 3000 and documented the local runtime contract against the Worker API scaffold.
 - 2026-03-02 - Task 4.1 - Added the frontend env template and seeded local `.env.local` with localhost API/app URLs.
 - 2026-03-02 - Task 2.1 - Scaffolded `apps/web` workspace boundaries and wired frontend shared-contract usage via `@promptops/shared`.

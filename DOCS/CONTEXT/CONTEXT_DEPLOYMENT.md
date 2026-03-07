@@ -4,6 +4,8 @@
 
 ---
 
+Phase 5 operator runbook: [`../DEPLOYMENT_RUNBOOK.md`](../DEPLOYMENT_RUNBOOK.md)
+
 ## Deployment Architecture
 
 - **Frontend:** Next.js on Vercel free tier (100GB bandwidth/month)
@@ -11,29 +13,38 @@
 - **Database:** Cloudflare D1 free tier (5M reads/day, 100K writes/day, 5GB)
 - **Storage:** Cloudflare R2 free tier (10GB storage, 10M reads/month)
 
+## Current Production Endpoints (2026-03-06)
+
+- **Frontend:** `https://prompt-ops-web.vercel.app`
+- **Backend:** `https://promptops-api-production.promptops-ameer.workers.dev`
+- **D1 binding:** `DB -> promptops-db`
+- **R2 binding:** `STORAGE -> promptops-storage`
+
 ## Vercel (Frontend)
 
-**Setup:** Create a Vercel account -> import the GitHub repo -> set the root directory to `apps/web` -> set the build command to `cd ../.. && pnpm build`. Preview deploys come from pull requests; production deploys come from `main`.
+**Setup:** Create a Vercel account -> import the GitHub repo -> set the root directory to `apps/web` -> keep the framework preset as `Next.js` -> set the build command to `cd ../.. && corepack pnpm build:web`. Preview deploys come from pull requests; production deploys come from `main`.
 
 **Env vars (set in the Vercel dashboard):**
 
-- `NEXT_PUBLIC_API_URL=https://promptops-api.your-sub.workers.dev`
-- `NEXT_PUBLIC_APP_URL=https://promptops-studio.vercel.app`
+- `NEXT_PUBLIC_API_URL=https://promptops-api-production.promptops-ameer.workers.dev`
+- `NEXT_PUBLIC_APP_URL=https://prompt-ops-web.vercel.app`
+
+Preview deployments are still separated from production by Vercel's deployment channels and preview URLs. For now, the same public API/app URL values are shared across Vercel environments until a separate preview backend exists.
 
 ## Cloudflare (Backend)
 
 **Setup steps:**
 
 1. Create a Cloudflare account.
-2. Install Wrangler and authenticate with `wrangler login`.
-3. Create the D1 database: `wrangler d1 create promptops-db` and record the `database_id`.
-4. Update `apps/api/wrangler.toml` with the real `database_id` and future resource bindings.
-5. Run SQL migrations against production with `wrangler d1 execute promptops-db --file=<path> --remote`.
-6. Create the R2 bucket: `wrangler r2 bucket create promptops-storage`.
-7. Set secrets: `wrangler secret put JWT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `ENCRYPTION_KEY`.
-8. Deploy with `wrangler deploy`.
+2. Authenticate with `corepack pnpm --filter @promptops/api exec wrangler login`.
+3. Create the D1 database and write the binding into `apps/api/wrangler.toml`: `corepack pnpm --filter @promptops/api exec wrangler d1 create promptops-db --binding DB --use-remote --update-config`.
+4. Create the R2 bucket and write the binding into `apps/api/wrangler.toml`: `corepack pnpm --filter @promptops/api exec wrangler r2 bucket create promptops-storage --binding STORAGE --use-remote --update-config`.
+5. Add `[env.production.vars]` in `apps/api/wrangler.toml` once the Vercel production URL is known so `FRONTEND_URL` is not deployed with the local localhost value.
+6. Run SQL migrations against production with `corepack pnpm --filter @promptops/api exec wrangler d1 execute promptops-db --file=<path> --remote`.
+7. Set secrets with `corepack pnpm --filter @promptops/api exec wrangler secret put <NAME> --env production` for `JWT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `ENCRYPTION_KEY`.
+8. Deploy with `corepack pnpm deploy:api`.
 
-`wrangler.toml` currently declares the Worker name, `FRONTEND_URL`, and `ENVIRONMENT`. Future phases add D1 and R2 bindings with real IDs.
+`wrangler.toml` currently declares the local development `FRONTEND_URL` and `ENVIRONMENT`. Production-only values belong under `[env.production.vars]`, while secrets stay in Wrangler's secret store.
 
 ## Local Development
 
@@ -86,8 +97,9 @@ Vercel still handles frontend preview/production deploys from GitHub separately 
 
 1. Create numbered SQL files in `apps/api/src/db/migrations/`.
 2. Test locally with `wrangler d1 execute promptops-db --file=<path> --local`.
-3. Apply to production with `wrangler d1 execute promptops-db --file=<path> --remote`.
-4. Track applied migrations in `_migrations`.
+3. Use `pnpm --filter @promptops/api db:validate:core` to replay the Phase 6 core-tenancy migration against clean and already-migrated local D1 state before any remote apply.
+4. Apply to production with `wrangler d1 execute promptops-db --file=<path> --remote`.
+5. Track applied migrations in `_migrations`.
 
 ## Domain Setup
 
@@ -115,7 +127,7 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 
 - All secrets in Wrangler/Vercel/GitHub secret stores only
 - `.dev.vars` kept out of git
-- GitHub OAuth callback URLs correct for both dev and prod
+- Separate GitHub OAuth apps created for local and production, each pointing to the backend `/api/auth/callback` route
 - CORS limited to the frontend domain plus localhost
 - Strong random values for `JWT_SECRET` and `ENCRYPTION_KEY` in production
 - No sensitive data in logs
@@ -154,21 +166,21 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 
 **Initial Setup:**
 
-- [ ] Create Cloudflare account
-- [ ] Install and authenticate Wrangler
-- [ ] Create D1 database
-- [ ] Create R2 bucket
-- [ ] Set all Wrangler secrets
-- [ ] Create Vercel account
-- [ ] Connect GitHub repo to Vercel
-- [ ] Set Vercel env vars
-- [ ] Register GitHub OAuth App (dev + prod callback URLs)
+- [x] Create Cloudflare account
+- [x] Install and authenticate Wrangler
+- [x] Create D1 database
+- [x] Create R2 bucket
+- [x] Set all Wrangler secrets
+- [x] Create Vercel account
+- [x] Connect GitHub repo to Vercel
+- [x] Set Vercel env vars
+- [x] Register GitHub OAuth apps (local + production)
 
 **First Deploy:**
 
 - [ ] Apply all migrations to production D1
-- [ ] Deploy Worker to Cloudflare
-- [ ] Deploy frontend to Vercel
+- [x] Deploy Worker to Cloudflare
+- [x] Deploy frontend to Vercel
 - [ ] Verify the health endpoint in production
 - [ ] Verify the full OAuth flow in production
 
@@ -192,6 +204,10 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-07 - Task 6.2 - Added a repeatable local D1 replay validator and documented the pre-remote migration verification flow.
+- 2026-03-06 - Task 5.3 - Provisioned the Vercel project, recorded the production frontend/backend URLs, and mapped the public app/API env vars.
+- 2026-03-06 - Task 5.2 - Registered the local and production GitHub OAuth apps and stored the production auth secrets in Cloudflare.
+- 2026-03-06 - Task 5.1 - Created the production Worker resources and bound `promptops-db` plus `promptops-storage` in Wrangler.
 - 2026-03-06 - Task 4.3 - Added a local development guide with dependency, OAuth, secret, migration, and CORS recovery steps.
 - 2026-03-06 - Task 4.2 - Validated local ports, health endpoint behavior, and the trusted local-origin CORS contract for web and API startup.
 - 2026-03-06 - Task 3.3 - Added the GitHub Actions validation workflow and documented `CI / validate` as the required branch-protection check.

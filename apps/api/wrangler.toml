@@ -6,4 +6,28 @@ compatibility_date = "2026-03-02"
 ENVIRONMENT = "development"
 FRONTEND_URL = "http://localhost:3000"
 
-# Real resource IDs and names are added in Phase 5 cloud provisioning.
+[[d1_databases]]
+binding = "DB"
+database_name = "promptops-db"
+database_id = "5e57380c-8d89-4edb-a10a-0386bdad670a"
+remote = true
+
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "promptops-storage"
+remote = true
+
+[env.production.vars]
+ENVIRONMENT = "production"
+FRONTEND_URL = "https://prompt-ops-web.vercel.app"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "promptops-db"
+database_id = "5e57380c-8d89-4edb-a10a-0386bdad670a"
+remote = true
+
+[[env.production.r2_buckets]]
+binding = "STORAGE"
+bucket_name = "promptops-storage"
+remote = true

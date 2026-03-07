@@ -2809,6 +2809,7 @@ _This document is your single source of truth. Every task is self-contained with
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-07 - Task 6.1 - Implemented the core tenancy D1 migration with ISO-8601 timestamps, role constraints, foreign keys, and `_migrations` tracking.
 - 2026-03-06 - Task 4.3 - Added a local development guide with dependency, OAuth, secret, migration, and CORS troubleshooting plus recovery steps.
 - 2026-03-06 - Task 3.3 - Added the GitHub Actions validation workflow and documented `CI / validate` as the required branch-protection check.
 - 2026-03-06 - Task 3.1 - Added shared lint/format/typecheck standards and wired them into the root validation commands.

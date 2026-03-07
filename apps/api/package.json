@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "description": "PromptOps Studio backend API on Cloudflare Workers",
   "scripts": {
+    "db:apply:core:local": "wrangler d1 execute promptops-db --file=src/db/migrations/001_core_tenancy.sql --local",
+    "db:validate:core": "node ./scripts/validate-core-tenancy-migrations.mjs",
     "dev": "wrangler dev",
     "build": "tsc --noEmit",
     "deploy": "wrangler deploy",

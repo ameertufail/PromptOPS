@@ -59,6 +59,8 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 
 - [x] `apps/web` scaffolded with Next.js package boundary files (`package.json`, `tsconfig`, `src/app` entrypoints)
 - [x] Frontend import boundary documented to consume shared contracts through `@promptops/shared`
+- [x] Canonical entity/status DTOs and route metadata are available to the frontend through `@promptops/shared`
+- [x] Canonical request/response validation schemas are available for the future frontend API client layer
 - [x] Local frontend startup validated on `localhost:3000`
 - [x] Vercel project provisioned with public app/API URL env mapping
 
@@ -132,6 +134,8 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 8.2 - Added canonical API boundary schemas so the frontend can validate route payloads against the same contracts as the backend.
+- 2026-03-08 - Task 8.1 - Added the shared enums, entity DTOs, and route metadata the frontend will import from `@promptops/shared`.
 - 2026-03-06 - Task 5.3 - Provisioned the Vercel project and mapped the deployed Worker/frontend URLs into the frontend env contract.
 - 2026-03-06 - Task 4.2 - Validated frontend startup on port 3000 and documented the local runtime contract against the Worker API scaffold.
 - 2026-03-02 - Task 4.1 - Added the frontend env template and seeded local `.env.local` with localhost API/app URLs.

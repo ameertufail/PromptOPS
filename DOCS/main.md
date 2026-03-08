@@ -796,6 +796,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 - Task scope matches the implementation plan instruction and listed `Read Context` docs.
 - Verification evidence is attached for changed behavior (tests/lint/typecheck/manual checks as applicable).
 - Phase 1 guardrails remain intact (browser-first eval model and security baseline).
+- Shared contract changes bump `SHARED_CONTRACT_VERSION`, update the shared contract catalog snapshot, and describe compatibility impact in the PR.
 - Documentation writeback is complete across plan and context trackers.
 - Follow-up risks or deferred work are explicitly listed.
 
@@ -818,6 +819,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 - [x] Branch strategy documented.
 - [x] Review checklist documented.
+- [x] Shared contract versioning review rule documented.
 - [x] Definition of done documented.
 - [x] Documentation update and handoff rules documented.
 
@@ -2815,6 +2817,7 @@ _This document is your single source of truth. Every task is self-contained with
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 8.3 - Added the shared contract versioning review rule and compatibility snapshot expectation to the implementation guide.
 - 2026-03-08 - Task 7.1 - Added the documented Phase 7 D1 domain model and index optimizations to the implementation-ready schema baseline.
 - 2026-03-07 - Task 6.1 - Implemented the core tenancy D1 migration with ISO-8601 timestamps, role constraints, foreign keys, and `_migrations` tracking.
 - 2026-03-06 - Task 4.3 - Added a local development guide with dependency, OAuth, secret, migration, and CORS troubleshooting plus recovery steps.

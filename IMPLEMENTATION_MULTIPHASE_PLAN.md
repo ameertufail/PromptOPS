@@ -125,18 +125,18 @@ How to use this document:
 
 ## Phase 8 - Shared Contracts and Validation Layer
 
-1. [ ] Task 8.1: Define shared entity types, enums, and constants package-wide.  
+1. [x] Task 8.1: Define shared entity types, enums, and constants package-wide.  
         Read Context: [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)  
         Instruction: Create one canonical type source for statuses, verdicts, roles, and DTOs so frontend and backend cannot diverge.
-       Completion Summary: Pending.
-2. [ ] Task 8.2: Define input/output validation schemas for all API boundaries.  
+       Completion Summary: 2026-03-08 - Added the canonical shared constants, enums, entity DTOs, and cross-workspace contract exports in `@promptops/shared`.
+2. [x] Task 8.2: Define input/output validation schemas for all API boundaries.  
         Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)  
         Instruction: Map every endpoint payload and response into validated contracts and reject invalid request shapes uniformly.
-       Completion Summary: Pending.
-3. [ ] Task 8.3: Establish contract-change policy and compatibility checks.  
+       Completion Summary: 2026-03-08 - Added Zod request/response schemas plus a route contract catalog for the planned API boundaries in `@promptops/shared`.
+3. [x] Task 8.3: Establish contract-change policy and compatibility checks.  
         Read Context: [CONTEXT/README.md](DOCS/CONTEXT/README.md), [main.md](DOCS/main.md)  
         Instruction: Require explicit version-aware updates whenever shared contracts change and tie this rule to PR review checklist.
-       Completion Summary: Pending.
+       Completion Summary: 2026-03-08 - Added shared contract versioning rules, a compatibility snapshot test, and PR-review guidance for contract changes.
 
 ## Phase 9 - Backend App Skeleton and Middleware Pipeline
 

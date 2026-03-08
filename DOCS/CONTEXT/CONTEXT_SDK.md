@@ -8,22 +8,22 @@
 
 A tiny Node.js/TypeScript package that lets any app log LLM "runs" to PromptOps Studio. It's the bridge between production apps and the observability dashboards.
 
-Flow: User's app calls SDK → SDK sends POST /api/runs with API key → Backend stores in runs table → Visible in dashboard.
+Flow: User's app calls SDK -> SDK sends POST /api/runs with API key -> Backend stores in runs table -> Visible in dashboard.
 
 ## SDK Package
 
 Located at `packages/sdk/`. Contains:
 
-- Client class (PromptOpsClient) — main entry point
+- Client class (PromptOpsClient) - main entry point
 - Retry logic with exponential backoff + jitter
 - Type definitions
 - Example app
 
 ## SDK Features
 
-**logRun method:** Accepts promptVersionId (optional), input (object), output (string), latencyMs, tokenCount, costEstimate, metadata (any extra context like environment, userId). Returns { id, status: "logged" } or null on failure. Fire-and-forget safe — errors are caught and console.warned, never thrown to crash the user's app. Retries up to 3 times on 5xx with exponential backoff (500ms, 1s, 2s + jitter).
+**logRun method:** Accepts promptVersionId (optional), input (object), output (string), latencyMs, tokenCount, costEstimate, metadata (any extra context like environment, userId). Returns { id, status: "logged" } or null on failure. Fire-and-forget safe - errors are caught and console.warned, never thrown to crash the user's app. Retries up to 3 times on 5xx with exponential backoff (500ms, 1s, 2s + jitter).
 
-**instrumentedGenerate wrapper:** Takes an async function (the LLM call) + input params. Auto-measures latency. Calls logRun in background (fire-and-forget). Returns the LLM output — logging never blocks the user's code.
+**instrumentedGenerate wrapper:** Takes an async function (the LLM call) + input params. Auto-measures latency. Calls logRun in background (fire-and-forget). Returns the LLM output - logging never blocks the user's code.
 
 **Configuration:** apiKey (required, must start with `po_sk_`), baseUrl (optional, defaults to production), timeout (optional, default 5000ms).
 
@@ -33,11 +33,11 @@ Uses API key (not JWT). Key sent as `Authorization: Bearer po_sk_...`. Backend h
 
 ## Backend Run Logging Endpoint
 
-POST /api/runs — API key auth only. Validates input with Zod. Optionally runs PII guardrail on the output (regex-based, stored in metrics). Inserts into runs table with source = "SDK". Returns { id, status: "logged" }.
+POST /api/runs - API key auth only. Validates input with Zod. Optionally runs PII guardrail on the output (regex-based, stored in metrics). Inserts into runs table with source = "SDK". Returns { id, status: "logged" }.
 
 ## Backend Stats Endpoint
 
-GET /api/projects/:projectId/runs/stats — Returns aggregated data for dashboard: total runs in period, avg/max latency, PII detection count, runs per day (for charts). Filterable by date range. Uses D1 json_extract for querying metrics fields.
+GET /api/projects/:projectId/runs/stats - Returns aggregated data for dashboard: total runs in period, avg/max latency, PII detection count, runs per day (for charts). Filterable by date range. Uses the Phase 7 `runs` project/date indexes and only light `json_extract` reads for metrics-derived fields.
 
 ## SDK Distribution
 
@@ -83,4 +83,4 @@ A simple script in `packages/sdk/examples/` that: initializes PromptOpsClient, s
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- (no completed tasks yet)
+- 2026-03-08 - Task 7.2 - Documented the Phase 7 `runs` index baseline that the SDK logging list and stats endpoints will rely on.

@@ -97,9 +97,11 @@ Vercel still handles frontend preview/production deploys from GitHub separately 
 
 1. Create numbered SQL files in `apps/api/src/db/migrations/`.
 2. Test locally with `wrangler d1 execute promptops-db --file=<path> --local`.
-3. Use `pnpm --filter @promptops/api db:validate:core` to replay the Phase 6 core-tenancy migration against clean and already-migrated local D1 state before any remote apply.
-4. Apply to production with `wrangler d1 execute promptops-db --file=<path> --remote`.
-5. Track applied migrations in `_migrations`.
+3. Use `pnpm --filter @promptops/api db:validate:all` to replay the full migration chain against clean and already-migrated local D1 state before any remote apply.
+4. Apply the full chain locally with `pnpm --filter @promptops/api db:apply:all:local` when you want the default dev D1 state updated outside the validator.
+5. Apply to production with `pnpm --filter @promptops/api db:apply:all:remote` or by running each numbered file with `wrangler d1 execute promptops-db --file=<path> --remote`.
+6. Verify `_migrations` on the remote database after promotion so every numbered SQL file is recorded exactly once.
+7. Track applied migrations in `_migrations`.
 
 ## Domain Setup
 
@@ -178,10 +180,10 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 
 **First Deploy:**
 
-- [ ] Apply all migrations to production D1
+- [x] Apply all migrations to production D1
 - [x] Deploy Worker to Cloudflare
 - [x] Deploy frontend to Vercel
-- [ ] Verify the health endpoint in production
+- [x] Verify the health endpoint in production
 - [ ] Verify the full OAuth flow in production
 
 **CI/CD:**
@@ -204,6 +206,9 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 9.1 - Verified the production Worker health endpoint returns the expected `status: ok` payload on the live domain.
+- 2026-03-08 - Task 7.3 - Applied the full migration chain to the remote D1 database and verified production `_migrations` coverage for 001 through 007.
+- 2026-03-08 - Task 7.3 - Added the full-chain D1 validation/apply workflow and documented the remote `_migrations` verification step before production promotion.
 - 2026-03-07 - Task 6.2 - Added a repeatable local D1 replay validator and documented the pre-remote migration verification flow.
 - 2026-03-06 - Task 5.3 - Provisioned the Vercel project, recorded the production frontend/backend URLs, and mapped the public app/API env vars.
 - 2026-03-06 - Task 5.2 - Registered the local and production GitHub OAuth apps and stored the production auth secrets in Cloudflare.

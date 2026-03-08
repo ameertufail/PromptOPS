@@ -521,19 +521,25 @@ CREATE INDEX idx_prompts_project ON prompts(project_id);
 CREATE INDEX idx_prompt_versions_prompt ON prompt_versions(prompt_id);
 CREATE INDEX idx_datasets_project ON datasets(project_id);
 CREATE INDEX idx_dataset_items_dataset ON dataset_items(dataset_id);
+CREATE INDEX idx_dataset_items_dataset_sort_order ON dataset_items(dataset_id, sort_order, id);
 CREATE INDEX idx_eval_configs_project ON eval_configs(project_id);
 CREATE INDEX idx_eval_runs_config ON eval_runs(eval_config_id);
 CREATE INDEX idx_eval_runs_status ON eval_runs(status);
+CREATE INDEX idx_eval_runs_config_created ON eval_runs(eval_config_id, created_at);
 CREATE INDEX idx_eval_run_items_run ON eval_run_items(eval_run_id);
 CREATE INDEX idx_eval_run_items_verdict ON eval_run_items(verdict);
+CREATE INDEX idx_eval_run_items_run_verdict_created ON eval_run_items(eval_run_id, verdict, created_at);
 CREATE INDEX idx_runs_project ON runs(project_id);
 CREATE INDEX idx_runs_version ON runs(prompt_version_id);
 CREATE INDEX idx_runs_created ON runs(created_at);
+CREATE INDEX idx_runs_project_created ON runs(project_id, created_at);
+CREATE INDEX idx_runs_project_prompt_created ON runs(project_id, prompt_version_id, created_at);
 CREATE INDEX idx_api_keys_project ON api_keys(project_id);
 CREATE INDEX idx_api_keys_hash ON api_keys(key_hash);
 CREATE INDEX idx_audit_events_org ON audit_events(org_id);
 CREATE INDEX idx_audit_events_entity ON audit_events(entity_type, entity_id);
 CREATE INDEX idx_audit_events_created ON audit_events(created_at);
+CREATE INDEX idx_audit_events_org_created ON audit_events(org_id, created_at);
 ```
 
 ## Eval Config Rules Schema (JSON stored in `eval_configs.rules`)
@@ -2809,6 +2815,7 @@ _This document is your single source of truth. Every task is self-contained with
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 7.1 - Added the documented Phase 7 D1 domain model and index optimizations to the implementation-ready schema baseline.
 - 2026-03-07 - Task 6.1 - Implemented the core tenancy D1 migration with ISO-8601 timestamps, role constraints, foreign keys, and `_migrations` tracking.
 - 2026-03-06 - Task 4.3 - Added a local development guide with dependency, OAuth, secret, migration, and CORS troubleshooting plus recovery steps.
 - 2026-03-06 - Task 3.3 - Added the GitHub Actions validation workflow and documented `CI / validate` as the required branch-protection check.

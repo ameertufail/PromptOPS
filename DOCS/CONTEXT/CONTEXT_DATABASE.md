@@ -79,7 +79,8 @@ Required indexes include:
 
 - Numbered SQL files
 - Validate locally with `--local`
-- Use `pnpm --filter @promptops/api db:validate:core` to replay the core tenancy migration against clean and already-migrated local D1 state
+- Use `pnpm --filter @promptops/api db:validate:all` to replay the full migration chain against clean and already-migrated local D1 state before any remote apply
+- `pnpm --filter @promptops/api db:validate:core` remains available when only the tenancy baseline needs isolated validation
 - Promote with `--remote`
 - Track applied files in `_migrations`
 
@@ -94,20 +95,24 @@ Required indexes include:
 - [x] Database testing targets documented for migrations and typed query helpers
 - [x] Production D1 database provisioned and bound in Wrangler
 - [x] Migration 001: users, orgs, org_members, projects
-- [ ] Migration 002: prompts, prompt_versions
-- [ ] Migration 003: datasets, dataset_items
-- [ ] Migration 004: eval_configs, eval_runs, eval_run_items
-- [ ] Migration 005: runs, api_keys, provider_keys
-- [ ] Migration 006: audit_events
-- [ ] Migration 007: all indexes
+- [x] Migration 002: prompts, prompt_versions
+- [x] Migration 003: datasets, dataset_items
+- [x] Migration 004: eval_configs, eval_runs, eval_run_items
+- [x] Migration 005: runs, api_keys, provider_keys
+- [x] Migration 006: audit_events
+- [x] Migration 007: all indexes
 - [x] Typed query helpers
 - [x] Test migrations locally
-- [ ] Apply to production D1
+- [x] Apply to production D1
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 7.3 - Applied the full migration chain to the production D1 database and verified all numbered files in remote `_migrations`.
+- 2026-03-08 - Task 7.3 - Added full-chain D1 migration tooling and validated replay-safe `_migrations` tracking plus the local-to-remote promotion workflow.
+- 2026-03-08 - Task 7.2 - Added the required D1 indexes plus hot-path composite indexes for dataset, eval item, runs, and audit pagination/filter queries.
+- 2026-03-08 - Task 7.1 - Added migrations 002-006 to complete the prompts, datasets, eval, runs/keys, and audit domain tables.
 - 2026-03-07 - Task 6.3 - Added typed tenancy query helpers and unit tests for user upsert, membership resolution, and project-scoped access reads.
 - 2026-03-07 - Task 6.2 - Added a local D1 replay validator and confirmed repeated core-tenancy migration runs stay deterministic.
 - 2026-03-07 - Task 6.1 - Added the core tenancy migration for users, orgs, org_members, and projects with `_migrations` tracking.

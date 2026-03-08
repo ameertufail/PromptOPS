@@ -35,6 +35,7 @@ Use the `Completion Summary` format from the plan and prepend a one-line entry t
 
 - `apps/web` and `apps/api` may only share contracts through `@promptops/shared`.
 - `packages/shared` must not import from app workspaces.
+- Shared contract changes must increment `SHARED_CONTRACT_VERSION` and update the shared contract catalog snapshot test.
 - Avoid deep imports into `packages/*/src/*` from other workspaces.
 - Preserve the browser-first BYOK model and Phase 1 security guardrails.
 

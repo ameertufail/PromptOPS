@@ -136,9 +136,9 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 7.1 - Implement migrations for prompts, versions, datasets, eval entities, runs, keys, and audit events]
-**Last completed:** [Task 6.3 - Implement typed query helpers for tenancy reads/writes]
-**Next up:** Task 7.1 - Implement migrations for prompts, versions, datasets, eval entities, runs, keys, and audit events
+**Currently working on:** [Task 8.1 - Define shared entity types, enums, and constants package-wide]
+**Last completed:** [Task 7.3 - Validate production migration workflow and tracking table behavior]
+**Next up:** Task 8.1 - Define shared entity types, enums, and constants package-wide
 
 ### Phase 1 - Scope, Decisions, and Execution Rules
 
@@ -215,6 +215,10 @@ After completing a task, tell Codex: "Mark [task] as complete in the context fil
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 7.3 - Applied the remote D1 migration chain and verified production `_migrations` now includes 001 through 007.
+- 2026-03-08 - Task 7.3 - Added full-chain D1 migration validation/apply tooling and verified replay-safe `_migrations` tracking before remote promotion.
+- 2026-03-08 - Task 7.2 - Added the required D1 indexes and hot-path query optimizations for planned prompt, eval, SDK run, and audit access patterns.
+- 2026-03-08 - Task 7.1 - Completed the D1 domain schema for prompts, datasets, eval entities, runs/keys, and audit events.
 - 2026-03-07 - Task 6.3 - Added typed tenancy query helpers and tests so the backend can upsert users and resolve org/project access consistently.
 - 2026-03-07 - Task 6.2 - Validated the core tenancy migration locally with deterministic clean-state and replay checks.
 - 2026-03-07 - Task 6.1 - Added the first D1 migration for the tenancy tables and wired `_migrations` bookkeeping into the schema bootstrap.

@@ -110,18 +110,18 @@ How to use this document:
 
 ## Phase 7 - Database Domain Model Completion
 
-1. [ ] Task 7.1: Implement migrations for prompts, versions, datasets, eval entities, runs, keys, and audit events.  
+1. [x] Task 7.1: Implement migrations for prompts, versions, datasets, eval entities, runs, keys, and audit events.
         Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
         Instruction: Complete the full schema exactly aligned with domain entities and JSON fields defined in the product spec.
-       Completion Summary: Pending.
-2. [ ] Task 7.2: Add all required indexes and query-path optimizations.  
-        Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
+       Completion Summary: 2026-03-08 - Added migrations 002-006 to complete the prompt, dataset, eval, run logging, key, and audit domain tables with ISO timestamps, FKs, and status constraints.
+2. [x] Task 7.2: Add all required indexes and query-path optimizations.
+       Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
         Instruction: Implement indexes listed in context docs, then verify critical list and stats endpoints use indexed filters and pagination paths.
-       Completion Summary: Pending.
-3. [ ] Task 7.3: Validate production migration workflow and tracking table behavior.  
+       Completion Summary: 2026-03-08 - Added migration 007 plus composite hot-path indexes and validated representative dataset, eval item, runs, API key, and audit query plans locally.
+3. [x] Task 7.3: Validate production migration workflow and tracking table behavior.
         Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
         Instruction: Confirm local-to-remote migration promotion process and `_migrations` bookkeeping before applying schema to production D1.
-       Completion Summary: Pending.
+       Completion Summary: 2026-03-08 - Added full-chain D1 apply/validation scripts and confirmed replay-safe `_migrations` tracking plus the documented remote promotion workflow.
 
 ## Phase 8 - Shared Contracts and Validation Layer
 

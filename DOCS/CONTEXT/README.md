@@ -50,6 +50,7 @@ Every file has checkboxes at the bottom. After completing a task:
 - Use task branches named `task/<phase>-<task>-<slug>` and keep one implementation task per branch.
 - `main` is protected; merge by squash so each task maps to one reviewable merge unit.
 - PR review must confirm scope, validation evidence, and guardrail compliance before merge.
+- Shared contract changes must increment `SHARED_CONTRACT_VERSION`, update the shared contract catalog test snapshot, and call out compatibility impact in review.
 - Definition of done requires acceptance criteria met, validation complete, and trackers/docs updated.
 - No task is merge-complete unless documentation writeback is finished.
 
@@ -64,6 +65,7 @@ Every file has checkboxes at the bottom. After completing a task:
 
 - [x] Branch strategy captured
 - [x] Review expectations captured
+- [x] Shared contract versioning rule captured
 - [x] Definition of done captured
 - [x] Documentation writeback rules captured
 
@@ -75,5 +77,6 @@ All files are pure context - no code blocks, no implementations. Just what thing
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 8.3 - Documented the shared contract versioning rule and compatibility-check expectations for future schema changes.
 - 2026-03-06 - Task 2.3 - Added root onboarding docs and linked the repo-level quick-start, contribution, testing, and local-development guides.
 - 2026-03-02 - Task 1.3 - Added branch/PR governance, definition of done, and mandatory tracker writeback protocol.

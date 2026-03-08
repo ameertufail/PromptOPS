@@ -73,6 +73,8 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 
 - [x] Hono app setup (entrypoint, health route, local CORS baseline)
 - [x] API workspace boundary scaffold and shared contract import baseline
+- [x] Shared backend DTOs, enums, and route metadata exported from `@promptops/shared`
+- [x] Planned API request/response schemas cataloged in the shared validation layer
 - [x] Local backend runtime validated on `localhost:8787`
 - [x] Backend smoke tests added for the health endpoint and CORS contract
 - [x] Production Worker deployed with `DB`, `STORAGE`, and production env bindings
@@ -103,6 +105,8 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 8.2 - Added the shared Zod API boundary schemas and route catalog the backend will validate against as routes are implemented.
+- 2026-03-08 - Task 8.1 - Moved canonical backend-facing enums and DTOs into `@promptops/shared` so route and query layers stop defining divergent contract types.
 - 2026-03-08 - Task 7.2 - Added D1 index coverage for the planned prompt, dataset, eval, run logging, and audit query paths used by backend endpoints.
 - 2026-03-08 - Task 7.1 - Added the backend D1 domain migrations for prompts, datasets, eval entities, runs/keys, and audit events.
 - 2026-03-07 - Task 6.3 - Added typed tenancy query helpers plus unit tests in `apps/api/src/db` for user upsert, membership resolution, and project access lookups.

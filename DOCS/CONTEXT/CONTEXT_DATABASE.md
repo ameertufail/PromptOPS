@@ -94,6 +94,7 @@ Required indexes include:
 
 - [x] Database testing targets documented for migrations and typed query helpers
 - [x] Production D1 database provisioned and bound in Wrangler
+- [x] Shared status/role/provider enums aligned to the D1 schema contract
 - [x] Migration 001: users, orgs, org_members, projects
 - [x] Migration 002: prompts, prompt_versions
 - [x] Migration 003: datasets, dataset_items
@@ -109,6 +110,7 @@ Required indexes include:
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 8.1 - Aligned the shared enums and entity DTO field shapes with the D1 schema so API/web contracts match the database model.
 - 2026-03-08 - Task 7.3 - Applied the full migration chain to the production D1 database and verified all numbered files in remote `_migrations`.
 - 2026-03-08 - Task 7.3 - Added full-chain D1 migration tooling and validated replay-safe `_migrations` tracking plus the local-to-remote promotion workflow.
 - 2026-03-08 - Task 7.2 - Added the required D1 indexes plus hot-path composite indexes for dataset, eval item, runs, and audit pagination/filter queries.

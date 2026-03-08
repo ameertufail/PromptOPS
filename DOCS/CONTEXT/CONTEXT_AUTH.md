@@ -81,6 +81,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - [x] Security baseline frozen for BYOK, key handling, JWT/cookie policy, and RBAC enforcement
 - [x] GitHub OAuth apps registered (local + production)
+- [x] Shared auth, API key, and provider key request/response schemas defined in `@promptops/shared`
 - [ ] OAuth flow backend (redirect, callback, token exchange, upsert)
 - [ ] JWT issuance and cookie handling
 - [ ] Auth middleware (JWT + API key)
@@ -100,6 +101,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 8.2 - Added shared auth/session, API key, and provider-key validation schemas so future route handlers and UI flows use one contract source.
 - 2026-03-07 - Task 6.1 - Added the core tenancy tables and RBAC membership constraints that the OAuth upsert and role-resolution flow will rely on.
 - 2026-03-06 - Task 5.2 - Registered separate local and production GitHub OAuth apps and stored the production auth secrets in Cloudflare.
 - 2026-03-02 - Task 1.2 - Locked auth guardrails for BYOK boundaries, encrypted/hashed keys, JWT cookie policy, and deny-by-default RBAC.

@@ -136,9 +136,9 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 8.1 - Define shared entity types, enums, and constants package-wide]
-**Last completed:** [Task 7.3 - Validate production migration workflow and tracking table behavior]
-**Next up:** Task 8.1 - Define shared entity types, enums, and constants package-wide
+**Currently working on:** [Task 9.1 - Build backend entrypoint, route registration, and CORS/security defaults]
+**Last completed:** [Task 8.3 - Establish contract-change policy and compatibility checks]
+**Next up:** Task 9.1 - Build backend entrypoint, route registration, and CORS/security defaults
 
 ### Phase 1 - Scope, Decisions, and Execution Rules
 
@@ -215,6 +215,7 @@ After completing a task, tell Codex: "Mark [task] as complete in the context fil
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 8.1 - Added the canonical shared contract surface for enums, entity DTOs, route metadata, and runtime validation exports in `@promptops/shared`.
 - 2026-03-08 - Task 7.3 - Applied the remote D1 migration chain and verified production `_migrations` now includes 001 through 007.
 - 2026-03-08 - Task 7.3 - Added full-chain D1 migration validation/apply tooling and verified replay-safe `_migrations` tracking before remote promotion.
 - 2026-03-08 - Task 7.2 - Added the required D1 indexes and hot-path query optimizations for planned prompt, eval, SDK run, and audit access patterns.

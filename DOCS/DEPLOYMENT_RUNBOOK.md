@@ -116,6 +116,32 @@ corepack pnpm --filter @promptops/api exec wrangler secret put ENCRYPTION_KEY --
 
 Paste each value only when Wrangler prompts for it. Do not put them in `wrangler.toml`, `.env` files committed to git, screenshots, or issue comments.
 
+## 3.1 Phase 7 D1 Migration Promotion
+
+Run this after pulling the Phase 7 migration files locally and before you start Phase 8 work against production data.
+
+1. Validate the full migration chain locally:
+
+   ```powershell
+   corepack pnpm --filter @promptops/api db:validate:all
+   ```
+
+2. Apply the migrations to the remote D1 database:
+
+   ```powershell
+   corepack pnpm --filter @promptops/api db:apply:all:remote
+   ```
+
+3. Confirm `_migrations` was written correctly:
+
+   ```powershell
+   corepack pnpm --filter @promptops/api exec wrangler d1 execute promptops-db --remote --command "SELECT name, applied_at FROM _migrations ORDER BY name;"
+   ```
+
+4. In the Cloudflare dashboard, open `Workers & Pages -> D1 -> promptops-db -> Console` and run the same `_migrations` query if you want a UI-side double check.
+
+5. If the migration list is missing any numbered file, stop and do not continue to Phase 8 route or contract work against production.
+
 ## 4. Vercel Project
 
 1. Open `https://vercel.com/new`.

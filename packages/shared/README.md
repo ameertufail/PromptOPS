@@ -12,3 +12,4 @@ Canonical cross-workspace contract package.
 - Keep exports stable and consume through `@promptops/shared`.
 - Do not import from `apps/*` or `packages/sdk`.
 - Do not expose app-specific runtime logic from this package.
+- Contract changes must increment `SHARED_CONTRACT_VERSION` and update the shared contract catalog snapshot test.

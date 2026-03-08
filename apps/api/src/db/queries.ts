@@ -1,8 +1,5 @@
+import { type UserRole } from "@promptops/shared";
 import { createUlid } from "../lib/ulid";
-
-export const USER_ROLES = ["OWNER", "ADMIN", "MEMBER", "VIEWER"] as const;
-
-export type UserRole = (typeof USER_ROLES)[number];
 
 export type DbUser = {
   avatar_url: string | null;

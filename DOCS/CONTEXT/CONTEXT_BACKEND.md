@@ -103,6 +103,8 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 7.2 - Added D1 index coverage for the planned prompt, dataset, eval, run logging, and audit query paths used by backend endpoints.
+- 2026-03-08 - Task 7.1 - Added the backend D1 domain migrations for prompts, datasets, eval entities, runs/keys, and audit events.
 - 2026-03-07 - Task 6.3 - Added typed tenancy query helpers plus unit tests in `apps/api/src/db` for user upsert, membership resolution, and project access lookups.
 - 2026-03-06 - Task 5.1 - Provisioned the production Worker bindings and deployed the backend on Cloudflare with D1/R2 attached.
 - 2026-03-06 - Task 4.2 - Validated backend startup on port 8787 and documented the local health/CORS runtime contract.

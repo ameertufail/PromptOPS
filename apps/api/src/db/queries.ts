@@ -324,6 +324,23 @@ export async function getOrgMembership(
   return row ? buildOrgMembershipRecord(row) : null;
 }
 
+export async function getUserById(
+  db: D1Database,
+  input: { userId: string }
+) {
+  return db
+    .prepare(
+      `
+        SELECT id, github_id, email, name, avatar_url, created_at
+        FROM users
+        WHERE id = ?
+        LIMIT 1
+      `
+    )
+    .bind(input.userId)
+    .first<DbUser>();
+}
+
 export async function getProjectById(
   db: D1Database,
   input: { projectId: string }

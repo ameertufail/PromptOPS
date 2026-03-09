@@ -4,6 +4,7 @@ import {
   createProject,
   getOrgMembership,
   getProjectAccess,
+  getUserById,
   upsertUser
 } from "./queries";
 
@@ -244,6 +245,25 @@ describe("db query helpers", () => {
       }
     });
     expect(mockDb.prepareCalls[0]?.boundValues).toEqual(["org_1", "user_1"]);
+  });
+
+  it("loads a user by id for session-backed auth endpoints", async () => {
+    const user = {
+      avatar_url: "https://avatars.example/alice.png",
+      created_at: "2026-03-07T10:00:00.000Z",
+      email: "alice@example.com",
+      github_id: 42,
+      id: "user_1",
+      name: "Alice"
+    };
+    const mockDb = new MockDb([], [user]);
+
+    const result = await getUserById(mockDb as unknown as D1Database, {
+      userId: "user_1"
+    });
+
+    expect(result).toEqual(user);
+    expect(mockDb.prepareCalls[0]?.boundValues).toEqual(["user_1"]);
   });
 
   it("resolves project access with the project, org, and caller role", async () => {

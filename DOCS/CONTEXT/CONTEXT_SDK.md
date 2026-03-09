@@ -83,4 +83,5 @@ A simple script in `packages/sdk/examples/` that: initializes PromptOpsClient, s
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 9.3 - Added API-key rate-limit middleware scaffolding and request-context contracts the future `/api/runs` SDK endpoint will plug into.
 - 2026-03-08 - Task 7.2 - Documented the Phase 7 `runs` index baseline that the SDK logging list and stats endpoints will rely on.

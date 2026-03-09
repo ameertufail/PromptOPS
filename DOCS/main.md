@@ -2817,6 +2817,7 @@ _This document is your single source of truth. Every task is self-contained with
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 9.2 - Added shared backend error classes, validation helpers, and global error/not-found formatters for the canonical `{ error, message, details }` API envelope.
 - 2026-03-08 - Task 8.3 - Added the shared contract versioning review rule and compatibility snapshot expectation to the implementation guide.
 - 2026-03-08 - Task 7.1 - Added the documented Phase 7 D1 domain model and index optimizations to the implementation-ready schema baseline.
 - 2026-03-07 - Task 6.1 - Implemented the core tenancy D1 migration with ISO-8601 timestamps, role constraints, foreign keys, and `_migrations` tracking.

@@ -67,6 +67,8 @@ Preview deployments are still separated from production by Vercel's deployment c
 - Health payload shape: `{ environment, status, service, timestamp }`
 - Local CORS allows `http://localhost:3000`, `http://127.0.0.1:3000`, and the configured `FRONTEND_URL`
 - Untrusted origins do not receive `Access-Control-Allow-Origin`
+- Unknown API routes return the canonical JSON error envelope with a generated request ID
+- API responses include `X-Request-Id`, `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy`
 
 **Local env files:**
 
@@ -206,7 +208,8 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
-- 2026-03-08 - Task 9.1 - Verified the production Worker health endpoint returns the expected `status: ok` payload on the live domain.
+- 2026-03-08 - Task 10.1 - Finalized the deployment-facing OAuth runtime contract around backend callback URLs, GitHub secrets, and frontend post-auth redirect targets.
+- 2026-03-08 - Task 9.1 - Updated the deployment runtime contract with request IDs, security headers, canonical unknown-route handling, and the verified live Worker health baseline.
 - 2026-03-08 - Task 7.3 - Applied the full migration chain to the remote D1 database and verified production `_migrations` coverage for 001 through 007.
 - 2026-03-08 - Task 7.3 - Added the full-chain D1 validation/apply workflow and documented the remote `_migrations` verification step before production promotion.
 - 2026-03-07 - Task 6.2 - Added a repeatable local D1 replay validator and documented the pre-remote migration verification flow.

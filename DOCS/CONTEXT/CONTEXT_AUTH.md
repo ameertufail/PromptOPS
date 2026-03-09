@@ -82,9 +82,10 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 - [x] Security baseline frozen for BYOK, key handling, JWT/cookie policy, and RBAC enforcement
 - [x] GitHub OAuth apps registered (local + production)
 - [x] Shared auth, API key, and provider key request/response schemas defined in `@promptops/shared`
-- [ ] OAuth flow backend (redirect, callback, token exchange, upsert)
-- [ ] JWT issuance and cookie handling
-- [ ] Auth middleware (JWT + API key)
+- [x] OAuth flow backend (redirect, callback, token exchange, upsert)
+- [x] JWT issuance and cookie handling
+- [x] JWT session middleware
+- [ ] API key auth middleware
 - [ ] RBAC middleware
 - [ ] Org CRUD + membership endpoints
 - [ ] API key CRUD endpoints
@@ -101,6 +102,10 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 10.3 - Added `/api/auth/me` and `/api/auth/logout` with shared contract responses, 401 session semantics, and idempotent cookie clearing on logout.
+- 2026-03-08 - Task 10.2 - Added signed 7-day session JWTs plus secure `po_session` cookie helpers and dashboard-session request resolution.
+- 2026-03-08 - Task 10.1 - Implemented GitHub authorize/callback routes with CSRF state validation, provider token exchange, user upsert, and frontend callback redirects.
+- 2026-03-08 - Task 9.3 - Added request-context, auth guard, and RBAC resolution middleware scaffolding so upcoming JWT/API-key implementation lands on one contract.
 - 2026-03-08 - Task 8.2 - Added shared auth/session, API key, and provider-key validation schemas so future route handlers and UI flows use one contract source.
 - 2026-03-07 - Task 6.1 - Added the core tenancy tables and RBAC membership constraints that the OAuth upsert and role-resolution flow will rely on.
 - 2026-03-06 - Task 5.2 - Registered separate local and production GitHub OAuth apps and stored the production auth secrets in Cloudflare.

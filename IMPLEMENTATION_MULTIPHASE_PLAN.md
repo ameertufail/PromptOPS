@@ -140,33 +140,33 @@ How to use this document:
 
 ## Phase 9 - Backend App Skeleton and Middleware Pipeline
 
-1. [ ] Task 9.1: Build backend entrypoint, route registration, and CORS/security defaults.  
+1. [x] Task 9.1: Build backend entrypoint, route registration, and CORS/security defaults.  
         Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
         Instruction: Implement the baseline API shell with trusted origins, JSON response consistency, and health endpoint for deployment validation.
-       Completion Summary: Pending.
-2. [ ] Task 9.2: Implement standardized error classes and global error formatter.  
+       Completion Summary: 2026-03-08 - Refactored the API into an app factory with route registration, trusted-origin CORS, security headers, request IDs, and deployment-safe health/not-found handling.
+2. [x] Task 9.2: Implement standardized error classes and global error formatter.  
         Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [main.md](DOCS/main.md)  
         Instruction: Normalize all backend failures into one error response shape and ensure validation/auth/domain failures remain distinguishable.
-       Completion Summary: Pending.
-3. [ ] Task 9.3: Implement reusable middleware scaffolding for auth, RBAC, audit, and rate limiting.  
+       Completion Summary: 2026-03-08 - Added shared backend error classes, validation helpers, and global error/not-found formatters that emit the canonical `{ error, message, details }` envelope.
+3. [x] Task 9.3: Implement reusable middleware scaffolding for auth, RBAC, audit, and rate limiting.  
         Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md)  
         Instruction: Define middleware ordering and request context contracts so all route handlers receive resolved identity, role, and project metadata.
-       Completion Summary: Pending.
+       Completion Summary: 2026-03-08 - Added request-context, auth guard, RBAC resolution, audit queue flush, and API-key rate-limit middleware scaffolding with focused API tests.
 
 ## Phase 10 - Authentication Backend (OAuth, JWT, Session)
 
-1. [ ] Task 10.1: Implement GitHub OAuth redirect and callback flow end-to-end.  
+1. [x] Task 10.1: Implement GitHub OAuth redirect and callback flow end-to-end.  
         Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
         Instruction: Handle state validation, token exchange, user profile fetch, and user upsert with explicit failure paths for bad code/state conditions.
-       Completion Summary: Pending.
-2. [ ] Task 10.2: Implement JWT issuance and session cookie controls.  
+       Completion Summary: 2026-03-08 - Implemented GitHub authorize/callback routes with CSRF state cookies, provider token exchange, profile/email fetch, user upsert, and frontend redirect outcomes.
+2. [x] Task 10.2: Implement JWT issuance and session cookie controls.  
         Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
         Instruction: Issue HttpOnly session cookies with secure attributes, fixed expiry, and route-level authentication checks for dashboard endpoints.
-       Completion Summary: Pending.
-3. [ ] Task 10.3: Implement auth utility endpoints and logout invalidation.  
+       Completion Summary: 2026-03-08 - Added signed 7-day HS256 session tokens, secure HttpOnly cookie helpers, and JWT-backed request resolution for dashboard-authenticated routes.
+3. [x] Task 10.3: Implement auth utility endpoints and logout invalidation.  
         Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
         Instruction: Provide `/me` and logout endpoints with consistent session invalidation behavior and clear unauthorized response semantics.
-       Completion Summary: Pending.
+       Completion Summary: 2026-03-08 - Added `/api/auth/me` and `/api/auth/logout` with shared contract responses, 401 semantics for missing sessions, and idempotent cookie clearing on logout.
 
 ## Phase 11 - Multi-Tenancy, RBAC, and Org/Project Management
 

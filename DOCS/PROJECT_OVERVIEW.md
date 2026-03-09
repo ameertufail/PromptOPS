@@ -136,9 +136,9 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 9.1 - Build backend entrypoint, route registration, and CORS/security defaults]
-**Last completed:** [Task 8.3 - Establish contract-change policy and compatibility checks]
-**Next up:** Task 9.1 - Build backend entrypoint, route registration, and CORS/security defaults
+**Currently working on:** [Task 11.1 - Implement org CRUD and membership management endpoints]
+**Last completed:** [Task 10.3 - Implement auth utility endpoints and logout invalidation]
+**Next up:** Task 11.1 - Implement org CRUD and membership management endpoints
 
 ### Phase 1 - Scope, Decisions, and Execution Rules
 
@@ -215,6 +215,12 @@ After completing a task, tell Codex: "Mark [task] as complete in the context fil
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 10.3 - Added `/api/auth/me` and `/api/auth/logout` with shared contract responses, 401 semantics for missing sessions, and idempotent cookie clearing on logout.
+- 2026-03-08 - Task 10.2 - Added signed 7-day HS256 session tokens, secure HttpOnly cookie helpers, and JWT-backed request resolution for dashboard-authenticated routes.
+- 2026-03-08 - Task 10.1 - Implemented GitHub authorize/callback routes with CSRF state cookies, provider token exchange, profile/email fetch, user upsert, and frontend redirect outcomes.
+- 2026-03-08 - Task 9.3 - Added request-context, auth guard, RBAC resolution, audit queue flush, and API-key rate-limit middleware scaffolding with focused API tests.
+- 2026-03-08 - Task 9.2 - Added shared backend error classes, validation helpers, and global error/not-found formatters for the canonical API failure envelope.
+- 2026-03-08 - Task 9.1 - Refactored the API app shell around route registration, trusted-origin CORS, security headers, request IDs, and deployment-safe health handling.
 - 2026-03-08 - Task 8.1 - Added the canonical shared contract surface for enums, entity DTOs, route metadata, and runtime validation exports in `@promptops/shared`.
 - 2026-03-08 - Task 7.3 - Applied the remote D1 migration chain and verified production `_migrations` now includes 001 through 007.
 - 2026-03-08 - Task 7.3 - Added full-chain D1 migration validation/apply tooling and verified replay-safe `_migrations` tracking before remote promotion.

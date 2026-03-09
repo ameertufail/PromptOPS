@@ -10,12 +10,12 @@ Hono.js on Cloudflare Workers. Location: `apps/api/`.
 
 ## Structure
 
-- `src/index.ts` - entrypoint, health route, and CORS defaults
-- `src/routes/` - auth, orgs, projects, prompts, datasets, evals, runs, keys, demo
-- `src/middleware/` - auth, rbac, audit, rateLimit
+- `src/index.ts` - app factory, middleware ordering, and top-level handlers
+- `src/routes/` - route registration, health endpoint, and future auth/org/project routes
+- `src/middleware/` - auth, rbac, audit, rateLimit, security
 - `src/services/` - guardrails, diff, summary computation
 - `src/db/` - migrations and typed queries
-- `src/lib/` - crypto, ULID, errors, validation
+- `src/lib/` - crypto, ULID, errors, validation, request-context
 
 ## Worker Bindings
 
@@ -40,8 +40,13 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 ## Current Runtime Contract
 
 - `GET /api/health` returns `{ environment, status, service, timestamp }`
+- `GET /api/auth/github` and `GET /api/auth/callback` drive the GitHub OAuth browser redirect flow
+- `GET /api/auth/me` returns the active session payload or `401` when no valid dashboard session exists
+- `POST /api/auth/logout` clears `po_session` and returns `{ success: true }`
 - Local CORS allows `http://localhost:3000`, `http://127.0.0.1:3000`, and the configured `FRONTEND_URL`
 - Untrusted origins do not receive allow headers
+- Unknown API routes return `{ error, message, details }` with a request ID in `details`
+- API responses include `X-Request-Id`, `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy`
 - Production Worker URL: `https://promptops-api-production.promptops-ameer.workers.dev`
 - Production `FRONTEND_URL`: `https://prompt-ops-web.vercel.app`
 
@@ -78,12 +83,15 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 - [x] Local backend runtime validated on `localhost:8787`
 - [x] Backend smoke tests added for the health endpoint and CORS contract
 - [x] Production Worker deployed with `DB`, `STORAGE`, and production env bindings
-- [ ] Auth routes
-- [ ] Auth middleware (JWT + API key)
+- [x] App factory + route registration shell
+- [x] Request context contract + middleware ordering baseline
+- [x] Error handling (custom classes, global handler)
+- [x] Auth routes
+- [x] JWT session middleware
+- [ ] API key auth middleware
 - [ ] RBAC middleware
-- [ ] Audit helper
-- [ ] Rate limit middleware
-- [ ] Error handling (custom classes, global handler)
+- [x] Audit helper
+- [x] Rate limit middleware
 - [ ] Org routes
 - [ ] Project routes
 - [ ] Prompt routes + versions
@@ -105,6 +113,12 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-08 - Task 10.3 - Added `/api/auth/me` and `/api/auth/logout` with shared contract responses, 401 semantics for missing sessions, and idempotent cookie clearing on logout.
+- 2026-03-08 - Task 10.2 - Added signed 7-day session JWTs, secure cookie helpers, and JWT-backed request resolution for dashboard-authenticated routes.
+- 2026-03-08 - Task 10.1 - Implemented GitHub authorize/callback routes with CSRF state validation, token exchange, GitHub profile/email fetches, and user upsert redirects.
+- 2026-03-08 - Task 9.3 - Added request-context, auth guard, RBAC resolution, audit queue flush, and API-key rate-limit middleware scaffolding with focused API tests.
+- 2026-03-08 - Task 9.2 - Added shared backend error classes, validation helpers, and global error/not-found formatters for the canonical API failure envelope.
+- 2026-03-08 - Task 9.1 - Refactored the API app shell around route registration, trusted-origin CORS, security headers, request IDs, and deployment-safe health handling.
 - 2026-03-08 - Task 8.2 - Added the shared Zod API boundary schemas and route catalog the backend will validate against as routes are implemented.
 - 2026-03-08 - Task 8.1 - Moved canonical backend-facing enums and DTOs into `@promptops/shared` so route and query layers stop defining divergent contract types.
 - 2026-03-08 - Task 7.2 - Added D1 index coverage for the planned prompt, dataset, eval, run logging, and audit query paths used by backend endpoints.

@@ -1,74 +1,73 @@
-import { API_HEALTH_PATH } from "@promptops/shared";
-import { Hono } from "hono";
+import { Hono, type MiddlewareHandler } from "hono";
+import {
+  normalizeError,
+  NotFoundError,
+  toApiErrorResponse
+} from "./lib/errors";
+import { createRequestContext, maybeGetRequestContext } from "./lib/request-context";
+import { auditMiddleware } from "./middleware/audit";
+import { resolveRequestIdentity } from "./middleware/auth";
+import {
+  apiCorsMiddleware,
+  apiSecurityHeadersMiddleware
+} from "./middleware/security";
+import { registerRoutes } from "./routes";
+import type { AppBindings, AppEnv } from "./types";
 
-export type AppBindings = {
-  DB?: D1Database;
-  ENCRYPTION_KEY?: string;
-  ENVIRONMENT?: string;
-  FRONTEND_URL?: string;
-  GITHUB_CLIENT_ID?: string;
-  GITHUB_CLIENT_SECRET?: string;
-  JWT_SECRET?: string;
-  STORAGE?: R2Bucket;
+type CreateAppOptions = {
+  configureApp?: (app: Hono<AppEnv>) => void;
 };
 
-const app = new Hono<{ Bindings: AppBindings }>();
+const requestContextMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
+  const requestId = c.req.header("X-Request-Id")?.trim() || crypto.randomUUID();
 
-const LOCAL_FRONTEND_ORIGINS = new Set([
-  "http://localhost:3000",
-  "http://127.0.0.1:3000"
-]);
-
-function getAllowedOrigin(
-  requestOrigin: string | undefined,
-  configuredOrigin?: string
-) {
-  if (!requestOrigin) {
-    return undefined;
-  }
-
-  if (LOCAL_FRONTEND_ORIGINS.has(requestOrigin)) {
-    return requestOrigin;
-  }
-
-  if (configuredOrigin && requestOrigin === configuredOrigin) {
-    return requestOrigin;
-  }
-
-  return undefined;
-}
-
-app.use("/api/*", async (c, next) => {
-  const allowedOrigin = getAllowedOrigin(
-    c.req.header("Origin"),
-    c.env?.FRONTEND_URL
-  );
-
-  if (allowedOrigin) {
-    c.header("Access-Control-Allow-Credentials", "true");
-    c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    c.header(
-      "Access-Control-Allow-Methods",
-      "GET, POST, PATCH, DELETE, OPTIONS"
-    );
-    c.header("Access-Control-Allow-Origin", allowedOrigin);
-    c.header("Vary", "Origin");
-  }
-
-  if (c.req.method === "OPTIONS") {
-    return c.body(null, 204);
-  }
+  c.header("X-Request-Id", requestId);
+  c.set("requestContext", createRequestContext(requestId));
 
   await next();
-});
+};
 
-app.get(API_HEALTH_PATH, (c) => {
-  return c.json({
-    environment: c.env?.ENVIRONMENT ?? "development",
-    status: "ok",
-    service: "promptops-api",
-    timestamp: new Date().toISOString()
+export function createApp(options: CreateAppOptions = {}) {
+  const app = new Hono<AppEnv>();
+
+  app.use("*", requestContextMiddleware);
+  app.use("/api/*", apiSecurityHeadersMiddleware);
+  app.use("/api/*", apiCorsMiddleware);
+  app.use("/api/*", resolveRequestIdentity);
+  app.use("/api/*", auditMiddleware);
+
+  registerRoutes(app);
+  options.configureApp?.(app);
+
+  app.notFound((c) => {
+    const requestContext = maybeGetRequestContext(c);
+    const normalizedError = normalizeError(
+      new NotFoundError(`Route ${c.req.method} ${new URL(c.req.url).pathname} was not found.`),
+      requestContext?.requestId
+    );
+
+    Object.entries(normalizedError.headers).forEach(([name, value]) => {
+      c.header(name, value);
+    });
+
+    return c.json(toApiErrorResponse(normalizedError), normalizedError.status);
   });
-});
+
+  app.onError((error, c) => {
+    const requestContext = maybeGetRequestContext(c);
+    const normalizedError = normalizeError(error, requestContext?.requestId);
+
+    Object.entries(normalizedError.headers).forEach(([name, value]) => {
+      c.header(name, value);
+    });
+
+    return c.json(toApiErrorResponse(normalizedError), normalizedError.status);
+  });
+
+  return app;
+}
+
+const app = createApp();
 
 export default app;
+export type { AppBindings, AppEnv };

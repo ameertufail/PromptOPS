@@ -24,7 +24,10 @@ import {
 } from "../lib/session";
 import { getRequestContext } from "../lib/request-context";
 import { parseWithSchema } from "../lib/validation";
-import { requireDatabaseBinding, requireSessionIdentity } from "../middleware/auth";
+import {
+  requireDatabaseBinding,
+  requireSessionIdentity
+} from "../middleware/auth";
 import type { AppEnv } from "../types";
 
 export const authRoutes = new Hono<AppEnv>();

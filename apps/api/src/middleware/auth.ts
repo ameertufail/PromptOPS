@@ -41,7 +41,10 @@ function getBearerSessionToken(c: Context<AppEnv>) {
   return token;
 }
 
-export const resolveRequestIdentity: MiddlewareHandler<AppEnv> = async (c, next) => {
+export const resolveRequestIdentity: MiddlewareHandler<AppEnv> = async (
+  c,
+  next
+) => {
   const sessionToken = getSessionCookie(c) ?? getBearerSessionToken(c);
 
   if (!sessionToken || !c.env?.JWT_SECRET || !c.env?.DB) {
@@ -132,9 +135,14 @@ export function requireApiKeyIdentity(message?: string) {
   }) satisfies MiddlewareHandler<AppEnv>;
 }
 
-export function requireRouteParam(paramName: string, value: string | undefined) {
+export function requireRouteParam(
+  paramName: string,
+  value: string | undefined
+) {
   if (!value) {
-    throw new ValidationError(`Missing required route parameter "${paramName}".`);
+    throw new ValidationError(
+      `Missing required route parameter "${paramName}".`
+    );
   }
 
   return value;

@@ -76,7 +76,9 @@ function queryRows(runName, command) {
     return payload.results;
   }
 
-  throw new Error(`Unexpected wrangler JSON payload: ${JSON.stringify(payload)}`);
+  throw new Error(
+    `Unexpected wrangler JSON payload: ${JSON.stringify(payload)}`
+  );
 }
 
 function assert(condition, message) {
@@ -116,12 +118,15 @@ function validateSchema(snapshot) {
   const usersSql = snapshot.find((row) => row.name === "users")?.sql;
 
   assert(
-    typeof usersSql === "string" && usersSql.includes("github_id INTEGER UNIQUE NOT NULL"),
+    typeof usersSql === "string" &&
+      usersSql.includes("github_id INTEGER UNIQUE NOT NULL"),
     "users table is missing the GitHub uniqueness constraint."
   );
   assert(
     typeof orgMembersSql === "string" &&
-      orgMembersSql.includes("CHECK (role IN ('OWNER', 'ADMIN', 'MEMBER', 'VIEWER'))"),
+      orgMembersSql.includes(
+        "CHECK (role IN ('OWNER', 'ADMIN', 'MEMBER', 'VIEWER'))"
+      ),
     "org_members table is missing the role constraint."
   );
   assert(
@@ -136,7 +141,10 @@ function validateForeignKeys(runName) {
     runName,
     "PRAGMA foreign_key_list('org_members');"
   );
-  const projectForeignKeys = queryRows(runName, "PRAGMA foreign_key_list('projects');");
+  const projectForeignKeys = queryRows(
+    runName,
+    "PRAGMA foreign_key_list('projects');"
+  );
   const orgMemberTargets = orgMemberForeignKeys.map((row) => row.table).sort();
   const projectTargets = projectForeignKeys.map((row) => row.table).sort();
 

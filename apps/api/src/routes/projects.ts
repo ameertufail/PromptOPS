@@ -29,7 +29,11 @@ import {
   validateRequestParams
 } from "../lib/requests";
 import { queueAuditEvent } from "../middleware/audit";
-import { requireMinimumRole, resolveOrgAccess, resolveProjectAccess } from "../middleware/rbac";
+import {
+  requireMinimumRole,
+  resolveOrgAccess,
+  resolveProjectAccess
+} from "../middleware/rbac";
 import { requireDatabaseBinding } from "../middleware/auth";
 import type { AppEnv } from "../types";
 
@@ -69,7 +73,9 @@ projectRoutes.post(
     });
 
     if (existingProject) {
-      throw new ConflictError("A project with this slug already exists in the organization.");
+      throw new ConflictError(
+        "A project with this slug already exists in the organization."
+      );
     }
 
     const project = await createProject(db, {

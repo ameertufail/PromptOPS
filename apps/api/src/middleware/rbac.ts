@@ -1,6 +1,10 @@
 import type { MiddlewareHandler } from "hono";
 import type { UserRole } from "@promptops/shared";
-import { getOrgMembership, getProjectAccess, getProjectById } from "../db/queries";
+import {
+  getOrgMembership,
+  getProjectAccess,
+  getProjectById
+} from "../db/queries";
 import {
   AuthorizationError,
   InternalServerError,
@@ -11,7 +15,11 @@ import {
   setResolvedOrgContext,
   setResolvedProjectContext
 } from "../lib/request-context";
-import { requireDatabaseBinding, requireRouteParam, requireSessionIdentity } from "./auth";
+import {
+  requireDatabaseBinding,
+  requireRouteParam,
+  requireSessionIdentity
+} from "./auth";
 import type { AppEnv } from "../types";
 
 const ROLE_RANK: Record<UserRole, number> = {
@@ -40,7 +48,10 @@ export function resolveOrgAccess(options: OrgAccessOptions = {}) {
       );
       const membership = await getOrgMembership(requireDatabaseBinding(c), {
         orgId,
-        userId: requestContext.identity.kind === "session" ? requestContext.identity.userId : ""
+        userId:
+          requestContext.identity.kind === "session"
+            ? requestContext.identity.userId
+            : ""
       });
 
       if (!membership) {
@@ -110,9 +121,7 @@ export function resolveProjectAccess(options: ProjectAccessOptions = {}) {
       });
 
       if (!access) {
-        throw new AuthorizationError(
-          "You do not have access to this project."
-        );
+        throw new AuthorizationError("You do not have access to this project.");
       }
 
       setResolvedOrgContext(c, {
@@ -135,7 +144,9 @@ export function resolveProjectAccess(options: ProjectAccessOptions = {}) {
 export function requireMinimumRole(role: UserRole) {
   return (async (c, next) => {
     if (ROLE_RANK[getResolvedRole(c)] < ROLE_RANK[role]) {
-      throw new AuthorizationError("You do not have permission to perform this action.");
+      throw new AuthorizationError(
+        "You do not have permission to perform this action."
+      );
     }
 
     await next();
@@ -161,7 +172,9 @@ export function assertCanManageOrgMember(options: {
   targetRole?: UserRole;
 }) {
   if (ROLE_RANK[options.actorRole] < ROLE_RANK.ADMIN) {
-    throw new AuthorizationError("You do not have permission to manage organization members.");
+    throw new AuthorizationError(
+      "You do not have permission to manage organization members."
+    );
   }
 
   if (

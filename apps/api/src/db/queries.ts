@@ -173,9 +173,7 @@ function buildOrgMemberRecord(row: OrgMemberRow): OrgMemberRecord {
   };
 }
 
-function buildProjectAccessRecord(
-  row: ProjectAccessRow
-): ProjectAccessRecord {
+function buildProjectAccessRecord(row: ProjectAccessRow): ProjectAccessRecord {
   return {
     membership: {
       created_at: row.membership_created_at,
@@ -445,10 +443,7 @@ export async function listUserOrgMemberships(
   return result.results.map(buildOrgMembershipRecord);
 }
 
-export async function getOrgById(
-  db: D1Database,
-  input: { orgId: string }
-) {
+export async function getOrgById(db: D1Database, input: { orgId: string }) {
   return db
     .prepare(
       `
@@ -462,10 +457,7 @@ export async function getOrgById(
     .first<DbOrg>();
 }
 
-export async function getOrgBySlug(
-  db: D1Database,
-  input: { slug: string }
-) {
+export async function getOrgBySlug(db: D1Database, input: { slug: string }) {
   return db
     .prepare(
       `
@@ -479,10 +471,7 @@ export async function getOrgBySlug(
     .first<DbOrg>();
 }
 
-export async function getUserByEmail(
-  db: D1Database,
-  input: { email: string }
-) {
+export async function getUserByEmail(db: D1Database, input: { email: string }) {
   return db
     .prepare(
       `
@@ -496,10 +485,7 @@ export async function getUserByEmail(
     .first<DbUser>();
 }
 
-export async function getUserById(
-  db: D1Database,
-  input: { userId: string }
-) {
+export async function getUserById(db: D1Database, input: { userId: string }) {
   return db
     .prepare(
       `
@@ -548,10 +534,7 @@ export async function getOrgMember(
   return record;
 }
 
-export async function listOrgMembers(
-  db: D1Database,
-  input: { orgId: string }
-) {
+export async function listOrgMembers(db: D1Database, input: { orgId: string }) {
   const result = await db
     .prepare(
       `

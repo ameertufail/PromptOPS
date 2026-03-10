@@ -37,7 +37,11 @@ import {
   type OrgMembershipRecord,
   updateOrgMemberRole
 } from "../db/queries";
-import { AuthorizationError, ConflictError, NotFoundError } from "../lib/errors";
+import {
+  AuthorizationError,
+  ConflictError,
+  NotFoundError
+} from "../lib/errors";
 import {
   parseJsonRequestBody,
   parseRequestParams,
@@ -47,7 +51,10 @@ import {
 } from "../lib/requests";
 import { getRequestContext } from "../lib/request-context";
 import { queueAuditEvent } from "../middleware/audit";
-import { requireSessionIdentity, requireDatabaseBinding } from "../middleware/auth";
+import {
+  requireSessionIdentity,
+  requireDatabaseBinding
+} from "../middleware/auth";
 import {
   assertCanManageOrgMember,
   getResolvedRole,
@@ -100,10 +107,7 @@ function toOwnerRoleCountConflict() {
   return new ConflictError("Organizations must retain at least one owner.");
 }
 
-async function assertOrgRetainsOwner(
-  db: D1Database,
-  membership: DbOrgMember
-) {
+async function assertOrgRetainsOwner(db: D1Database, membership: DbOrgMember) {
   if (membership.role !== "OWNER") {
     return;
   }
@@ -259,7 +263,9 @@ orgRoutes.post(
     });
 
     if (existingMembership) {
-      throw new ConflictError("This user is already a member of the organization.");
+      throw new ConflictError(
+        "This user is already a member of the organization."
+      );
     }
 
     const member = await addOrgMember(db, {
@@ -319,7 +325,10 @@ orgRoutes.patch(
       targetRole: existingMembership.membership.role
     });
 
-    if (existingMembership.membership.role === "OWNER" && body.role !== "OWNER") {
+    if (
+      existingMembership.membership.role === "OWNER" &&
+      body.role !== "OWNER"
+    ) {
       await assertOrgRetainsOwner(db, existingMembership.membership);
     }
 

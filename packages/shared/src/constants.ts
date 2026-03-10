@@ -71,11 +71,6 @@ export const API_ERROR_CODES = [
   "INTERNAL_ERROR"
 ] as const;
 
-export const API_CONTRACT_METHODS = [
-  "GET",
-  "POST",
-  "PATCH",
-  "DELETE"
-] as const;
+export const API_CONTRACT_METHODS = ["GET", "POST", "PATCH", "DELETE"] as const;
 
 export const CONTRACT_RESPONSE_MODES = ["json", "redirect", "empty"] as const;

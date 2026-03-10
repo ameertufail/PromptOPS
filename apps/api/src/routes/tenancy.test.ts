@@ -4,10 +4,7 @@ import {
 } from "@promptops/shared";
 import { describe, expect, it } from "vitest";
 import { createApp, type AppBindings } from "../index";
-import {
-  createSessionClaims,
-  signSessionToken
-} from "../lib/session";
+import { createSessionClaims, signSessionToken } from "../lib/session";
 import { createResult, MockDb } from "../test-utils/d1";
 
 const ORG_ID = "01ARZ3NDEKTSV4RRFFQ69G5FAA";
@@ -80,14 +77,16 @@ function createOrgMemberRow(
   };
 }
 
-function createProjectRow(overrides: Partial<{
-  created_at: string;
-  description: string | null;
-  id: string;
-  name: string;
-  org_id: string;
-  slug: string;
-}> = {}) {
+function createProjectRow(
+  overrides: Partial<{
+    created_at: string;
+    description: string | null;
+    id: string;
+    name: string;
+    org_id: string;
+    slug: string;
+  }> = {}
+) {
   return {
     created_at: "2026-03-09T09:15:00.000Z",
     description: "Core app",
@@ -137,7 +136,14 @@ describe("Phase 11 tenancy routes", () => {
       user_id: USER_ID
     };
     const db = new MockDb(
-      [[createResult([]), createResult([]), createResult([org]), createResult([membership])]],
+      [
+        [
+          createResult([]),
+          createResult([]),
+          createResult([org]),
+          createResult([membership])
+        ]
+      ],
       [sessionUser, null]
     );
     const response = await createApp().request(
@@ -181,11 +187,9 @@ describe("Phase 11 tenancy routes", () => {
   });
 
   it("lists the caller's organizations", async () => {
-    const db = new MockDb(
-      [],
-      [sessionUser],
-      {
-        allResponses: [[
+    const db = new MockDb([], [sessionUser], {
+      allResponses: [
+        [
           createOrgAccessRow("ADMIN"),
           {
             ...createOrgAccessRow("VIEWER"),
@@ -194,9 +198,9 @@ describe("Phase 11 tenancy routes", () => {
             org_name: "Beta",
             org_slug: "beta"
           }
-        ]]
-      }
-    );
+        ]
+      ]
+    });
     const response = await createApp().request(
       "http://localhost:8787/api/orgs",
       {
@@ -296,7 +300,8 @@ describe("Phase 11 tenancy routes", () => {
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toMatchObject({
       error: "FORBIDDEN",
-      message: "Only organization owners can assign or manage owner memberships."
+      message:
+        "Only organization owners can assign or manage owner memberships."
     });
   });
 
@@ -329,18 +334,20 @@ describe("Phase 11 tenancy routes", () => {
       [],
       [sessionUser, createOrgAccessRow("ADMIN"), { total: 1 }],
       {
-        allResponses: [[
-          {
-            action: "project.created",
-            actor_user_id: USER_ID,
-            created_at: "2026-03-09T10:30:00.000Z",
-            entity_id: PROJECT_ID,
-            entity_type: "project",
-            id: AUDIT_ID,
-            metadata: "{\"slug\":\"promptops\"}",
-            org_id: ORG_ID
-          }
-        ]]
+        allResponses: [
+          [
+            {
+              action: "project.created",
+              actor_user_id: USER_ID,
+              created_at: "2026-03-09T10:30:00.000Z",
+              entity_id: PROJECT_ID,
+              entity_type: "project",
+              id: AUDIT_ID,
+              metadata: '{"slug":"promptops"}',
+              org_id: ORG_ID
+            }
+          ]
+        ]
       }
     );
     const response = await createApp().request(

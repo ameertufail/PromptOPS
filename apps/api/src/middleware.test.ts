@@ -56,7 +56,9 @@ class MockDatabase {
   async batch(statements: MockPreparedStatement[]) {
     this.batchCalls.push(stmtsToArray(statements));
 
-    return statements.map(() => ({ results: [] })) as unknown as D1Result<Record<string, unknown>>[];
+    return statements.map(() => ({ results: [] })) as unknown as D1Result<
+      Record<string, unknown>
+    >[];
   }
 }
 
@@ -246,7 +248,9 @@ describe("Phase 9 middleware scaffolding", () => {
     expect(firstResponse.headers.get("X-RateLimit-Remaining")).toBe("0");
 
     expect(secondResponse.status).toBe(429);
-    expect(secondResponse.headers.get("Retry-After")).toEqual(expect.any(String));
+    expect(secondResponse.headers.get("Retry-After")).toEqual(
+      expect.any(String)
+    );
 
     const payload = (await secondResponse.json()) as ApiErrorResponse;
 

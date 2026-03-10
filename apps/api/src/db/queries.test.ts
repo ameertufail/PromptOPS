@@ -34,11 +34,14 @@ class MockPreparedStatement {
   private readonly resolveFirst: () => unknown;
   private readonly resolveRun: () => D1Result<unknown>;
 
-  constructor(readonly query: string, options: {
-    resolveAll?: () => unknown[];
-    resolveFirst?: () => unknown;
-    resolveRun?: () => D1Result<unknown>;
-  } = {}) {
+  constructor(
+    readonly query: string,
+    options: {
+      resolveAll?: () => unknown[];
+      resolveFirst?: () => unknown;
+      resolveRun?: () => D1Result<unknown>;
+    } = {}
+  ) {
     this.resolveAll = options.resolveAll ?? (() => []);
     this.resolveFirst = options.resolveFirst ?? (() => null);
     this.resolveRun = options.resolveRun ?? (() => createResult<never>([]));
@@ -127,7 +130,8 @@ class MockDb {
       resolveAll: () => (this.allResponses.shift() ?? []) as unknown[],
       resolveFirst: () => this.firstResponses.shift() ?? null,
       resolveRun: () =>
-        (this.runResponses.shift() ?? createResult<never>([])) as D1Result<unknown>
+        (this.runResponses.shift() ??
+          createResult<never>([])) as D1Result<unknown>
     });
     this.prepareCalls.push(statement);
     return statement;
@@ -224,9 +228,7 @@ describe("db query helpers", () => {
       org_id: "01ARZ3NDEKTSV4RRFFQ69G5FAA",
       slug: "promptops"
     };
-    const mockDb = new MockDb([
-      [createResult([]), createResult([project])]
-    ]);
+    const mockDb = new MockDb([[createResult([]), createResult([project])]]);
 
     const result = await createProject(
       mockDb as unknown as D1Database,
@@ -256,10 +258,10 @@ describe("db query helpers", () => {
     };
     const mockDb = new MockDb([], [row]);
 
-    const result = await getOrgMembership(
-      mockDb as unknown as D1Database,
-      { orgId: "org_1", userId: "user_1" }
-    );
+    const result = await getOrgMembership(mockDb as unknown as D1Database, {
+      orgId: "org_1",
+      userId: "user_1"
+    });
 
     expect(result).toEqual({
       membership: {
@@ -419,13 +421,9 @@ describe("db query helpers", () => {
   });
 
   it("counts org members by role and deletes memberships", async () => {
-    const mockDb = new MockDb(
-      [],
-      [{ total: 2 }],
-      {
-        runResponses: [createResult([])]
-      }
-    );
+    const mockDb = new MockDb([], [{ total: 2 }], {
+      runResponses: [createResult([])]
+    });
 
     const totalOwners = await countOrgMembersByRole(
       mockDb as unknown as D1Database,
@@ -461,10 +459,10 @@ describe("db query helpers", () => {
     };
     const mockDb = new MockDb([], [row]);
 
-    const result = await getProjectAccess(
-      mockDb as unknown as D1Database,
-      { projectId: "project_1", userId: "user_1" }
-    );
+    const result = await getProjectAccess(mockDb as unknown as D1Database, {
+      projectId: "project_1",
+      userId: "user_1"
+    });
 
     expect(result).toEqual({
       membership: {
@@ -535,18 +533,20 @@ describe("db query helpers", () => {
       [[createResult([]), createResult([updatedProject])]],
       [{ total: 1 }],
       {
-        allResponses: [[
-          {
-            action: "project.updated",
-            actor_user_id: "user_1",
-            created_at: "2026-03-07T12:00:00.000Z",
-            entity_id: "project_1",
-            entity_type: "project",
-            id: "audit_1",
-            metadata: "{\"name\":\"PromptOps 2\"}",
-            org_id: "org_1"
-          }
-        ]]
+        allResponses: [
+          [
+            {
+              action: "project.updated",
+              actor_user_id: "user_1",
+              created_at: "2026-03-07T12:00:00.000Z",
+              entity_id: "project_1",
+              entity_type: "project",
+              id: "audit_1",
+              metadata: '{"name":"PromptOps 2"}',
+              org_id: "org_1"
+            }
+          ]
+        ]
       }
     );
 
@@ -555,11 +555,14 @@ describe("db query helpers", () => {
       name: "PromptOps 2",
       projectId: "project_1"
     });
-    const auditPage = await listOrgAuditEvents(mockDb as unknown as D1Database, {
-      limit: 50,
-      orgId: "org_1",
-      page: 1
-    });
+    const auditPage = await listOrgAuditEvents(
+      mockDb as unknown as D1Database,
+      {
+        limit: 50,
+        orgId: "org_1",
+        page: 1
+      }
+    );
 
     expect(project).toEqual(updatedProject);
     expect(auditPage).toEqual({

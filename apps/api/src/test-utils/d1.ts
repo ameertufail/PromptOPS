@@ -113,7 +113,8 @@ export class MockDb {
       () => (this.allResponses.shift() ?? []) as unknown[],
       () => this.firstResponses.shift() ?? null,
       () =>
-        (this.runResponses.shift() ?? createResult<never>([])) as D1Result<unknown>
+        (this.runResponses.shift() ??
+          createResult<never>([])) as D1Result<unknown>
     );
     this.prepareCalls.push(statement);
     return statement;

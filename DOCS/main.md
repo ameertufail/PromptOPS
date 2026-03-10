@@ -795,6 +795,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 
 - Task scope matches the implementation plan instruction and listed `Read Context` docs.
 - Verification evidence is attached for changed behavior (tests/lint/typecheck/manual checks as applicable).
+- If the task closes a phase, include a passing `pnpm format:check` run from the repo root in the verification evidence.
 - Phase 1 guardrails remain intact (browser-first eval model and security baseline).
 - Shared contract changes bump `SHARED_CONTRACT_VERSION`, update the shared contract catalog snapshot, and describe compatibility impact in the PR.
 - Documentation writeback is complete across plan and context trackers.
@@ -805,6 +806,7 @@ PromptOps Studio officially locks eval execution to a browser-orchestrated model
 - Task acceptance criteria are satisfied.
 - Code and documentation are consistent with no stale "Pending" task summaries for completed work.
 - Required quality gates pass for changed scope (or have explicit documented rationale if not applicable).
+- Any handoff that completes a phase includes a final passing `pnpm format:check`.
 - Deferred work is tracked as new tasks, not hidden as untracked TODOs.
 
 ### Documentation writeback rules (mandatory for every merged task)
@@ -2817,6 +2819,7 @@ _This document is your single source of truth. Every task is self-contained with
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-10 - Task 1.3 - Added a mandatory end-of-phase `pnpm format:check` verification gate to the implementation governance guide.
 - 2026-03-08 - Task 9.2 - Added shared backend error classes, validation helpers, and global error/not-found formatters for the canonical `{ error, message, details }` API envelope.
 - 2026-03-08 - Task 8.3 - Added the shared contract versioning review rule and compatibility snapshot expectation to the implementation guide.
 - 2026-03-08 - Task 7.1 - Added the documented Phase 7 D1 domain model and index optimizations to the implementation-ready schema baseline.

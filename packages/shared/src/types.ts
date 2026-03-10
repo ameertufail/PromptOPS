@@ -276,7 +276,9 @@ export type UpdateEvalConfigResponse = z.infer<
 export type CreateEvalRunRequest = z.infer<typeof createEvalRunRequestSchema>;
 export type CreateEvalRunResponse = z.infer<typeof createEvalRunResponseSchema>;
 export type EvalRunIdParams = z.infer<typeof evalRunIdParamsSchema>;
-export type EvalRunDetailsResponse = z.infer<typeof evalRunDetailsResponseSchema>;
+export type EvalRunDetailsResponse = z.infer<
+  typeof evalRunDetailsResponseSchema
+>;
 export type EvalRunItemsQuery = z.infer<typeof evalRunItemsQuerySchema>;
 export type EvalRunItemsResponse = z.infer<typeof evalRunItemsResponseSchema>;
 export type CreateEvalRunItemRequest = z.infer<

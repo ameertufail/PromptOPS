@@ -7,7 +7,10 @@ import {
 } from "../lib/request-context";
 import type { AppEnv, PendingAuditEvent } from "../types";
 
-export function queueAuditEvent(c: Context<AppEnv>, auditEvent: PendingAuditEvent) {
+export function queueAuditEvent(
+  c: Context<AppEnv>,
+  auditEvent: PendingAuditEvent
+) {
   appendAuditEvent(c, auditEvent);
 }
 
@@ -27,15 +30,19 @@ export const auditMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
   }
 
   const statements = requestContext.auditEvents.map((auditEvent) => {
-    const orgId = auditEvent.orgId ?? requestContext.org?.id ?? requestContext.project?.orgId;
+    const orgId =
+      auditEvent.orgId ??
+      requestContext.org?.id ??
+      requestContext.project?.orgId;
     const actorUserId =
       auditEvent.actorUserId ??
       (requestContext.identity.kind === "session"
         ? requestContext.identity.userId
         : null);
 
-    return db.prepare(
-      `
+    return db
+      .prepare(
+        `
         INSERT INTO audit_events (
           id,
           org_id,
@@ -47,15 +54,18 @@ export const auditMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
         )
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `
-    ).bind(
-      createUlid(),
-      orgId ?? null,
-      actorUserId,
-      auditEvent.action,
-      auditEvent.entityType,
-      auditEvent.entityId,
-      auditEvent.metadata === undefined ? null : JSON.stringify(auditEvent.metadata)
-    );
+      )
+      .bind(
+        createUlid(),
+        orgId ?? null,
+        actorUserId,
+        auditEvent.action,
+        auditEvent.entityType,
+        auditEvent.entityId,
+        auditEvent.metadata === undefined
+          ? null
+          : JSON.stringify(auditEvent.metadata)
+      );
   });
 
   await db.batch(statements);

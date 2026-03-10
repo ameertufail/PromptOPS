@@ -1,4 +1,8 @@
-import type { ApiErrorCode, ApiErrorResponse, JsonValue } from "@promptops/shared";
+import type {
+  ApiErrorCode,
+  ApiErrorResponse,
+  JsonValue
+} from "@promptops/shared";
 
 type ValidationIssue = {
   code?: string;
@@ -26,7 +30,11 @@ function mergeRequestId(
     return { requestId };
   }
 
-  if (details === null || Array.isArray(details) || typeof details !== "object") {
+  if (
+    details === null ||
+    Array.isArray(details) ||
+    typeof details !== "object"
+  ) {
     return {
       context: details,
       requestId
@@ -47,7 +55,9 @@ export function formatValidationIssues(issues: ValidationIssue[]) {
   }));
 }
 
-function hasValidationIssues(error: unknown): error is { issues: ValidationIssue[] } {
+function hasValidationIssues(
+  error: unknown
+): error is { issues: ValidationIssue[] } {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -115,7 +125,10 @@ export class RateLimitError extends AppError {
 }
 
 export class InternalServerError extends AppError {
-  constructor(message = "An unexpected error occurred.", options?: AppErrorOptions) {
+  constructor(
+    message = "An unexpected error occurred.",
+    options?: AppErrorOptions
+  ) {
     super("INTERNAL_ERROR", message, 500, options);
   }
 }

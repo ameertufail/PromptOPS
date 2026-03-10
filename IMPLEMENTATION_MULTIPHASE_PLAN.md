@@ -18,6 +18,12 @@ How to use this document:
 4. Update relevant checklist items to `[x]` in the touched context files and `DOCS/PROJECT_OVERVIEW.md`.
 5. Keep newest completion note at the top so a new chat immediately sees latest progress.
 
+## Phase Closeout Validation Rule (Mandatory)
+
+1. When you finish the last task in a phase, run `pnpm format:check` from the repo root before handing the phase off.
+2. If formatting drift is reported, run `pnpm format`, review the changes, and rerun `pnpm format:check` until it passes.
+3. Do not mark a phase complete or move to the next phase while `pnpm format:check` is failing.
+
 ## Phase 1 - Scope, Decisions, and Execution Rules
 
 1. [x] Task 1.1: Lock the execution model and success criteria.  
@@ -111,15 +117,15 @@ How to use this document:
 ## Phase 7 - Database Domain Model Completion
 
 1. [x] Task 7.1: Implement migrations for prompts, versions, datasets, eval entities, runs, keys, and audit events.
-        Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
+       Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
         Instruction: Complete the full schema exactly aligned with domain entities and JSON fields defined in the product spec.
        Completion Summary: 2026-03-08 - Added migrations 002-006 to complete the prompt, dataset, eval, run logging, key, and audit domain tables with ISO timestamps, FKs, and status constraints.
 2. [x] Task 7.2: Add all required indexes and query-path optimizations.
        Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
-        Instruction: Implement indexes listed in context docs, then verify critical list and stats endpoints use indexed filters and pagination paths.
+       Instruction: Implement indexes listed in context docs, then verify critical list and stats endpoints use indexed filters and pagination paths.
        Completion Summary: 2026-03-08 - Added migration 007 plus composite hot-path indexes and validated representative dataset, eval item, runs, API key, and audit query plans locally.
 3. [x] Task 7.3: Validate production migration workflow and tracking table behavior.
-        Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
+       Read Context: [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md)  
         Instruction: Confirm local-to-remote migration promotion process and `_migrations` bookkeeping before applying schema to production D1.
        Completion Summary: 2026-03-08 - Added full-chain D1 apply/validation scripts and confirmed replay-safe `_migrations` tracking plus the documented remote promotion workflow.
 
@@ -171,15 +177,15 @@ How to use this document:
 ## Phase 11 - Multi-Tenancy, RBAC, and Org/Project Management
 
 1. [x] Task 11.1: Implement org CRUD and membership management endpoints.
-        Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
+       Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
         Instruction: Enforce role-gated membership changes and guarantee all org mutations produce audit records.
        Completion Summary: 2026-03-09 - Added org create/list/detail/member-management and audit log endpoints with owner safeguards and audit writes for every org mutation.
 2. [x] Task 11.2: Implement project CRUD with strict org-scoped access control.
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
         Instruction: Ensure project operations are only allowed within caller organization and support role checks for create/update/delete actions.
        Completion Summary: 2026-03-09 - Added org-scoped project create/list/detail/update/delete routes with role checks, slug conflict handling, and mutation audit records.
 3. [x] Task 11.3: Implement RBAC resolver and audit event logging integration.
-        Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
+       Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
         Instruction: Centralize role resolution by project to avoid duplicated access logic and record actor/action/entity metadata for sensitive operations.
        Completion Summary: 2026-03-09 - Tightened RBAC resolution around org/project role checks, added owner-management guardrails, and persisted structured audit metadata for tenancy mutations.
 

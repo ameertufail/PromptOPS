@@ -57,7 +57,10 @@ export const apiCorsMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
   if (allowedOrigin) {
     c.header("Access-Control-Allow-Credentials", "true");
     c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    c.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+    c.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PATCH, DELETE, OPTIONS"
+    );
     c.header("Access-Control-Allow-Origin", allowedOrigin);
     c.header("Access-Control-Max-Age", "86400");
     c.header("Vary", "Origin");

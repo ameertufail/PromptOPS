@@ -1,10 +1,10 @@
-import { AUTH_SESSION_COOKIE_NAME, type ApiErrorResponse } from "@promptops/shared";
+import {
+  AUTH_SESSION_COOKIE_NAME,
+  type ApiErrorResponse
+} from "@promptops/shared";
 import { describe, expect, it } from "vitest";
 import { createApp, type AppBindings } from "../index";
-import {
-  createSessionClaims,
-  signSessionToken
-} from "../lib/session";
+import { createSessionClaims, signSessionToken } from "../lib/session";
 import { createResult, MockDb } from "../test-utils/d1";
 
 const sessionUser = {
@@ -164,17 +164,21 @@ describe("org routes", () => {
 
     expect(payload).toMatchObject({
       error: "FORBIDDEN",
-      message: "Only organization owners can assign or manage owner memberships."
+      message:
+        "Only organization owners can assign or manage owner memberships."
     });
   });
 
   it("prevents removing the last remaining organization owner", async () => {
-    const db = new MockDb([], [
-      sessionUser,
-      createOrgMembershipRow("OWNER"),
-      createOrgMemberRow("OWNER"),
-      { total: 1 }
-    ]);
+    const db = new MockDb(
+      [],
+      [
+        sessionUser,
+        createOrgMembershipRow("OWNER"),
+        createOrgMemberRow("OWNER"),
+        { total: 1 }
+      ]
+    );
     const response = await createApp().request(
       `/api/orgs/01ARZ3NDEKTSV4RRFFQ69G5FAA/members/${sessionUser.id}`,
       {

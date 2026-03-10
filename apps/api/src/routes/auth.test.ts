@@ -1,4 +1,7 @@
-import { AUTH_SESSION_COOKIE_NAME, type ApiErrorResponse } from "@promptops/shared";
+import {
+  AUTH_SESSION_COOKIE_NAME,
+  type ApiErrorResponse
+} from "@promptops/shared";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createResult, MockDb } from "../test-utils/d1";
 import { createApp, type AppBindings } from "../index";
@@ -64,9 +67,8 @@ describe("auth routes", () => {
       name: "Alice"
     };
     const db = new MockDb([[createResult([]), createResult([upsertedUser])]]);
-    const fetchMock = vi.fn<
-      typeof fetch
-    >()
+    const fetchMock = vi
+      .fn<typeof fetch>()
       .mockResolvedValueOnce(
         new Response(JSON.stringify({ access_token: "gho_token" }), {
           status: 200
@@ -105,7 +107,9 @@ describe("auth routes", () => {
     );
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("http://localhost:3000/callback");
+    expect(response.headers.get("location")).toBe(
+      "http://localhost:3000/callback"
+    );
     expect(response.headers.get("set-cookie")).toContain(
       `${AUTH_SESSION_COOKIE_NAME}=`
     );
@@ -159,7 +163,9 @@ describe("auth routes", () => {
   });
 
   it("returns 401 from /api/auth/me when no valid session exists", async () => {
-    const response = await createApp().request("http://localhost:8787/api/auth/me");
+    const response = await createApp().request(
+      "http://localhost:8787/api/auth/me"
+    );
 
     expect(response.status).toBe(401);
 

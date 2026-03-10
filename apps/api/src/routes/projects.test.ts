@@ -1,10 +1,10 @@
-import { AUTH_SESSION_COOKIE_NAME, type ApiErrorResponse } from "@promptops/shared";
+import {
+  AUTH_SESSION_COOKIE_NAME,
+  type ApiErrorResponse
+} from "@promptops/shared";
 import { describe, expect, it } from "vitest";
 import { createApp, type AppBindings } from "../index";
-import {
-  createSessionClaims,
-  signSessionToken
-} from "../lib/session";
+import { createSessionClaims, signSessionToken } from "../lib/session";
 import { createResult, MockDb } from "../test-utils/d1";
 
 const sessionUser = {
@@ -44,9 +44,7 @@ function createOrgMembershipRow(role: "OWNER" | "ADMIN" | "MEMBER" | "VIEWER") {
   };
 }
 
-function createProjectAccessRow(
-  role: "OWNER" | "ADMIN" | "MEMBER" | "VIEWER"
-) {
+function createProjectAccessRow(role: "OWNER" | "ADMIN" | "MEMBER" | "VIEWER") {
   return {
     membership_created_at: "2026-03-09T08:05:00.000Z",
     org_created_at: "2026-03-09T08:00:00.000Z",
@@ -159,7 +157,10 @@ describe("project routes", () => {
       org_id: "01ARZ3NDEKTSV4RRFFQ69G5FAA",
       slug: "promptops"
     };
-    const db = new MockDb([], [sessionUser, createProjectAccessRow("VIEWER"), project]);
+    const db = new MockDb(
+      [],
+      [sessionUser, createProjectAccessRow("VIEWER"), project]
+    );
     const response = await createApp().request(
       "/api/projects/01ARZ3NDEKTSV4RRFFQ69G5FAB",
       {
@@ -195,7 +196,10 @@ describe("project routes", () => {
       org_id: "01ARZ3NDEKTSV4RRFFQ69G5FAA",
       slug: "promptops"
     };
-    const db = new MockDb([], [sessionUser, createProjectAccessRow("OWNER"), project]);
+    const db = new MockDb(
+      [],
+      [sessionUser, createProjectAccessRow("OWNER"), project]
+    );
     const response = await createApp().request(
       "/api/projects/01ARZ3NDEKTSV4RRFFQ69G5FAB",
       {

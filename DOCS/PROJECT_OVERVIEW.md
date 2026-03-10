@@ -52,6 +52,7 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 - Scope matches the task instruction and all listed `Read Context` files were reviewed.
 - Validation evidence is included for touched behavior (tests, lint, typecheck, or explicit rationale when not applicable).
+- If the completed task closes a phase, the handoff includes a passing `pnpm format:check` run from the repo root.
 - Phase 1.1 and 1.2 guardrails remain intact (browser-first eval model, BYOK/security constraints).
 - Documentation writebacks are complete across the plan and context trackers.
 - PR descriptions include changed files, verification outcomes, and follow-up items.
@@ -61,6 +62,7 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 - Task acceptance criteria are met and reflected in updated docs/checklists.
 - Implementation and documentation are consistent (no stale `Pending` summaries for completed tasks).
 - Required quality checks pass locally or in CI for changed scope.
+- Phase-complete handoffs include a final passing `pnpm format:check`.
 - Deferred work is captured as a new task, not hidden as untracked TODOs.
 
 ### Handoff Protocol
@@ -215,6 +217,7 @@ After completing a task, tell Codex: "Mark [task] as complete in the context fil
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-10 - Task 1.3 - Added a mandatory end-of-phase `pnpm format:check` handoff gate to the delivery governance rules.
 - 2026-03-09 - Task 11.3 - Tightened org/project RBAC resolution with owner-management guardrails and structured audit metadata for sensitive tenancy actions.
 - 2026-03-09 - Task 11.2 - Added org-scoped project CRUD routes with strict permission enforcement and mutation audit logging.
 - 2026-03-09 - Task 11.1 - Added org create/list/detail/member-management and audit-events endpoints with owner safeguards and test coverage.

@@ -88,7 +88,9 @@ function queryRows(runName, command) {
     return payload.results;
   }
 
-  throw new Error(`Unexpected wrangler JSON payload: ${JSON.stringify(payload)}`);
+  throw new Error(
+    `Unexpected wrangler JSON payload: ${JSON.stringify(payload)}`
+  );
 }
 
 function applyAllMigrations(runName) {
@@ -165,17 +167,23 @@ function validateTableConstraints(snapshot) {
   );
 
   assert(
-    sqlByTable.prompts.includes("project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE"),
+    sqlByTable.prompts.includes(
+      "project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE"
+    ),
     "prompts is missing the project foreign key constraint."
   );
   assert(
     sqlByTable.prompt_versions.includes("UNIQUE (prompt_id, version_number)") &&
-      sqlByTable.prompt_versions.includes("CHECK (status IN ('DRAFT', 'RELEASED', 'ARCHIVED'))"),
+      sqlByTable.prompt_versions.includes(
+        "CHECK (status IN ('DRAFT', 'RELEASED', 'ARCHIVED'))"
+      ),
     "prompt_versions is missing the expected uniqueness or status constraint."
   );
   assert(
     sqlByTable.datasets.includes("item_count INTEGER NOT NULL DEFAULT 0") &&
-      sqlByTable.datasets.includes("CHECK (type IN ('GENERATION', 'EXTRACTION', 'CLASSIFICATION'))"),
+      sqlByTable.datasets.includes(
+        "CHECK (type IN ('GENERATION', 'EXTRACTION', 'CLASSIFICATION'))"
+      ),
     "datasets is missing the type constraint or denormalized item count."
   );
   assert(
@@ -183,13 +191,15 @@ function validateTableConstraints(snapshot) {
     "eval_configs is missing the rules JSON column."
   );
   assert(
-    sqlByTable.eval_runs.includes("CHECK (status IN ('QUEUED', 'RUNNING', 'COMPLETED', 'FAILED'))") &&
-      sqlByTable.eval_runs.includes("summary TEXT"),
+    sqlByTable.eval_runs.includes(
+      "CHECK (status IN ('QUEUED', 'RUNNING', 'COMPLETED', 'FAILED'))"
+    ) && sqlByTable.eval_runs.includes("summary TEXT"),
     "eval_runs is missing the status guard or summary JSON column."
   );
   assert(
-    sqlByTable.eval_run_items.includes("CHECK (verdict IN ('IMPROVED', 'REGRESSED', 'SAME', 'UNKNOWN'))") &&
-      sqlByTable.eval_run_items.includes("delta TEXT"),
+    sqlByTable.eval_run_items.includes(
+      "CHECK (verdict IN ('IMPROVED', 'REGRESSED', 'SAME', 'UNKNOWN'))"
+    ) && sqlByTable.eval_run_items.includes("delta TEXT"),
     "eval_run_items is missing the verdict guard or delta JSON column."
   );
   assert(
@@ -198,8 +208,9 @@ function validateTableConstraints(snapshot) {
     "runs is missing the source guard or metrics JSON column."
   );
   assert(
-    sqlByTable.provider_keys.includes("CHECK (provider IN ('OPENAI', 'ANTHROPIC', 'GROQ', 'TOGETHER', 'CUSTOM'))") &&
-      sqlByTable.provider_keys.includes("UNIQUE (project_id, provider)"),
+    sqlByTable.provider_keys.includes(
+      "CHECK (provider IN ('OPENAI', 'ANTHROPIC', 'GROQ', 'TOGETHER', 'CUSTOM'))"
+    ) && sqlByTable.provider_keys.includes("UNIQUE (project_id, provider)"),
     "provider_keys is missing the provider guard or uniqueness constraint."
   );
   assert(
@@ -209,7 +220,9 @@ function validateTableConstraints(snapshot) {
 }
 
 function validateForeignKeys(runName) {
-  for (const [tableName, expectedTargets] of Object.entries(foreignKeyTargets)) {
+  for (const [tableName, expectedTargets] of Object.entries(
+    foreignKeyTargets
+  )) {
     const rows = queryRows(runName, `PRAGMA foreign_key_list('${tableName}');`);
     const actualTargets = rows.map((row) => row.table).sort();
     const sortedExpectedTargets = [...expectedTargets].sort();

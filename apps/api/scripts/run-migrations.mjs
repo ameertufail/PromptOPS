@@ -18,8 +18,7 @@ const args = process.argv.slice(2);
 const isRemote = args.includes("--remote");
 const modeFlag = isRemote ? "--remote" : "--local";
 const persistToIndex = args.indexOf("--persist-to");
-const persistTo =
-  persistToIndex >= 0 ? args[persistToIndex + 1] : undefined;
+const persistTo = persistToIndex >= 0 ? args[persistToIndex + 1] : undefined;
 
 if (persistToIndex >= 0 && !persistTo) {
   throw new Error("Expected a path after --persist-to.");

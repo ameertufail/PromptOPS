@@ -54,7 +54,11 @@ export function parseRequestQuery<T>(
 ) {
   const url = new URL(c.req.url);
 
-  return parseWithSchema(schema, Object.fromEntries(url.searchParams.entries()), message);
+  return parseWithSchema(
+    schema,
+    Object.fromEntries(url.searchParams.entries()),
+    message
+  );
 }
 
 export function validateRequestParams<T>(

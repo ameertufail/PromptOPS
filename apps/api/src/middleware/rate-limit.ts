@@ -29,7 +29,9 @@ export function createApiKeyRateLimitMiddleware(
     const requestContext = getRequestContext(c);
 
     if (requestContext.identity.kind !== "api_key") {
-      throw new RateLimitError("API key authentication is required before rate limiting.");
+      throw new RateLimitError(
+        "API key authentication is required before rate limiting."
+      );
     }
 
     const bucketKey = requestContext.identity.apiKeyId;

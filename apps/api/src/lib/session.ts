@@ -114,7 +114,10 @@ function getBackendBaseUrl(c: Context<AppEnv>) {
   return new URL(c.req.url).origin;
 }
 
-function getRequiredSecret(c: Context<AppEnv>, name: "GITHUB_CLIENT_ID" | "GITHUB_CLIENT_SECRET" | "JWT_SECRET") {
+function getRequiredSecret(
+  c: Context<AppEnv>,
+  name: "GITHUB_CLIENT_ID" | "GITHUB_CLIENT_SECRET" | "JWT_SECRET"
+) {
   const value = c.env?.[name];
 
   if (!value) {
@@ -126,7 +129,9 @@ function getRequiredSecret(c: Context<AppEnv>, name: "GITHUB_CLIENT_ID" | "GITHU
 
 function parseGithubAccessTokenResponse(value: unknown) {
   if (typeof value !== "object" || value === null) {
-    throw new ValidationError("GitHub returned an invalid access token payload.");
+    throw new ValidationError(
+      "GitHub returned an invalid access token payload."
+    );
   }
 
   return value as GithubAccessTokenResponse;
@@ -208,7 +213,10 @@ export function buildGithubAuthorizeUrl(c: Context<AppEnv>, state: string) {
   const url = new URL("https://github.com/login/oauth/authorize");
 
   url.searchParams.set("client_id", getRequiredSecret(c, "GITHUB_CLIENT_ID"));
-  url.searchParams.set("redirect_uri", `${getBackendBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`);
+  url.searchParams.set(
+    "redirect_uri",
+    `${getBackendBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`
+  );
   url.searchParams.set("scope", GITHUB_OAUTH_SCOPE);
   url.searchParams.set("state", state);
 
@@ -343,7 +351,9 @@ export async function exchangeGithubCode(
 
   if (!response.ok || !payload.access_token) {
     throw new ValidationError(
-      payload.error_description ?? payload.error ?? "GitHub token exchange failed."
+      payload.error_description ??
+        payload.error ??
+        "GitHub token exchange failed."
     );
   }
 
@@ -385,7 +395,9 @@ export async function fetchGithubPrimaryEmail(accessToken: string) {
     emails.find((email) => email.verified);
 
   if (!primaryVerifiedEmail) {
-    throw new ValidationError("A verified GitHub email is required to sign in.");
+    throw new ValidationError(
+      "A verified GitHub email is required to sign in."
+    );
   }
 
   return primaryVerifiedEmail.email;

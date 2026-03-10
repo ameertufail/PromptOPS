@@ -4,7 +4,10 @@ import {
   NotFoundError,
   toApiErrorResponse
 } from "./lib/errors";
-import { createRequestContext, maybeGetRequestContext } from "./lib/request-context";
+import {
+  createRequestContext,
+  maybeGetRequestContext
+} from "./lib/request-context";
 import { auditMiddleware } from "./middleware/audit";
 import { resolveRequestIdentity } from "./middleware/auth";
 import {
@@ -42,7 +45,9 @@ export function createApp(options: CreateAppOptions = {}) {
   app.notFound((c) => {
     const requestContext = maybeGetRequestContext(c);
     const normalizedError = normalizeError(
-      new NotFoundError(`Route ${c.req.method} ${new URL(c.req.url).pathname} was not found.`),
+      new NotFoundError(
+        `Route ${c.req.method} ${new URL(c.req.url).pathname} was not found.`
+      ),
       requestContext?.requestId
     );
 

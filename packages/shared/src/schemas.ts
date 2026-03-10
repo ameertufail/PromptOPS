@@ -622,10 +622,12 @@ export const orgMemberResponseSchema = z
   })
   .strict();
 
-export const removeOrgMemberResponseSchema = successResponseSchema.extend({
-  orgId: ulidSchema,
-  userId: ulidSchema
-}).strict();
+export const removeOrgMemberResponseSchema = successResponseSchema
+  .extend({
+    orgId: ulidSchema,
+    userId: ulidSchema
+  })
+  .strict();
 
 export const createProjectRequestSchema = z
   .object({
@@ -674,9 +676,11 @@ export const updateProjectResponseSchema = z
   })
   .strict();
 
-export const deleteProjectResponseSchema = successResponseSchema.extend({
-  projectId: ulidSchema
-}).strict();
+export const deleteProjectResponseSchema = successResponseSchema
+  .extend({
+    projectId: ulidSchema
+  })
+  .strict();
 
 export const createPromptRequestSchema = z
   .object({
@@ -822,9 +826,11 @@ export const updateDatasetResponseSchema = z
   })
   .strict();
 
-export const deleteDatasetResponseSchema = successResponseSchema.extend({
-  datasetId: ulidSchema
-}).strict();
+export const deleteDatasetResponseSchema = successResponseSchema
+  .extend({
+    datasetId: ulidSchema
+  })
+  .strict();
 
 export const createDatasetItemRequestSchema = z
   .object({
@@ -860,9 +866,11 @@ export const updateDatasetItemRequestSchema = requireAtLeastOneField(
     .strict()
 );
 
-export const deleteDatasetItemResponseSchema = successResponseSchema.extend({
-  itemId: ulidSchema
-}).strict();
+export const deleteDatasetItemResponseSchema = successResponseSchema
+  .extend({
+    itemId: ulidSchema
+  })
+  .strict();
 
 export const datasetJsonlImportLineSchema = z
   .object({
@@ -1124,9 +1132,11 @@ export const apiKeyIdParamsSchema = z
   })
   .strict();
 
-export const revokeApiKeyResponseSchema = successResponseSchema.extend({
-  keyId: ulidSchema
-}).strict();
+export const revokeApiKeyResponseSchema = successResponseSchema
+  .extend({
+    keyId: ulidSchema
+  })
+  .strict();
 
 export const createProviderKeyRequestSchema = z
   .object({
@@ -1147,9 +1157,11 @@ export const listProviderKeysResponseSchema = z
   })
   .strict();
 
-export const deleteProviderKeyResponseSchema = successResponseSchema.extend({
-  keyId: ulidSchema
-}).strict();
+export const deleteProviderKeyResponseSchema = successResponseSchema
+  .extend({
+    keyId: ulidSchema
+  })
+  .strict();
 
 export const auditEventsQuerySchema = z
   .object({

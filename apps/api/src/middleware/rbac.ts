@@ -134,19 +134,42 @@ export function resolveProjectAccess(options: ProjectAccessOptions = {}) {
 
 export function requireMinimumRole(role: UserRole) {
   return (async (c, next) => {
-    const requestContext = getRequestContext(c);
-    const resolvedRole = requestContext.project?.role ?? requestContext.org?.role;
-
-    if (!resolvedRole) {
-      throw new InternalServerError(
-        "RBAC role resolution must run before permission checks."
-      );
-    }
-
-    if (ROLE_RANK[resolvedRole] < ROLE_RANK[role]) {
+    if (ROLE_RANK[getResolvedRole(c)] < ROLE_RANK[role]) {
       throw new AuthorizationError("You do not have permission to perform this action.");
     }
 
     await next();
   }) satisfies MiddlewareHandler<AppEnv>;
+}
+
+export function getResolvedRole(c: Parameters<MiddlewareHandler<AppEnv>>[0]) {
+  const requestContext = getRequestContext(c);
+  const resolvedRole = requestContext.project?.role ?? requestContext.org?.role;
+
+  if (!resolvedRole) {
+    throw new InternalServerError(
+      "RBAC role resolution must run before permission checks."
+    );
+  }
+
+  return resolvedRole;
+}
+
+export function assertCanManageOrgMember(options: {
+  actorRole: UserRole;
+  nextRole?: UserRole;
+  targetRole?: UserRole;
+}) {
+  if (ROLE_RANK[options.actorRole] < ROLE_RANK.ADMIN) {
+    throw new AuthorizationError("You do not have permission to manage organization members.");
+  }
+
+  if (
+    options.actorRole !== "OWNER" &&
+    (options.targetRole === "OWNER" || options.nextRole === "OWNER")
+  ) {
+    throw new AuthorizationError(
+      "Only organization owners can assign or manage owner memberships."
+    );
+  }
 }

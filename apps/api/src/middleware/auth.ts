@@ -1,6 +1,5 @@
 import type { Context, MiddlewareHandler } from "hono";
-import type { User } from "@promptops/shared";
-import { getUserById, type DbUser } from "../db/queries";
+import { getUserById } from "../db/queries";
 import {
   AuthenticationError,
   InternalServerError,
@@ -12,6 +11,7 @@ import {
   setAuthenticatedUser,
   setRequestIdentity
 } from "../lib/request-context";
+import { toUser } from "../lib/serializers";
 import {
   clearSessionCookie,
   getSessionCookie,
@@ -24,17 +24,6 @@ type RequireIdentityOptions = {
   allowApiKey?: boolean;
   message?: string;
 };
-
-function toSharedUser(user: DbUser): User {
-  return {
-    avatarUrl: user.avatar_url,
-    createdAt: user.created_at,
-    email: user.email,
-    githubId: user.github_id,
-    id: user.id,
-    name: user.name
-  };
-}
 
 function getBearerSessionToken(c: Context<AppEnv>) {
   const authorizationHeader = c.req.header("Authorization");
@@ -73,7 +62,7 @@ export const resolveRequestIdentity: MiddlewareHandler<AppEnv> = async (c, next)
     }
 
     authenticateSession(c, user.id);
-    setAuthenticatedUser(c, toSharedUser(user), getSessionExpiryIso(claims));
+    setAuthenticatedUser(c, toUser(user), getSessionExpiryIso(claims));
   } catch {
     setRequestIdentity(c, { kind: "anonymous" });
     clearAuthenticatedUser(c);

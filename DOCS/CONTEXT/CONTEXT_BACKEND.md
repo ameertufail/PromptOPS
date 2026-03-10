@@ -89,11 +89,11 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 - [x] Auth routes
 - [x] JWT session middleware
 - [ ] API key auth middleware
-- [ ] RBAC middleware
+- [x] RBAC middleware
 - [x] Audit helper
 - [x] Rate limit middleware
-- [ ] Org routes
-- [ ] Project routes
+- [x] Org routes
+- [x] Project routes
 - [ ] Prompt routes + versions
 - [ ] Diff endpoint
 - [ ] Release/archive endpoints
@@ -113,6 +113,9 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-09 - Task 11.3 - Tightened org/project RBAC resolution, owner-only membership transitions, and structured audit metadata handling for tenancy mutations.
+- 2026-03-09 - Task 11.2 - Added org-scoped project CRUD routes with shared validation, permission checks, and mutation audit writes.
+- 2026-03-09 - Task 11.1 - Added org create/list/detail/member-management and audit-events routes on the shared auth/RBAC pipeline.
 - 2026-03-08 - Task 10.3 - Added `/api/auth/me` and `/api/auth/logout` with shared contract responses, 401 semantics for missing sessions, and idempotent cookie clearing on logout.
 - 2026-03-08 - Task 10.2 - Added signed 7-day session JWTs, secure cookie helpers, and JWT-backed request resolution for dashboard-authenticated routes.
 - 2026-03-08 - Task 10.1 - Implemented GitHub authorize/callback routes with CSRF state validation, token exchange, GitHub profile/email fetches, and user upsert redirects.

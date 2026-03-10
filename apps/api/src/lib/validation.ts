@@ -1,3 +1,4 @@
+import type { Context } from "hono";
 import { ValidationError, formatValidationIssues } from "./errors";
 
 type SafeParseSuccess<T> = {
@@ -36,4 +37,20 @@ export function parseWithSchema<T>(
   }
 
   return result.data;
+}
+
+export async function parseRequestJsonWithSchema<T>(
+  c: Pick<Context, "req">,
+  schema: SafeParseSchema<T>,
+  message = "Request validation failed."
+) {
+  let body: unknown;
+
+  try {
+    body = await c.req.json();
+  } catch {
+    throw new ValidationError("Request body must be valid JSON.");
+  }
+
+  return parseWithSchema(schema, body, message);
 }

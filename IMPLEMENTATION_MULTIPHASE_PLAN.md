@@ -170,18 +170,18 @@ How to use this document:
 
 ## Phase 11 - Multi-Tenancy, RBAC, and Org/Project Management
 
-1. [ ] Task 11.1: Implement org CRUD and membership management endpoints.  
+1. [x] Task 11.1: Implement org CRUD and membership management endpoints.
         Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
         Instruction: Enforce role-gated membership changes and guarantee all org mutations produce audit records.
-       Completion Summary: Pending.
-2. [ ] Task 11.2: Implement project CRUD with strict org-scoped access control.  
+       Completion Summary: 2026-03-09 - Added org create/list/detail/member-management and audit log endpoints with owner safeguards and audit writes for every org mutation.
+2. [x] Task 11.2: Implement project CRUD with strict org-scoped access control.
         Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
         Instruction: Ensure project operations are only allowed within caller organization and support role checks for create/update/delete actions.
-       Completion Summary: Pending.
-3. [ ] Task 11.3: Implement RBAC resolver and audit event logging integration.  
+       Completion Summary: 2026-03-09 - Added org-scoped project create/list/detail/update/delete routes with role checks, slug conflict handling, and mutation audit records.
+3. [x] Task 11.3: Implement RBAC resolver and audit event logging integration.
         Read Context: [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
         Instruction: Centralize role resolution by project to avoid duplicated access logic and record actor/action/entity metadata for sensitive operations.
-       Completion Summary: Pending.
+       Completion Summary: 2026-03-09 - Tightened RBAC resolution around org/project role checks, added owner-management guardrails, and persisted structured audit metadata for tenancy mutations.
 
 ## Phase 12 - Frontend Shell, Auth UI, and Protected Navigation
 

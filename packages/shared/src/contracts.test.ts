@@ -79,6 +79,7 @@ describe("shared contracts", () => {
         "listProjectPrompts:GET /api/projects/:projectId/prompts (json)",
         "listProviderKeys:GET /api/projects/:projectId/provider-keys (json)",
         "logRun:POST /api/runs (json)",
+        "removeOrgMember:DELETE /api/orgs/:orgId/members/:userId (json)",
         "releasePromptVersion:PATCH /api/prompt-versions/:versionId/release (json)",
         "revokeApiKey:DELETE /api/api-keys/:keyId (json)",
         "updateDataset:PATCH /api/datasets/:datasetId (json)",

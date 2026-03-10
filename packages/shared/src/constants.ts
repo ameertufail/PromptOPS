@@ -8,7 +8,7 @@ export const AUTH_SESSION_COOKIE_NAME = "po_session";
 export const SDK_DEFAULT_BASE_URL = "http://localhost:8787";
 export const SDK_DEFAULT_TIMEOUT_MS = 5_000;
 
-export const SHARED_CONTRACT_VERSION = 1;
+export const SHARED_CONTRACT_VERSION = 2;
 export const DEFAULT_PAGE_SIZE = 50;
 export const MAX_PAGE_SIZE = 100;
 

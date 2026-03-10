@@ -110,6 +110,9 @@ Required indexes include:
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-09 - Task 11.3 - Added Phase 11 tenancy query coverage for RBAC role resolution, owner-count enforcement, and paginated audit-event reads.
+- 2026-03-09 - Task 11.2 - Added project tenancy helpers for org+slug lookup, scoped listing, update, and delete flows used by the new project routes.
+- 2026-03-09 - Task 11.1 - Added organization lookup, membership management, user-by-email, member listing, and audit-event query helpers with unit coverage.
 - 2026-03-08 - Task 8.1 - Aligned the shared enums and entity DTO field shapes with the D1 schema so API/web contracts match the database model.
 - 2026-03-08 - Task 7.3 - Applied the full migration chain to the production D1 database and verified all numbered files in remote `_migrations`.
 - 2026-03-08 - Task 7.3 - Added full-chain D1 migration tooling and validated replay-safe `_migrations` tracking plus the local-to-remote promotion workflow.

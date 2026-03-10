@@ -86,8 +86,8 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 - [x] JWT issuance and cookie handling
 - [x] JWT session middleware
 - [ ] API key auth middleware
-- [ ] RBAC middleware
-- [ ] Org CRUD + membership endpoints
+- [x] RBAC middleware
+- [x] Org CRUD + membership endpoints
 - [ ] API key CRUD endpoints
 - [ ] Provider key CRUD endpoints
 - [ ] Login page UI
@@ -102,6 +102,9 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-09 - Task 11.3 - Tightened org/project RBAC enforcement with owner-management guardrails and structured audit metadata on sensitive tenancy mutations.
+- 2026-03-09 - Task 11.2 - Added org-scoped project create/list/detail/update/delete endpoints with role checks and audit logging.
+- 2026-03-09 - Task 11.1 - Added org create/list/detail/member-management and audit log endpoints with existing-user invites and last-owner safeguards.
 - 2026-03-08 - Task 10.3 - Added `/api/auth/me` and `/api/auth/logout` with shared contract responses, 401 session semantics, and idempotent cookie clearing on logout.
 - 2026-03-08 - Task 10.2 - Added signed 7-day session JWTs plus secure `po_session` cookie helpers and dashboard-session request resolution.
 - 2026-03-08 - Task 10.1 - Implemented GitHub authorize/callback routes with CSRF state validation, provider token exchange, user upsert, and frontend callback redirects.

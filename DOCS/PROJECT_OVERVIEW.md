@@ -136,9 +136,9 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 11.1 - Implement org CRUD and membership management endpoints]
-**Last completed:** [Task 10.3 - Implement auth utility endpoints and logout invalidation]
-**Next up:** Task 11.1 - Implement org CRUD and membership management endpoints
+**Currently working on:** [Task 12.0 - Initialize shadcn/ui foundation and theme contract]
+**Last completed:** [Task 11.3 - Implement RBAC resolver and audit event logging integration]
+**Next up:** Task 12.0 - Initialize shadcn/ui foundation and theme contract
 
 ### Phase 1 - Scope, Decisions, and Execution Rules
 
@@ -215,6 +215,9 @@ After completing a task, tell Codex: "Mark [task] as complete in the context fil
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-09 - Task 11.3 - Tightened org/project RBAC resolution with owner-management guardrails and structured audit metadata for sensitive tenancy actions.
+- 2026-03-09 - Task 11.2 - Added org-scoped project CRUD routes with strict permission enforcement and mutation audit logging.
+- 2026-03-09 - Task 11.1 - Added org create/list/detail/member-management and audit-events endpoints with owner safeguards and test coverage.
 - 2026-03-08 - Task 10.3 - Added `/api/auth/me` and `/api/auth/logout` with shared contract responses, 401 semantics for missing sessions, and idempotent cookie clearing on logout.
 - 2026-03-08 - Task 10.2 - Added signed 7-day HS256 session tokens, secure HttpOnly cookie helpers, and JWT-backed request resolution for dashboard-authenticated routes.
 - 2026-03-08 - Task 10.1 - Implemented GitHub authorize/callback routes with CSRF state cookies, provider token exchange, profile/email fetch, user upsert, and frontend redirect outcomes.

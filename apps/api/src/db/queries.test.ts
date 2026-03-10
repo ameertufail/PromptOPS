@@ -1,10 +1,20 @@
 import { describe, expect, it } from "vitest";
 import {
+  addOrgMember,
+  countOrgMembersByRole,
   createOrgWithOwner,
   createProject,
   getOrgMembership,
+  getProjectByOrgAndSlug,
   getProjectAccess,
   getUserById,
+  listOrgAuditEvents,
+  listOrgMembers,
+  listOrgProjects,
+  listUserOrgMemberships,
+  removeOrgMember,
+  updateOrgMemberRole,
+  updateProject,
   upsertUser
 } from "./queries";
 
@@ -20,11 +30,19 @@ function createResult<T>(results: T[]): MockResult<T> {
 
 class MockPreparedStatement {
   boundValues: unknown[] = [];
+  private readonly resolveAll: () => unknown[];
+  private readonly resolveFirst: () => unknown;
+  private readonly resolveRun: () => D1Result<unknown>;
 
-  constructor(
-    readonly query: string,
-    private readonly firstValue: unknown = null
-  ) {}
+  constructor(readonly query: string, options: {
+    resolveAll?: () => unknown[];
+    resolveFirst?: () => unknown;
+    resolveRun?: () => D1Result<unknown>;
+  } = {}) {
+    this.resolveAll = options.resolveAll ?? (() => []);
+    this.resolveFirst = options.resolveFirst ?? (() => null);
+    this.resolveRun = options.resolveRun ?? (() => createResult<never>([]));
+  }
 
   bind(...values: unknown[]) {
     this.boundValues = values;
@@ -32,11 +50,11 @@ class MockPreparedStatement {
   }
 
   async first<T>() {
-    return this.firstValue as T | null;
+    return this.resolveFirst() as T | null;
   }
 
   async all<T>() {
-    return createResult<T>([]);
+    return createResult<T>(this.resolveAll() as T[]);
   }
 
   async raw<T>() {
@@ -44,7 +62,7 @@ class MockPreparedStatement {
   }
 
   async run<T>() {
-    return createResult<T>([]);
+    return this.resolveRun() as D1Result<T>;
   }
 }
 
@@ -80,11 +98,22 @@ class MockDb {
   prepareCalls: MockPreparedStatement[] = [];
   sessions: MockSession[] = [];
   sessionConstraints: string[] = [];
+  private readonly allResponses: unknown[][];
+  private readonly firstResponses: unknown[];
+  private readonly runResponses: Array<D1Result<unknown>>;
 
   constructor(
     private readonly batchResponses: Array<D1Result<unknown>[]>,
-    private readonly firstResponses: unknown[] = []
-  ) {}
+    firstResponses: unknown[] = [],
+    options: {
+      allResponses?: unknown[][];
+      runResponses?: Array<D1Result<unknown>>;
+    } = {}
+  ) {
+    this.allResponses = [...(options.allResponses ?? [])];
+    this.firstResponses = [...firstResponses];
+    this.runResponses = [...(options.runResponses ?? [])];
+  }
 
   withSession(constraint?: string) {
     this.sessionConstraints.push(constraint ?? "");
@@ -94,10 +123,12 @@ class MockDb {
   }
 
   prepare(query: string) {
-    const statement = new MockPreparedStatement(
-      query,
-      this.firstResponses.shift() ?? null
-    );
+    const statement = new MockPreparedStatement(query, {
+      resolveAll: () => (this.allResponses.shift() ?? []) as unknown[],
+      resolveFirst: () => this.firstResponses.shift() ?? null,
+      resolveRun: () =>
+        (this.runResponses.shift() ?? createResult<never>([])) as D1Result<unknown>
+    });
     this.prepareCalls.push(statement);
     return statement;
   }
@@ -247,6 +278,49 @@ describe("db query helpers", () => {
     expect(mockDb.prepareCalls[0]?.boundValues).toEqual(["org_1", "user_1"]);
   });
 
+  it("lists a user's org memberships with org metadata", async () => {
+    const rows = [
+      {
+        membership_created_at: "2026-03-07T10:00:00.000Z",
+        org_created_at: "2026-03-07T09:00:00.000Z",
+        org_id: "org_1",
+        org_name: "Acme",
+        org_slug: "acme",
+        role: "ADMIN" as const,
+        user_id: "user_1"
+      },
+      {
+        membership_created_at: "2026-03-07T11:00:00.000Z",
+        org_created_at: "2026-03-07T09:30:00.000Z",
+        org_id: "org_2",
+        org_name: "Beta",
+        org_slug: "beta",
+        role: "VIEWER" as const,
+        user_id: "user_1"
+      }
+    ];
+    const mockDb = new MockDb([], [], {
+      allResponses: [rows]
+    });
+
+    const result = await listUserOrgMemberships(
+      mockDb as unknown as D1Database,
+      { userId: "user_1" }
+    );
+
+    expect(result).toHaveLength(2);
+    expect(result[0]).toMatchObject({
+      membership: {
+        role: "ADMIN",
+        user_id: "user_1"
+      },
+      org: {
+        id: "org_1",
+        name: "Acme"
+      }
+    });
+  });
+
   it("loads a user by id for session-backed auth endpoints", async () => {
     const user = {
       avatar_url: "https://avatars.example/alice.png",
@@ -264,6 +338,110 @@ describe("db query helpers", () => {
 
     expect(result).toEqual(user);
     expect(mockDb.prepareCalls[0]?.boundValues).toEqual(["user_1"]);
+  });
+
+  it("lists org members with user records", async () => {
+    const rows = [
+      {
+        membership_created_at: "2026-03-07T10:00:00.000Z",
+        org_id: "org_1",
+        role: "ADMIN" as const,
+        user_avatar_url: "https://avatars.example/alice.png",
+        user_created_at: "2026-03-07T09:00:00.000Z",
+        user_email: "alice@example.com",
+        user_github_id: 42,
+        user_id: "user_1",
+        user_name: "Alice"
+      }
+    ];
+    const mockDb = new MockDb([], [], {
+      allResponses: [rows]
+    });
+
+    const result = await listOrgMembers(mockDb as unknown as D1Database, {
+      orgId: "org_1"
+    });
+
+    expect(result).toEqual([
+      {
+        membership: {
+          created_at: "2026-03-07T10:00:00.000Z",
+          org_id: "org_1",
+          role: "ADMIN",
+          user_id: "user_1"
+        },
+        user: {
+          avatar_url: "https://avatars.example/alice.png",
+          created_at: "2026-03-07T09:00:00.000Z",
+          email: "alice@example.com",
+          github_id: 42,
+          id: "user_1",
+          name: "Alice"
+        }
+      }
+    ]);
+  });
+
+  it("adds and updates org members in sequentially consistent batches", async () => {
+    const memberRow = {
+      membership_created_at: "2026-03-07T10:00:00.000Z",
+      org_id: "org_1",
+      role: "ADMIN" as const,
+      user_avatar_url: "https://avatars.example/alice.png",
+      user_created_at: "2026-03-07T09:00:00.000Z",
+      user_email: "alice@example.com",
+      user_github_id: 42,
+      user_id: "user_1",
+      user_name: "Alice"
+    };
+    const mockDb = new MockDb([
+      [createResult([]), createResult([memberRow])],
+      [createResult([]), createResult([{ ...memberRow, role: "MEMBER" }])]
+    ]);
+
+    const created = await addOrgMember(mockDb as unknown as D1Database, {
+      orgId: "org_1",
+      role: "ADMIN",
+      userId: "user_1"
+    });
+    const updated = await updateOrgMemberRole(mockDb as unknown as D1Database, {
+      orgId: "org_1",
+      role: "MEMBER",
+      userId: "user_1"
+    });
+
+    expect(created.membership.role).toBe("ADMIN");
+    expect(updated.membership.role).toBe("MEMBER");
+    expect(mockDb.sessionConstraints).toEqual([
+      "first-primary",
+      "first-primary"
+    ]);
+  });
+
+  it("counts org members by role and deletes memberships", async () => {
+    const mockDb = new MockDb(
+      [],
+      [{ total: 2 }],
+      {
+        runResponses: [createResult([])]
+      }
+    );
+
+    const totalOwners = await countOrgMembersByRole(
+      mockDb as unknown as D1Database,
+      {
+        orgId: "org_1",
+        role: "OWNER"
+      }
+    );
+
+    await removeOrgMember(mockDb as unknown as D1Database, {
+      orgId: "org_1",
+      userId: "user_1"
+    });
+
+    expect(totalOwners).toBe(2);
+    expect(mockDb.prepareCalls[1]?.boundValues).toEqual(["org_1", "user_1"]);
   });
 
   it("resolves project access with the project, org, and caller role", async () => {
@@ -314,5 +492,92 @@ describe("db query helpers", () => {
       "project_1",
       "user_1"
     ]);
+  });
+
+  it("loads org-scoped project lookups and lists org projects", async () => {
+    const project = {
+      created_at: "2026-03-07T11:00:00.000Z",
+      description: "Core app",
+      id: "project_1",
+      name: "PromptOps",
+      org_id: "org_1",
+      slug: "promptops"
+    };
+    const mockDb = new MockDb([[]], [project], {
+      allResponses: [[project]]
+    });
+
+    const bySlug = await getProjectByOrgAndSlug(
+      mockDb as unknown as D1Database,
+      {
+        orgId: "org_1",
+        slug: "promptops"
+      }
+    );
+    const listed = await listOrgProjects(mockDb as unknown as D1Database, {
+      orgId: "org_1"
+    });
+
+    expect(bySlug).toEqual(project);
+    expect(listed).toEqual([project]);
+  });
+
+  it("updates projects and lists audit events with parsed metadata", async () => {
+    const updatedProject = {
+      created_at: "2026-03-07T11:00:00.000Z",
+      description: "Renamed",
+      id: "project_1",
+      name: "PromptOps 2",
+      org_id: "org_1",
+      slug: "promptops"
+    };
+    const mockDb = new MockDb(
+      [[createResult([]), createResult([updatedProject])]],
+      [{ total: 1 }],
+      {
+        allResponses: [[
+          {
+            action: "project.updated",
+            actor_user_id: "user_1",
+            created_at: "2026-03-07T12:00:00.000Z",
+            entity_id: "project_1",
+            entity_type: "project",
+            id: "audit_1",
+            metadata: "{\"name\":\"PromptOps 2\"}",
+            org_id: "org_1"
+          }
+        ]]
+      }
+    );
+
+    const project = await updateProject(mockDb as unknown as D1Database, {
+      description: "Renamed",
+      name: "PromptOps 2",
+      projectId: "project_1"
+    });
+    const auditPage = await listOrgAuditEvents(mockDb as unknown as D1Database, {
+      limit: 50,
+      orgId: "org_1",
+      page: 1
+    });
+
+    expect(project).toEqual(updatedProject);
+    expect(auditPage).toEqual({
+      events: [
+        {
+          action: "project.updated",
+          actor_user_id: "user_1",
+          created_at: "2026-03-07T12:00:00.000Z",
+          entity_id: "project_1",
+          entity_type: "project",
+          id: "audit_1",
+          metadata: {
+            name: "PromptOps 2"
+          },
+          org_id: "org_1"
+        }
+      ],
+      total: 1
+    });
   });
 });

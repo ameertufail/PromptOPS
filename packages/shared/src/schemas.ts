@@ -1570,6 +1570,15 @@ export const apiContractCatalog = {
     response: createRunLogResponseSchema,
     responseMode: "json"
   },
+  removeOrgMember: {
+    method: "DELETE",
+    path: `${API_BASE_PATH}/orgs/:orgId/members/:userId`,
+    request: {
+      params: orgMemberParamsSchema
+    },
+    response: removeOrgMemberResponseSchema,
+    responseMode: "json"
+  },
   releasePromptVersion: {
     method: "PATCH",
     path: `${API_BASE_PATH}/prompt-versions/:versionId/release`,

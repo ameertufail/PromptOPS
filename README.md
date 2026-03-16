@@ -1,68 +1,173 @@
 # PromptOps Studio
 
-PromptOps Studio is a browser-first LLMOps platform for versioning prompts, running evals, and logging production runs without proxying model traffic through the backend.
+An open-source LLMOps platform for versioning prompts, evaluating against datasets, enforcing guardrails, and monitoring production quality — with **$0 infrastructure cost** and full **BYOK (Bring Your Own Key)** control.
 
-## Current Baseline
+## Features
 
-- Monorepo scaffolding is in place for `apps/web`, `apps/api`, `packages/shared`, and `packages/sdk`.
-- Local development currently validates the Next.js frontend, the Cloudflare Worker API, and the shared workspace tooling baseline.
-- The API scaffold exposes `GET /api/health`; feature routes land in later phases.
+- **Prompt Versioning** — Immutable versions with diffs, release gates, and one-click rollback
+- **Dataset Management** — Golden sets with structured inputs, JSONL bulk import, and validation
+- **Browser-Side Evals** — Run evaluations directly in your browser with your own API keys
+- **Guardrails & Checks** — JSON schema validation, regex matching, PII detection, prompt injection heuristics
+- **LLM-as-Judge** — Optional judge scoring with configurable models and providers
+- **Reports & Analytics** — Pass rates, verdict distributions, regressions, and latency trends
+- **SDK & Run Logging** — TypeScript SDK to log production runs with retry and backoff
+- **Multi-Tenancy** — Organizations, projects, and role-based access control (OWNER/ADMIN/MEMBER/VIEWER)
+- **GitHub OAuth** — One-click sign in, no password management
 
-## Prerequisites
+## Architecture
 
-- Node.js 20+
-- pnpm 10.2.0 via Corepack
-- Wrangler CLI access for backend development
+```
+Frontend (Next.js 14)           Backend (Cloudflare Workers)
+Vercel free tier                Hono.js + D1 + R2
+        │                               │
+        │  API calls + credentials      │
+        └──────────────────────────────►│
+                                        │
+LLM Providers (BYOK)                   │
+User's browser ──► OpenAI/Anthropic     │ stores results only
+```
+
+**Key design decision:** LLM inference calls go directly from the browser to the provider using the user's own API key. The backend never proxies inference — it only stores results, manages auth, and computes summaries.
+
+## Tech Stack
+
+| Layer    | Technology                          | Hosting           |
+| -------- | ----------------------------------- | ----------------- |
+| Frontend | Next.js 14, Tailwind CSS, shadcn/ui | Vercel (free)     |
+| Backend  | Hono.js on Cloudflare Workers       | Cloudflare (free) |
+| Database | Cloudflare D1 (SQLite)              | Cloudflare (free) |
+| Storage  | Cloudflare R2                       | Cloudflare (free) |
+| Auth     | GitHub OAuth + JWT                  | Free              |
+| Monorepo | pnpm workspaces                     | —                 |
 
 ## Quick Start
 
+### Prerequisites
+
+- Node.js 20+
+- pnpm via Corepack (`corepack enable`)
+- Wrangler CLI (for backend development)
+
+### Install and Run
+
 ```bash
+git clone https://github.com/promptops/studio.git
+cd studio
 pnpm install:deps
 pnpm dev
 ```
 
-Before starting the apps, copy or confirm the local env files:
+This starts:
 
-- `apps/web/.env.local`
-- `apps/api/.dev.vars`
+- **Frontend** at `http://localhost:3000`
+- **Backend** at `http://localhost:8787`
 
-The seeded local templates already point the web app to `http://localhost:8787` and the backend to `http://localhost:3000` as the trusted frontend origin.
+### Environment Setup
 
-## Local Runtime Contract
+Copy the env templates before first run:
 
-| Surface      | Command                                | Expected URL            | Notes                                                   |
-| ------------ | -------------------------------------- | ----------------------- | ------------------------------------------------------- |
-| Web app      | `pnpm --filter @promptops/web dev`     | `http://localhost:3000` | Next.js App Router frontend                             |
-| API app      | `pnpm --filter @promptops/api dev`     | `http://localhost:8787` | Cloudflare Worker via Wrangler                          |
-| Health check | `GET http://localhost:8787/api/health` | `200 OK`                | Returns `status`, `service`, `environment`, `timestamp` |
+```bash
+# Frontend
+cp apps/web/.env.local.example apps/web/.env.local
 
-Local CORS is limited to `http://localhost:3000` and `http://127.0.0.1:3000`, plus the configured `FRONTEND_URL` value in [`apps/api/wrangler.toml`](apps/api/wrangler.toml).
+# Backend (secrets for local OAuth)
+cp apps/api/.dev.vars.example apps/api/.dev.vars
+```
 
-## Folder Map
+Edit `apps/api/.dev.vars` with your GitHub OAuth app credentials (create one at [github.com/settings/developers](https://github.com/settings/developers) with callback URL `http://localhost:8787/api/auth/callback`).
 
-- `apps/web` - Next.js frontend shell and future dashboard/auth UI
-- `apps/api` - Cloudflare Worker API, health endpoint, and future auth/data routes
-- `packages/shared` - Cross-workspace contracts and utilities
-- `packages/sdk` - External SDK client package
-- `DOCS` - Product plan, context trackers, and local development guidance
-- `MONOREPO_BOUNDARIES.md` - Ownership and import rules
+## Repo Structure
+
+```
+apps/
+  web/          Next.js frontend (App Router)
+  api/          Cloudflare Workers backend (Hono.js)
+packages/
+  shared/       Shared types, Zod schemas, eval utilities
+  sdk/          TypeScript SDK for run logging
+DOCS/           Context trackers and guides
+```
 
 ## Workspace Commands
 
-- `pnpm dev` - run all workspace dev servers in parallel
-- `pnpm build` - type-safe build checks for all workspaces
-- `pnpm build:web` - build the Next.js app from the monorepo root
-- `pnpm deploy:api` - deploy the Cloudflare Worker using the `production` Wrangler environment
-- `pnpm tail:api` - tail Cloudflare Worker logs for the `production` environment
-- `pnpm lint` - run ESLint in every workspace
-- `pnpm format:check` - verify Prettier formatting
-- `pnpm typecheck` - run TypeScript checks in every workspace
-- `pnpm test` - run Vitest smoke and unit tests across the workspace
+| Command             | Description                             |
+| ------------------- | --------------------------------------- |
+| `pnpm dev`          | Start all dev servers in parallel       |
+| `pnpm build`        | Build all workspaces                    |
+| `pnpm lint`         | Lint all workspaces                     |
+| `pnpm typecheck`    | TypeScript checks across all workspaces |
+| `pnpm test`         | Run all tests                           |
+| `pnpm format:check` | Verify Prettier formatting              |
+| `pnpm deploy:api`   | Deploy Worker to Cloudflare production  |
 
-## Contributor Docs
+## SDK Usage
 
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) - branch strategy, validation rules, and documentation writeback requirements
-- [`TESTING.md`](TESTING.md) - unit/integration test strategy and current coverage baseline
-- [`DOCS/LOCAL_DEVELOPMENT.md`](DOCS/LOCAL_DEVELOPMENT.md) - local startup, verification steps, and troubleshooting
-- [`DOCS/DEPLOYMENT_RUNBOOK.md`](DOCS/DEPLOYMENT_RUNBOOK.md) - manual Cloudflare, GitHub OAuth, and Vercel provisioning steps for Phase 5
-- [`DOCS/PROJECT_OVERVIEW.md`](DOCS/PROJECT_OVERVIEW.md) - project status and phase tracker
+Install the SDK in your application:
+
+```bash
+npm install github:promptops/studio#packages/sdk
+```
+
+Log production runs:
+
+```typescript
+import { PromptOpsClient } from "@promptops/sdk";
+
+const client = new PromptOpsClient({
+  apiKey: "po_sk_your_api_key_here"
+});
+
+// Log a run manually
+await client.logRun({
+  input: { prompt: "Classify this ticket" },
+  output: "billing",
+  metrics: { latencyMs: 234 }
+});
+
+// Or wrap your LLM call for automatic logging
+const result = await client.instrumentedGenerate({
+  fn: () => openai.chat.completions.create({ ... }),
+  input: { prompt: "Classify this ticket" },
+  outputExtractor: (r) => r.choices[0].message.content
+});
+```
+
+See [`packages/sdk/examples/`](packages/sdk/examples/) for full examples.
+
+## Deployment
+
+### Backend (Cloudflare Workers)
+
+1. Authenticate: `wrangler login`
+2. Set secrets: `wrangler secret put JWT_SECRET --env production`
+3. Deploy: `pnpm deploy:api`
+
+### Frontend (Vercel)
+
+Connect the GitHub repo to Vercel, set root directory to `apps/web`, and configure:
+
+- `NEXT_PUBLIC_API_URL` = your Worker URL
+- `NEXT_PUBLIC_APP_URL` = your Vercel URL
+
+### CI/CD
+
+Push to `main` triggers:
+
+- **CI**: format check, lint, typecheck, tests
+- **Deploy**: Worker deployment + D1 migration application
+
+See [`.github/workflows/`](.github/workflows/) for workflow details.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for branch strategy, PR checklist, and documentation writeback rules.
+
+Additional docs:
+
+- [`TESTING.md`](TESTING.md) — Test strategy and coverage
+- [`DOCS/LOCAL_DEVELOPMENT.md`](DOCS/LOCAL_DEVELOPMENT.md) — Local setup and troubleshooting
+- [`DOCS/PROJECT_OVERVIEW.md`](DOCS/PROJECT_OVERVIEW.md) — Project status tracker
+
+## License
+
+[MIT](LICENSE)

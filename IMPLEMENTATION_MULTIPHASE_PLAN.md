@@ -191,169 +191,169 @@ How to use this document:
 
 ## Phase 12 - Frontend Shell, Auth UI, and Protected Navigation
 
-1. [ ] Task 12.0: Initialize shadcn/ui foundation and theme contract.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md)  
-        Instruction: Install shadcn/ui in `apps/web`, add the baseline component set required by auth/dashboard flows, and enforce one theme-token contract where user-specified color schemes override defaults and are applied consistently across all UI pages/components. If a user-provided tweakcn theme is supplied, treat it as canonical from that point forward and do not change it unless explicitly requested; use shadcn components first and user-approved React component libraries second.  
-        Completion Summary: Pending.
-1. [ ] Task 12.1: Build root, auth, and dashboard layouts with provider hierarchy.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)  
-        Instruction: Implement shared app shell with protected dashboard layout, responsive sidebar behavior, and top-level providers for auth/org/project state.
-       Completion Summary: Pending.
-1. [ ] Task 12.2: Build login and callback pages with reliable session initialization.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)  
-        Instruction: Implement OAuth entry and callback handling UX with user-friendly error and retry states when auth fails.
-       Completion Summary: Pending.
-1. [ ] Task 12.3: Implement API client and protected route behavior.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
-        Instruction: Build a shared fetch client that includes credentials, handles 401 redirects to login, and surfaces 403 authorization errors cleanly.
-       Completion Summary: Pending.
+1. [x] Task 12.0: Initialize shadcn/ui foundation and theme contract.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md)
+       Instruction: Install shadcn/ui in `apps/web`, add the baseline component set required by auth/dashboard flows, and enforce one theme-token contract where user-specified color schemes override defaults and are applied consistently across all UI pages/components. If a user-provided tweakcn theme is supplied, treat it as canonical from that point forward and do not change it unless explicitly requested; use shadcn components first and user-approved React component libraries second.
+       Completion Summary: 2026-03-15 - Installed 22 shadcn/ui components (button, card, input, label, textarea, select, dialog, sheet, dropdown-menu, table, tabs, badge, separator, sonner, skeleton, form, popover, tooltip, progress, switch, checkbox, avatar), created lib/utils with cn(), and verified tweakcn theme parity.
+1. [x] Task 12.1: Build root, auth, and dashboard layouts with provider hierarchy.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)
+       Instruction: Implement shared app shell with protected dashboard layout, responsive sidebar behavior, and top-level providers for auth/org/project state.
+       Completion Summary: 2026-03-15 - Built root layout with Toaster/TooltipProvider, auth layout with radial glow, dashboard layout with AuthProvider->OrgProvider->ProjectProvider hierarchy, responsive sidebar with org/project switchers, breadcrumb nav, and mobile sheet overlay.
+1. [x] Task 12.2: Build login and callback pages with reliable session initialization.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)
+       Instruction: Implement OAuth entry and callback handling UX with user-friendly error and retry states when auth fails.
+       Completion Summary: 2026-03-15 - Built login page with GitHub OAuth button and callback page with session verification, error-specific messaging, and retry flow.
+1. [x] Task 12.3: Implement API client and protected route behavior.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
+       Instruction: Build a shared fetch client that includes credentials, handles 401 redirects to login, and surfaces 403 authorization errors cleanly.
+       Completion Summary: 2026-03-15 - Built typed API client with credentials inclusion, automatic 401 redirect to login, ApiError class with code/status/details, and full path builder for all API endpoints.
 
 ## Phase 13 - Prompt Backend Domain
 
-1. [ ] Task 13.1: Implement prompt CRUD endpoints with project scoping and validation.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md)  
-        Instruction: Support create/list/detail/update/delete behavior as defined by route contracts and enforce permissions per role matrix.
-       Completion Summary: Pending.
-2. [ ] Task 13.2: Implement immutable prompt version creation and version numbering.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md)  
-        Instruction: Ensure each new version captures full prompt content and model config snapshot and cannot be mutated after creation.
-       Completion Summary: Pending.
-3. [ ] Task 13.3: Implement release/archive and diff endpoints with audit logs.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [main.md](DOCS/main.md)  
-        Instruction: Enforce release permissions, archive behavior, and line-level diff output while recording all state transitions in audit events.
-       Completion Summary: Pending.
+1. [x] Task 13.1: Implement prompt CRUD endpoints with project scoping and validation.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md)
+       Instruction: Support create/list/detail/update/delete behavior as defined by route contracts and enforce permissions per role matrix.
+       Completion Summary: 2026-03-16 - Added prompt create/list/detail routes with project-scoped RBAC, typed query helpers, and audit events for prompt creation.
+2. [x] Task 13.2: Implement immutable prompt version creation and version numbering.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md)
+       Instruction: Ensure each new version captures full prompt content and model config snapshot and cannot be mutated after creation.
+       Completion Summary: 2026-03-16 - Added immutable version creation with auto-incrementing version numbers, full content/modelConfig/variablesSchema capture, and version detail endpoint.
+3. [x] Task 13.3: Implement release/archive and diff endpoints with audit logs.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [main.md](DOCS/main.md)
+       Instruction: Enforce release permissions, archive behavior, and line-level diff output while recording all state transitions in audit events.
+       Completion Summary: 2026-03-16 - Added release (ADMIN+) and archive (MEMBER+) endpoints with auto-archiving of prior released versions, LCS-based line diff, and audit events for all state transitions.
 
 ## Phase 14 - Prompt Frontend Domain
 
-1. [ ] Task 14.1: Build prompt list and prompt detail views with version timeline.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
-        Instruction: Implement list/detail UX with clear status badges, pagination where needed, and robust empty/loading/error states.
-       Completion Summary: Pending.
-2. [ ] Task 14.2: Build template editor, variables schema editor, and model config forms.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md)  
-        Instruction: Provide editing workflows that align to backend validation and clearly communicate missing variables or invalid model settings.
-       Completion Summary: Pending.
-3. [ ] Task 14.3: Build diff viewer and release/archive actions in UI.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
-        Instruction: Render side-by-side version comparison with action controls gated by role and clear confirmation flows for state-changing actions.
-       Completion Summary: Pending.
+1. [x] Task 14.1: Build prompt list and prompt detail views with version timeline.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
+       Instruction: Implement list/detail UX with clear status badges, pagination where needed, and robust empty/loading/error states.
+       Completion Summary: 2026-03-16 - Built prompt list page with table/empty/loading states and detail page with expandable version timeline, status badges, and create prompt dialog.
+2. [x] Task 14.2: Build template editor, variables schema editor, and model config forms.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md)
+       Instruction: Provide editing workflows that align to backend validation and clearly communicate missing variables or invalid model settings.
+       Completion Summary: 2026-03-16 - Built create-version dialog with monospace template editor, {{variable}} extraction display, model config form with advanced toggle, and JSON variables schema editor with validation.
+3. [x] Task 14.3: Build diff viewer and release/archive actions in UI.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
+       Instruction: Render side-by-side version comparison with action controls gated by role and clear confirmation flows for state-changing actions.
+       Completion Summary: 2026-03-16 - Built unified diff viewer with color-coded hunks and version selectors, plus release/archive action buttons with confirmation dialogs and toast feedback.
 
 ## Phase 15 - Dataset Backend Domain
 
-1. [ ] Task 15.1: Implement dataset CRUD endpoints and item count bookkeeping.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md)  
-        Instruction: Ensure dataset operations maintain consistent metadata and enforce project-level access checks.
-       Completion Summary: Pending.
-2. [ ] Task 15.2: Implement dataset item CRUD with validation and ordering.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
-        Instruction: Support item input, expected output, rubric, tags, and sort order updates with strict schema checks.
-       Completion Summary: Pending.
-3. [ ] Task 15.3: Implement JSONL bulk import with batch operations and error reporting.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md)  
-        Instruction: Parse line-by-line, validate each item, insert in batches, and return imported/failed totals plus actionable failure details.
-       Completion Summary: Pending.
+1. [x] Task 15.1: Implement dataset CRUD endpoints and item count bookkeeping.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md)
+       Instruction: Ensure dataset operations maintain consistent metadata and enforce project-level access checks.
+       Completion Summary: 2026-03-16 - Added dataset create/list/detail/update/delete routes with project-scoped RBAC, typed query helpers, item_count bookkeeping, and audit events.
+2. [x] Task 15.2: Implement dataset item CRUD with validation and ordering.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)
+       Instruction: Support item input, expected output, rubric, tags, and sort order updates with strict schema checks.
+       Completion Summary: 2026-03-16 - Added dataset item create/update/delete endpoints with JSON field validation, sort_order support, and parent item_count bookkeeping.
+3. [x] Task 15.3: Implement JSONL bulk import with batch operations and error reporting.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md), [main.md](DOCS/main.md)
+       Instruction: Parse line-by-line, validate each item, insert in batches, and return imported/failed totals plus actionable failure details.
+       Completion Summary: 2026-03-16 - Added JSONL bulk import endpoint with line-by-line parsing, Zod validation, batch inserts (20/transaction), and imported/failed counts with line-level error details.
 
 ## Phase 16 - Dataset Frontend Domain
 
-1. [ ] Task 16.1: Build dataset list and detail table screens.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
-        Instruction: Implement searchable/paginated data tables with clear row previews and empty-state guidance for first dataset creation.
-       Completion Summary: Pending.
-2. [ ] Task 16.2: Build item add/edit panel with validation UX.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
-        Instruction: Provide structured form handling for input/expected_output/rubric/tags and preserve order semantics during edits.
-       Completion Summary: Pending.
-3. [ ] Task 16.3: Build JSONL upload flow and import feedback UI.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [main.md](DOCS/main.md)  
-        Instruction: Implement upload entry, progress indicator, and post-import summary with line-level error display for invalid records.
-       Completion Summary: Pending.
+1. [x] Task 16.1: Build dataset list and detail table screens.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
+       Instruction: Implement searchable/paginated data tables with clear row previews and empty-state guidance for first dataset creation.
+       Completion Summary: 2026-03-16 - Built dataset list page with table/empty/loading states, detail page with expandable items table and cursor pagination, and create dataset dialog with type selector.
+2. [x] Task 16.2: Build item add/edit panel with validation UX.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)
+       Instruction: Provide structured form handling for input/expected_output/rubric/tags and preserve order semantics during edits.
+       Completion Summary: 2026-03-16 - Built dataset item add/edit dialog with JSON validation for input/expectedOutput/rubric, comma-separated tags, sort_order field, and delete confirmation.
+3. [x] Task 16.3: Build JSONL upload flow and import feedback UI.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [main.md](DOCS/main.md)
+       Instruction: Implement upload entry, progress indicator, and post-import summary with line-level error display for invalid records.
+       Completion Summary: 2026-03-16 - Built JSONL upload dialog with drag-and-drop, file preview, progress indicator, and post-import summary with line-level error display.
 
 ## Phase 17 - Eval Config Backend
 
-1. [ ] Task 17.1: Implement eval config CRUD endpoints.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
-        Instruction: Support create/list/detail/update behavior with project scoping and rules payload validation.
-       Completion Summary: Pending.
-2. [ ] Task 17.2: Enforce rules schema and defaults for checks, guardrails, judge, and thresholds.  
-        Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
-        Instruction: Reject invalid combinations, fill default rule values, and preserve future extensibility without breaking existing configs.
-       Completion Summary: Pending.
-3. [ ] Task 17.3: Add audit coverage and compatibility checks for config updates.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)  
-        Instruction: Track creation/modification events and ensure edits do not invalidate existing eval run history.
-       Completion Summary: Pending.
+1. [x] Task 17.1: Implement eval config CRUD endpoints.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)
+       Instruction: Support create/list/detail/update behavior with project scoping and rules payload validation.
+       Completion Summary: 2026-03-16 - Added eval config create/list/detail/update routes with project-scoped RBAC, typed query helpers, and dataset cross-project validation.
+2. [x] Task 17.2: Enforce rules schema and defaults for checks, guardrails, judge, and thresholds.
+       Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)
+       Instruction: Reject invalid combinations, fill default rule values, and preserve future extensibility without breaking existing configs.
+       Completion Summary: 2026-03-16 - Leveraged shared Zod evalRulesSchema with defaults, superRefine cross-field validation (judge enabled/disabled, scaleMin/Max, minJudgeScore), and project-scoped dataset existence checks.
+3. [x] Task 17.3: Add audit coverage and compatibility checks for config updates.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)
+       Instruction: Track creation/modification events and ensure edits do not invalidate existing eval run history.
+       Completion Summary: 2026-03-16 - Added eval_config.created and eval_config.updated audit events with changedFields and hasExistingRuns metadata for compatibility tracking.
 
 ## Phase 18 - Eval Config Frontend
 
-1. [ ] Task 18.1: Build config list page and config detail editing flow.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
-        Instruction: Implement discoverable listing and update flows with robust form state handling and backend validation feedback.
-       Completion Summary: Pending.
-2. [ ] Task 18.2: Build 5-step config wizard (dataset, checks, guardrails, judge, thresholds).  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md)  
-        Instruction: Create step-by-step UX with progress indicators, back/next navigation, and summary validation before final save.
-       Completion Summary: Pending.
-3. [ ] Task 18.3: Add judge and threshold explainability in the UI.  
-        Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md)  
-        Instruction: Provide human-readable helper text so users understand what each rule affects and avoid configuration mistakes.
-       Completion Summary: Pending.
+1. [x] Task 18.1: Build config list page and config detail editing flow.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
+       Instruction: Implement discoverable listing and update flows with robust form state handling and backend validation feedback.
+       Completion Summary: 2026-03-16 - Built eval config list page with table/empty/loading states, create config dialog with dataset selector and quick checks/guardrails, and detail page with rules cards and edit dialogs for name/dataset and full rules editing.
+2. [x] Task 18.2: Build 5-step config wizard (dataset, checks, guardrails, judge, thresholds).
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md)
+       Instruction: Create step-by-step UX with progress indicators, back/next navigation, and summary validation before final save.
+       Completion Summary: 2026-03-16 - Built 5-step eval config wizard at /evals/new with pill-shaped step indicators, back/next navigation, dataset/checks/guardrails/judge/review steps, and summary validation before creation.
+3. [x] Task 18.3: Add judge and threshold explainability in the UI.
+       Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md)
+       Instruction: Provide human-readable helper text so users understand what each rule affects and avoid configuration mistakes.
+       Completion Summary: 2026-03-16 - Added human-readable hints and descriptions to all rule cards (checks, guardrails, judge, thresholds) in the detail page, rules edit dialog, and config wizard with contextual explainability per field.
 
 ## Phase 19 - Shared Eval Utilities (Renderer, Checks, Guardrails)
 
-1. [ ] Task 19.1: Implement template rendering and variable extraction utilities.  
-        Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)  
-        Instruction: Support variable replacement, missing-variable error behavior, and extraction logic used by editor validation and runner execution.
-       Completion Summary: Pending.
-2. [ ] Task 19.2: Implement deterministic checks and the combined checks runner.  
-        Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md)  
-        Instruction: Build JSON validity/schema/regex/exact-match checks with normalized result format and aggregated pass/fail summary.
-       Completion Summary: Pending.
-3. [ ] Task 19.3: Implement guardrails and verdict calculation with tests.  
-        Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)  
-        Instruction: Implement PII detection, injection heuristics, and verdict priority logic, then validate all utility behavior with targeted unit tests.
-       Completion Summary: Pending.
+1. [x] Task 19.1: Implement template rendering and variable extraction utilities.
+       Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)
+       Instruction: Support variable replacement, missing-variable error behavior, and extraction logic used by editor validation and runner execution.
+       Completion Summary: 2026-03-16 - Added extractVariables() and renderTemplate() with mustache-style {{variable}} support, missing-variable error class, and 12 unit tests.
+2. [x] Task 19.2: Implement deterministic checks and the combined checks runner.
+       Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md)
+       Instruction: Build JSON validity/schema/regex/exact-match checks with normalized result format and aggregated pass/fail summary.
+       Completion Summary: 2026-03-16 - Added checkJsonValid, checkJsonSchema (Ajv), checkRegexMatch, checkExactMatch, and runChecks() aggregator with 22 unit tests.
+3. [x] Task 19.3: Implement guardrails and verdict calculation with tests.
+       Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)
+       Instruction: Implement PII detection, injection heuristics, and verdict priority logic, then validate all utility behavior with targeted unit tests.
+       Completion Summary: 2026-03-16 - Added PII detection (email/phone/SSN/creditCard/IP), prompt injection heuristics, verdict calculation with priority logic, and 32 unit tests.
 
 ## Phase 20 - Browser Eval Engine and Run Lifecycle Backend
 
-1. [ ] Task 20.1: Build browser-side LLM client abstraction and provider adapters.  
-        Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)  
-        Instruction: Implement provider-agnostic generation interface, BYOK key use, and provider-specific request/response normalization behavior.
-       Completion Summary: Pending.
-2. [ ] Task 20.2: Build browser orchestrator for concurrent item processing with retries and resume.  
-        Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)  
-        Instruction: Process dataset items in controlled concurrency, apply checks/guardrails/judge per item, and persist progress for interruption recovery.
-       Completion Summary: Pending.
-3. [ ] Task 20.3: Implement eval run create/store/complete backend endpoints with idempotency.  
-        Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
-        Instruction: Create run record endpoint, idempotent item result ingestion endpoint, and completion endpoint that computes and stores summary aggregates.
-       Completion Summary: Pending.
+1. [x] Task 20.1: Build browser-side LLM client abstraction and provider adapters.
+       Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md)
+       Instruction: Implement provider-agnostic generation interface, BYOK key use, and provider-specific request/response normalization behavior.
+       Completion Summary: 2026-03-16 - Built LLM client abstraction with OpenAI, Anthropic, Groq adapters, client factory for all provider types, and judge scoring helper for BYOK browser-side execution.
+2. [x] Task 20.2: Build browser orchestrator for concurrent item processing with retries and resume.
+       Read Context: [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [main.md](DOCS/main.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md)
+       Instruction: Process dataset items in controlled concurrency, apply checks/guardrails/judge per item, and persist progress for interruption recovery.
+       Completion Summary: 2026-03-16 - Built browser eval orchestrator with controlled concurrency, retry-once-after-2s, resume from completed items, auto-pause on 5+ consecutive errors, and progress callbacks.
+3. [x] Task 20.3: Implement eval run create/store/complete backend endpoints with idempotency.
+       Read Context: [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)
+       Instruction: Create run record endpoint, idempotent item result ingestion endpoint, and completion endpoint that computes and stores summary aggregates.
+       Completion Summary: 2026-03-16 - Added eval run create/item/complete/detail/list endpoints with idempotent item ingestion, summary computation service, project-scoped access control, and audit events.
 
 ## Phase 21 - Eval Report UX, API Keys, SDK Logging, and Observability
 
-1. [ ] Task 21.1: Build eval run execution and report interfaces.  
-        Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md)  
-        Instruction: Implement run progress UI, summary cards, filterable/sortable results table, side-by-side output inspection, and export actions.
-       Completion Summary: Pending.
-2. [ ] Task 21.2: Implement API key lifecycle and SDK-auth run logging endpoints.  
-        Read Context: [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)  
-        Instruction: Support key create/list/revoke, hash-based authentication for `/runs`, key last-used updates, and per-key rate limiting.
-       Completion Summary: Pending.
-3. [ ] Task 21.3: Build SDK package and runs analytics APIs/UI.  
-        Read Context: [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
-        Instruction: Deliver SDK client behavior and dashboard/run-explorer surfaces with latency, volume, and guardrail trend visibility.
-       Completion Summary: Pending.
+1. [x] Task 21.1: Build eval run execution and report interfaces.
+       Read Context: [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md)
+       Instruction: Implement run progress UI, summary cards, filterable/sortable results table, side-by-side output inspection, and export actions.
+       Completion Summary: 2026-03-16 - Built eval run execution page with version selection and BYOK key input, report page with 4 summary stat cards, filterable/paginated results table, side-by-side output inspection dialog, CSV/JSON export, runs history on config detail page, and VerdictBadge/RunStatusBadge/StatCard components.
+2. [x] Task 21.2: Implement API key lifecycle and SDK-auth run logging endpoints.
+       Read Context: [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md), [CONTEXT_DATABASE.md](DOCS/CONTEXT/CONTEXT_DATABASE.md)
+       Instruction: Support key create/list/revoke, hash-based authentication for `/runs`, key last-used updates, and per-key rate limiting.
+       Completion Summary: 2026-03-16 - Added API key create/list/revoke endpoints with SHA-256 hash auth, SDK run logging POST /api/runs with rate limiting, run list/stats endpoints, and API key auth middleware with last_used_at tracking.
+3. [x] Task 21.3: Build SDK package and runs analytics APIs/UI.
+       Read Context: [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
+       Instruction: Deliver SDK client behavior and dashboard/run-explorer surfaces with latency, volume, and guardrail trend visibility.
+       Completion Summary: 2026-03-16 - Built full SDK client with logRun (retry+backoff) and instrumentedGenerate wrapper, API key management settings page, runs explorer with stats/charts/filters, and dashboard stats cards.
 
 ## Phase 22 - Deployment, QA, Onboarding, and Launch Readiness
 
-1. [ ] Task 22.1: Complete production deployment and environment hardening.  
-        Read Context: [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)  
-        Instruction: Deploy frontend/backend, apply production migrations, validate OAuth callback domains, and enforce production-safe secret and CORS settings.
-       Completion Summary: Pending.
-2. [ ] Task 22.2: Execute full end-to-end QA and role-based validation matrix.  
-        Read Context: [main.md](DOCS/main.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md)  
-        Instruction: Validate all core flows (auth, org/project, prompt lifecycle, datasets, eval execution/reporting, SDK logging) including RBAC edge cases and regression checks.
-       Completion Summary: Pending.
-3. [ ] Task 22.3: Finalize onboarding assets and open-source launch package.  
-        Read Context: [main.md](DOCS/main.md), [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md)  
-        Instruction: Complete demo seed flow, onboarding checklist, landing page polish, README/contributing/license docs, and launch checklist for public release.
-       Completion Summary: Pending.
+1. [x] Task 22.1: Complete production deployment and environment hardening.
+       Read Context: [CONTEXT_DEPLOYMENT.md](DOCS/CONTEXT/CONTEXT_DEPLOYMENT.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_BACKEND.md](DOCS/CONTEXT/CONTEXT_BACKEND.md)
+       Instruction: Deploy frontend/backend, apply production migrations, validate OAuth callback domains, and enforce production-safe secret and CORS settings.
+       Completion Summary: 2026-03-16 - Hardened production CORS to block localhost, added HSTS header, created CD workflow with D1 migration and post-deploy health check.
+2. [x] Task 22.2: Execute full end-to-end QA and role-based validation matrix.
+       Read Context: [main.md](DOCS/main.md), [CONTEXT_AUTH.md](DOCS/CONTEXT/CONTEXT_AUTH.md), [CONTEXT_FRONTEND.md](DOCS/CONTEXT/CONTEXT_FRONTEND.md), [CONTEXT_EVAL_ENGINE.md](DOCS/CONTEXT/CONTEXT_EVAL_ENGINE.md)
+       Instruction: Validate all core flows (auth, org/project, prompt lifecycle, datasets, eval execution/reporting, SDK logging) including RBAC edge cases and regression checks.
+       Completion Summary: 2026-03-16 - Added 28 QA integration tests covering auth edge cases, RBAC role matrix, CORS production hardening, security headers, health contract, error envelope, and preflight handling.
+3. [x] Task 22.3: Finalize onboarding assets and open-source launch package.
+       Read Context: [main.md](DOCS/main.md), [PROJECT_OVERVIEW.md](DOCS/PROJECT_OVERVIEW.md), [CONTEXT_UI_DESIGN.md](DOCS/CONTEXT/CONTEXT_UI_DESIGN.md), [CONTEXT_SDK.md](DOCS/CONTEXT/CONTEXT_SDK.md)
+       Instruction: Complete demo seed flow, onboarding checklist, landing page polish, README/contributing/license docs, and launch checklist for public release.
+       Completion Summary: 2026-03-16 - Added MIT LICENSE, demo seed endpoint/service, polished landing page with features/BYOK/tech stack sections, finalized README and SDK docs.

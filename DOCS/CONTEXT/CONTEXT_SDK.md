@@ -53,35 +53,38 @@ A simple script in `packages/sdk/examples/` that: initializes PromptOpsClient, s
 
 **SDK Package:**
 
-- [ ] Package scaffold (package.json, tsconfig, entry point)
-- [ ] Type definitions (SDKConfig, LogRunParams, LogRunResponse)
-- [ ] Retry utility (exponential backoff + jitter)
-- [ ] PromptOpsClient class
-- [ ] logRun method (with retry, fire-and-forget error handling)
-- [ ] instrumentedGenerate wrapper
-- [ ] Input validation (apiKey format check)
-- [ ] Example app (basic-logging)
-- [ ] SDK README with installation + usage docs
+- [x] Package scaffold (package.json, tsconfig, entry point)
+- [x] Type definitions (SDKConfig, LogRunParams, LogRunResponse)
+- [x] Retry utility (exponential backoff + jitter)
+- [x] PromptOpsClient class
+- [x] logRun method (with retry, fire-and-forget error handling)
+- [x] instrumentedGenerate wrapper
+- [x] Input validation (apiKey format check)
+- [x] Example app (basic-logging)
+- [x] SDK README with installation + usage docs
 
 **Backend:**
 
-- [ ] API key creation endpoint (generate, hash, store, return plaintext once)
-- [ ] API key list endpoint (prefix only, never full key)
-- [ ] API key revoke endpoint
-- [ ] API key auth middleware (hash lookup, rate limit, update last_used_at)
-- [ ] Run logging endpoint (POST /api/runs)
-- [ ] Run list endpoint (paginated, filterable)
-- [ ] Run stats aggregation endpoint
+- [x] API key creation endpoint (generate, hash, store, return plaintext once)
+- [x] API key list endpoint (prefix only, never full key)
+- [x] API key revoke endpoint
+- [x] API key auth middleware (hash lookup, rate limit, update last_used_at)
+- [x] Run logging endpoint (POST /api/runs)
+- [x] Run list endpoint (paginated, filterable)
+- [x] Run stats aggregation endpoint
 
 **Frontend:**
 
-- [ ] API key management UI in settings page
-- [ ] Runs explorer page
-- [ ] Dashboard stats cards + charts
+- [x] API key management UI in settings page
+- [x] Runs explorer page
+- [x] Dashboard stats cards + charts
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Task 22.3 - Finalized SDK README with installation, API reference, configuration, auth, and error handling documentation.
+- 2026-03-16 - Task 21.3 - Built full PromptOpsClient with logRun (3x retry + backoff), instrumentedGenerate wrapper, input validation, 13 unit tests, and example app.
+- 2026-03-16 - Task 21.2 - Added API key create/list/revoke endpoints, SHA-256 hash auth middleware, run logging POST /api/runs, run list/stats endpoints, and per-key rate limiting.
 - 2026-03-08 - Task 9.3 - Added API-key rate-limit middleware scaffolding and request-context contracts the future `/api/runs` SDK endpoint will plug into.
 - 2026-03-08 - Task 7.2 - Documented the Phase 7 `runs` index baseline that the SDK logging list and stats endpoints will rely on.

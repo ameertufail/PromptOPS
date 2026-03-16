@@ -61,9 +61,9 @@ Implementation rule: Initialize shadcn in `apps/web`, install the required compo
 ## Task Progress
 
 - [x] Tailwind + shadcn setup
-- [ ] Install all shadcn components
-- [ ] Enforce user-defined color scheme tokens across all routes/components
-- [ ] StatusBadge, VerdictBadge, StatCard, EmptyState
+- [x] Install all shadcn components
+- [x] Enforce user-defined color scheme tokens across all routes/components
+- [x] StatusBadge, VerdictBadge, StatCard, EmptyState
 - [ ] Responsive sidebar
 - [ ] Skeleton loading, toast setup, chart config
 
@@ -71,5 +71,13 @@ Implementation rule: Initialize shadcn in `apps/web`, install the required compo
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Task 22.3 - Polished landing page with hero, feature grid, BYOK section, tech stack badges, and CTA for open-source launch.
+- 2026-03-16 - Task 21.1 - Built VerdictBadge (IMPROVED/REGRESSED/SAME/UNKNOWN), RunStatusBadge, and StatCard components per design spec colors.
+- 2026-03-16 - Task 18.3 - Added per-field explainability hints to eval config cards, rules editor, and wizard steps for better configuration UX.
+- 2026-03-16 - Task 18.1 - Built eval config list with rules summary badges, detail page with checks/guardrails/judge/thresholds cards, and rules edit dialog.
+- 2026-03-16 - Task 16.1 - Built dataset list/detail pages with type badge, expandable item rows, and drag-and-drop JSONL upload zone.
+- 2026-03-16 - Task 14.3 - Built diff viewer with green/red/gray hunk coloring and release/archive confirmation flows with destructive variant styling.
+- 2026-03-16 - Task 14.1 - Added VersionStatusBadge component with Draft/Released/Archived colors per design spec (slate-400, green-500, zinc-400).
+- 2026-03-15 - Task 12.1 - Built responsive sidebar with org/project switchers, breadcrumb nav, and mobile sheet overlay using tweakcn sidebar tokens.
+- 2026-03-15 - Task 12.0 - Installed 22 shadcn/ui components and verified globals.css matches the canonical tweakcn-dark-active.css theme artifact.
 - 2026-03-02 - Task 12.0 - Registered the active tweakcn dark theme artifact and locked runtime component-selection rules.
-- (no completed tasks yet)

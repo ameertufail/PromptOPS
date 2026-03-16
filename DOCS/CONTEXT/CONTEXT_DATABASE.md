@@ -110,6 +110,12 @@ Required indexes include:
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Task 21.2 - Added typed API key query helpers (create/hash-lookup/list/revoke/lastUsed) and SDK run query helpers (create/list/stats with date/source filters and percentile computation).
+- 2026-03-16 - Task 20.3 - Added typed eval run query helpers for run create, item create (idempotent), run completion, paginated listing, and getAllDatasetItems for eval bootstrapping.
+- 2026-03-16 - Task 17.1 - Added typed eval config query helpers for create, get-by-id, list-by-project, update, and hasEvalRunsForConfig compatibility check.
+- 2026-03-16 - Task 15.1 - Added typed dataset query helpers for CRUD, item management, bulk import, and item_count bookkeeping.
+- 2026-03-16 - Task 13.2 - Added prompt version query helpers with auto-incrementing version numbers and JSON field serialization for modelConfig/variablesSchema.
+- 2026-03-16 - Task 13.1 - Added typed prompt query helpers for create, get-by-id, and list-with-latest-version join queries.
 - 2026-03-09 - Task 11.3 - Added Phase 11 tenancy query coverage for RBAC role resolution, owner-count enforcement, and paginated audit-event reads.
 - 2026-03-09 - Task 11.2 - Added project tenancy helpers for org+slug lookup, scoped listing, update, and delete flows used by the new project routes.
 - 2026-03-09 - Task 11.1 - Added organization lookup, membership management, user-by-email, member listing, and audit-event query helpers with unit coverage.

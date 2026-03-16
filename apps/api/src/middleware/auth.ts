@@ -1,4 +1,9 @@
 import type { Context, MiddlewareHandler } from "hono";
+import {
+  getApiKeyByHash,
+  hashKey,
+  updateApiKeyLastUsed
+} from "../db/api-key-queries";
 import { getUserById } from "../db/queries";
 import {
   AuthenticationError,
@@ -25,36 +30,67 @@ type RequireIdentityOptions = {
   message?: string;
 };
 
-function getBearerSessionToken(c: Context<AppEnv>) {
+function getBearerToken(c: Context<AppEnv>) {
   const authorizationHeader = c.req.header("Authorization");
 
   if (!authorizationHeader?.startsWith("Bearer ")) {
     return undefined;
   }
 
-  const token = authorizationHeader.slice("Bearer ".length).trim();
-
-  if (!token || token.startsWith("po_sk_")) {
-    return undefined;
-  }
-
-  return token;
+  return authorizationHeader.slice("Bearer ".length).trim() || undefined;
 }
 
 export const resolveRequestIdentity: MiddlewareHandler<AppEnv> = async (
   c,
   next
 ) => {
-  const sessionToken = getSessionCookie(c) ?? getBearerSessionToken(c);
+  const db = c.env?.DB;
+  const bearerToken = getBearerToken(c);
 
-  if (!sessionToken || !c.env?.JWT_SECRET || !c.env?.DB) {
+  // Handle API key authentication (po_sk_ prefix)
+  if (bearerToken?.startsWith("po_sk_") && db) {
+    try {
+      const keyHash = await hashKey(bearerToken);
+      const apiKey = await getApiKeyByHash(db, { keyHash });
+
+      if (apiKey) {
+        authenticateApiKey(c, {
+          apiKeyId: apiKey.id,
+          keyPrefix: apiKey.key_prefix,
+          projectId: apiKey.project_id
+        });
+
+        // Fire-and-forget last_used_at update
+        c.executionCtx.waitUntil(
+          updateApiKeyLastUsed(db, { keyId: apiKey.id })
+        );
+
+        await next();
+        return;
+      }
+    } catch {
+      // Fall through to anonymous
+    }
+
+    await next();
+    return;
+  }
+
+  // Handle session authentication (cookie or non-po_sk_ bearer)
+  const sessionToken =
+    getSessionCookie(c) ??
+    (bearerToken && !bearerToken.startsWith("po_sk_")
+      ? bearerToken
+      : undefined);
+
+  if (!sessionToken || !c.env?.JWT_SECRET || !db) {
     await next();
     return;
   }
 
   try {
     const claims = await verifySessionToken(c.env.JWT_SECRET, sessionToken);
-    const user = await getUserById(c.env.DB, { userId: claims.sub });
+    const user = await getUserById(db, { userId: claims.sub });
 
     if (!user) {
       setRequestIdentity(c, { kind: "anonymous" });

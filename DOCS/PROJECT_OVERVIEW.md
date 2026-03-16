@@ -217,6 +217,9 @@ After completing a task, tell Codex: "Mark [task] as complete in the context fil
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Landing page v3 - Fixed headline split (removed WordRotate, whitespace-nowrap), reverted to uniform 3x2 feature grid, tightened spacing (py-16), enlarged dashboard mockup (max-w-5xl, border, glow), differentiated stat colors, differentiated navbar/hero CTAs, uniform tech stack pills, wider pricing/CTA sections, spacious footer, alternating section tints, stronger aurora (0.22), larger BYOK icon/logos.
+- 2026-03-16 - Landing page v2 - Complete redesign: aurora background, blur-reveal hero, shimmer CTAs, styled terminal, CSS dashboard mockup, animated stats, TiltCard feature cards with per-color accents, SVG provider logos, tech stack icon grid, pricing section, border-beam CTA, 4-column footer. Removed auto-redirect for logged-in users; adaptive CTAs instead.
+- 2026-03-16 - Login page redesign - Auth layout with aurora background, enlarged login card (420px), purple branded logo, shimmer button, trust signals, back-to-home link, loading/error states, visible card border. Matching callback page styling.
 - 2026-03-16 - Task 22.3 - Added MIT LICENSE, demo seed endpoint, polished landing page, finalized README and SDK docs for open-source launch.
 - 2026-03-16 - Task 22.2 - Added 28 QA integration tests covering auth, RBAC matrix, CORS hardening, security headers, and error consistency.
 - 2026-03-16 - Task 22.1 - Hardened production CORS (block localhost), added HSTS, created CD workflow with D1 migrations and health check.

@@ -88,31 +88,44 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 - [x] Error handling (custom classes, global handler)
 - [x] Auth routes
 - [x] JWT session middleware
-- [ ] API key auth middleware
+- [x] API key auth middleware
 - [x] RBAC middleware
 - [x] Audit helper
 - [x] Rate limit middleware
 - [x] Org routes
 - [x] Project routes
-- [ ] Prompt routes + versions
-- [ ] Diff endpoint
-- [ ] Release/archive endpoints
-- [ ] Dataset routes
-- [ ] Dataset item routes
-- [ ] JSONL bulk import
-- [ ] Eval config routes
-- [ ] Eval run routes (create, status, items, complete)
-- [ ] Summary computation service
-- [ ] Run logging endpoint
-- [ ] Run stats endpoint
-- [ ] API key routes
+- [x] Prompt routes + versions
+- [x] Diff endpoint
+- [x] Release/archive endpoints
+- [x] Dataset routes
+- [x] Dataset item routes
+- [x] JSONL bulk import
+- [x] Eval config routes
+- [x] Eval run routes (create, status, items, complete)
+- [x] Summary computation service
+- [x] Run logging endpoint
+- [x] Run stats endpoint
+- [x] API key routes
 - [ ] Provider key routes
-- [ ] Demo seed endpoint
+- [x] Demo seed endpoint
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Task 22.1 - Hardened production CORS to block localhost origins, added HSTS header, and added demo seed endpoint (POST /api/projects/:projectId/seed-demo).
+- 2026-03-16 - Task 21.2 - Added API key create/list/revoke routes, SDK run logging POST /api/runs with rate limiting, run list/stats endpoints, and hash-based API key auth middleware.
+- 2026-03-16 - Task 20.3 - Added eval run create/item/complete/detail/list routes with idempotent item ingestion, summary computation service, and project-scoped access control.
+- 2026-03-16 - Task 18.1 - Added evalConfig path helper to the frontend API client for detail/update endpoints.
+- 2026-03-16 - Task 17.3 - Added eval_config.created and eval_config.updated audit events with changedFields and hasExistingRuns compatibility metadata.
+- 2026-03-16 - Task 17.2 - Enforced rules schema defaults and cross-field validation via shared Zod evalRulesSchema, plus project-scoped dataset existence checks.
+- 2026-03-16 - Task 17.1 - Added eval config create/list/detail/update routes with project-scoped RBAC, typed query helpers, and dataset cross-project validation.
+- 2026-03-16 - Task 15.3 - Added JSONL bulk import endpoint with line-by-line parsing, Zod validation, batch inserts (20/tx), and line-level error reporting.
+- 2026-03-16 - Task 15.2 - Added dataset item create/update/delete endpoints with JSON field validation, sort_order support, and parent item_count bookkeeping.
+- 2026-03-16 - Task 15.1 - Added dataset create/list/detail/update/delete routes with project-scoped RBAC, typed query helpers, and audit events.
+- 2026-03-16 - Task 13.3 - Added release (ADMIN+), archive (MEMBER+), and LCS-based line diff endpoints with audit events for all prompt version state transitions.
+- 2026-03-16 - Task 13.2 - Added immutable prompt version creation with auto-incrementing version numbers, content/modelConfig/variablesSchema capture, and version detail endpoint.
+- 2026-03-16 - Task 13.1 - Added prompt create/list/detail routes with project-scoped RBAC, typed prompt query helpers, and prompt creation audit events.
 - 2026-03-09 - Task 11.3 - Tightened org/project RBAC resolution, owner-only membership transitions, and structured audit metadata handling for tenancy mutations.
 - 2026-03-09 - Task 11.2 - Added org-scoped project CRUD routes with shared validation, permission checks, and mutation audit writes.
 - 2026-03-09 - Task 11.1 - Added org create/list/detail/member-management and audit-events routes on the shared auth/RBAC pipeline.

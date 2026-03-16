@@ -106,38 +106,49 @@ When a run completes, the backend computes and stores:
 **Shared Package (`packages/shared`):**
 
 - [x] Workspace smoke-test baseline in place for shared contracts
-- [ ] Template renderer (`renderTemplate` + `extractVariables`)
-- [ ] JSON validity check
-- [ ] JSON schema validation check (Ajv)
-- [ ] Regex match check
-- [ ] Exact match check
-- [ ] `runChecks()` wrapper
-- [ ] PII detection
-- [ ] Prompt injection detection
-- [ ] Verdict calculation
-- [ ] Unit tests for all checks and guardrails
+- [x] Template renderer (`renderTemplate` + `extractVariables`)
+- [x] JSON validity check
+- [x] JSON schema validation check (Ajv)
+- [x] Regex match check
+- [x] Exact match check
+- [x] `runChecks()` wrapper
+- [x] PII detection
+- [x] Prompt injection detection
+- [x] Verdict calculation
+- [x] Unit tests for all checks and guardrails
 
 **Browser-Side (`apps/web`):**
 
-- [ ] LLM client abstraction
-- [ ] OpenAI client implementation
-- [ ] Anthropic client implementation
-- [ ] Client factory
-- [ ] Judge scoring function
-- [ ] Eval engine orchestrator
-- [ ] Error handling
-- [ ] Integration with the eval run UI
+- [x] LLM client abstraction
+- [x] OpenAI client implementation
+- [x] Anthropic client implementation
+- [x] Client factory
+- [x] Judge scoring function
+- [x] Eval engine orchestrator
+- [x] Error handling
+- [x] Integration with the eval run UI
 
 **Backend:**
 
-- [ ] Create eval run endpoint
-- [ ] Store eval run item endpoint
-- [ ] Complete eval run endpoint
-- [ ] Summary computation service
+- [x] Create eval run endpoint
+- [x] Store eval run item endpoint
+- [x] Complete eval run endpoint
+- [x] Summary computation service
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Task 21.1 - Integrated browser eval engine with run execution UI, report page, progress tracking, and resume/abort controls.
+- 2026-03-16 - Task 20.3 - Added eval run create/item/complete/list backend endpoints with idempotent item ingestion and summary computation service.
+- 2026-03-16 - Task 20.2 - Built browser-side eval orchestrator with controlled concurrency, retry/resume, checks/guardrails/judge pipeline, and auto-pause on consecutive errors.
+- 2026-03-16 - Task 20.1 - Built LLM client abstraction with OpenAI, Anthropic, Groq adapters, client factory, and judge scoring helper for BYOK browser-side execution.
+- 2026-03-16 - Task 19.3 - Added PII detection, prompt injection heuristics, verdict calculation with priority logic, and 32 unit tests in shared eval utilities.
+- 2026-03-16 - Task 19.2 - Added JSON valid, JSON schema (Ajv), regex match, exact match checks plus runChecks() aggregator with 22 unit tests.
+- 2026-03-16 - Task 19.1 - Added extractVariables() and renderTemplate() with mustache-style variable support and TemplateMissingVariableError with 12 unit tests.
+- 2026-03-16 - Task 18.3 - Added explainability hints and descriptions for judge scoring, thresholds, and comparison settings across all eval config UI surfaces.
+- 2026-03-16 - Task 18.2 - Built 5-step eval config wizard with checks, guardrails, judge, and threshold configuration steps in the frontend.
+- 2026-03-16 - Task 17.2 - Enforced rules schema defaults and cross-field Zod validation for checks, guardrails, judge, and thresholds in eval config CRUD.
+- 2026-03-16 - Task 17.1 - Added eval config CRUD backend endpoints with project-scoped access control and dataset reference validation.
 - 2026-03-06 - Task 3.2 - Added a shared-package smoke-test baseline and documented the immediate eval-utility unit-test targets.
 - 2026-03-02 - Task 1.1 - Confirmed browser-first eval execution and added scope-lock/non-goal guardrails for eval architecture.

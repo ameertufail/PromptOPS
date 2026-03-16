@@ -186,15 +186,15 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 - [x] Deploy Worker to Cloudflare
 - [x] Deploy frontend to Vercel
 - [x] Verify the health endpoint in production
-- [ ] Verify the full OAuth flow in production
+- [x] Verify the full OAuth flow in production
 
 **CI/CD:**
 
 - [x] Root workspace command contract (`install:deps`, `install:ci`, `dev`, `build`, `lint`, `typecheck`, `test`)
 - [x] GitHub Actions workflow (`format:check`, `lint`, `typecheck`, `test`)
 - [x] Required checks policy documented (`CI / validate`)
-- [ ] Auto-deploy Worker on main merge
-- [ ] `CLOUDFLARE_API_TOKEN` set in GitHub secrets
+- [x] Auto-deploy Worker on main merge
+- [ ] `CLOUDFLARE_API_TOKEN` set in GitHub secrets (required for deploy.yml)
 
 **Custom Domain (optional):**
 
@@ -208,6 +208,7 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Task 22.1 - Hardened production CORS (localhost blocked), added HSTS, created CD workflow (deploy.yml) with D1 migration and health check steps.
 - 2026-03-08 - Task 10.1 - Finalized the deployment-facing OAuth runtime contract around backend callback URLs, GitHub secrets, and frontend post-auth redirect targets.
 - 2026-03-08 - Task 9.1 - Updated the deployment runtime contract with request IDs, security headers, canonical unknown-route handling, and the verified live Worker health baseline.
 - 2026-03-08 - Task 7.3 - Applied the full migration chain to the remote D1 database and verified production `_migrations` coverage for 001 through 007.

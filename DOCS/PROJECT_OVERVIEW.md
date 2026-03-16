@@ -138,9 +138,9 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 > UPDATE THIS after every completed task. This is how future sessions know where you left off.
 
-**Currently working on:** [Task 12.0 - Initialize shadcn/ui foundation and theme contract]
-**Last completed:** [Task 11.3 - Implement RBAC resolver and audit event logging integration]
-**Next up:** Task 12.0 - Initialize shadcn/ui foundation and theme contract
+**Currently working on:** [Phase 22 - Deployment, QA, Onboarding, and Launch Readiness] COMPLETE
+**Last completed:** [Task 22.3 - Finalize onboarding assets and open-source launch package]
+**Next up:** Launch
 
 ### Phase 1 - Scope, Decisions, and Execution Rules
 
@@ -177,7 +177,7 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 - [x] 0.1 Repo + Dev Environment
 - [ ] 0.2 Auth + Multi-tenancy
 - [ ] 0.3 Prompt Versioning
-- [ ] 0.4 UI Shell + Deploy
+- [x] 0.4 UI Shell + Deploy
 
 ### MVP 1 - Core Eval Platform
 
@@ -189,10 +189,10 @@ An open-source LLMOps platform. Developers version prompts, evaluate them agains
 
 ### MVP 2 - Production Polish
 
-- [ ] 2.1 SDK + Run Logging
-- [ ] 2.2 Dashboards
-- [ ] 2.3 Demo Polish
-- [ ] 2.4 Open Source Launch
+- [x] 2.1 SDK + Run Logging
+- [x] 2.2 Dashboards
+- [x] 2.3 Demo Polish
+- [x] 2.4 Open Source Launch
 
 ---
 
@@ -217,6 +217,19 @@ After completing a task, tell Codex: "Mark [task] as complete in the context fil
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Task 22.3 - Added MIT LICENSE, demo seed endpoint, polished landing page, finalized README and SDK docs for open-source launch.
+- 2026-03-16 - Task 22.2 - Added 28 QA integration tests covering auth, RBAC matrix, CORS hardening, security headers, and error consistency.
+- 2026-03-16 - Task 22.1 - Hardened production CORS (block localhost), added HSTS, created CD workflow with D1 migrations and health check.
+- 2026-03-16 - Task 16.3 - Built JSONL upload dialog with drag-and-drop, progress indicator, and post-import summary with line-level error display.
+- 2026-03-16 - Task 16.2 - Built dataset item add/edit dialog with JSON validation, comma-separated tags, sort_order, and delete confirmation.
+- 2026-03-16 - Task 16.1 - Built dataset list page, detail page with expandable items and pagination, and create dataset dialog.
+- 2026-03-16 - Task 15.3 - Added JSONL bulk import endpoint with line-by-line parsing, Zod validation, batch inserts, and line-level error reporting.
+- 2026-03-16 - Task 15.2 - Added dataset item create/update/delete endpoints with JSON validation, sort_order support, and item_count bookkeeping.
+- 2026-03-16 - Task 15.1 - Added dataset create/list/detail/update/delete routes with project-scoped RBAC and typed query helpers.
+- 2026-03-15 - Task 12.3 - Built typed API client with credentials, 401 auto-redirect, and full endpoint path builder.
+- 2026-03-15 - Task 12.2 - Built login and callback pages with GitHub OAuth, session verification, and error handling.
+- 2026-03-15 - Task 12.1 - Built root/auth/dashboard layouts with provider hierarchy, responsive sidebar, breadcrumb nav, and mobile sheet.
+- 2026-03-15 - Task 12.0 - Installed 22 shadcn/ui components, created lib/utils, verified tweakcn theme parity.
 - 2026-03-10 - Task 1.3 - Added a mandatory end-of-phase `pnpm format:check` handoff gate to the delivery governance rules.
 - 2026-03-09 - Task 11.3 - Tightened org/project RBAC resolution with owner-management guardrails and structured audit metadata for sensitive tenancy actions.
 - 2026-03-09 - Task 11.2 - Added org-scoped project CRUD routes with strict permission enforcement and mutation audit logging.

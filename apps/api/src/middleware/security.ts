@@ -20,9 +20,19 @@ function normalizeConfiguredOrigin(origin: string | undefined) {
 
 export function getAllowedOrigin(
   requestOrigin: string | undefined,
-  configuredOrigin?: string
+  configuredOrigin?: string,
+  environment?: string
 ) {
   if (!requestOrigin) {
+    return undefined;
+  }
+
+  // In production, only allow the configured FRONTEND_URL — never localhost
+  if (environment === "production") {
+    if (requestOrigin === normalizeConfiguredOrigin(configuredOrigin)) {
+      return requestOrigin;
+    }
+
     return undefined;
   }
 
@@ -46,12 +56,20 @@ export const apiSecurityHeadersMiddleware: MiddlewareHandler<AppEnv> = async (
   c.header("Referrer-Policy", "no-referrer");
   c.header("X-Content-Type-Options", "nosniff");
   c.header("X-Frame-Options", "DENY");
+
+  if (c.env?.ENVIRONMENT === "production") {
+    c.header(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains"
+    );
+  }
 };
 
 export const apiCorsMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
   const allowedOrigin = getAllowedOrigin(
     c.req.header("Origin"),
-    c.env?.FRONTEND_URL
+    c.env?.FRONTEND_URL,
+    c.env?.ENVIRONMENT
   );
 
   if (allowedOrigin) {

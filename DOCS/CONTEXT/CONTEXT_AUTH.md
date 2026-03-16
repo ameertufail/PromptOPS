@@ -85,23 +85,32 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 - [x] OAuth flow backend (redirect, callback, token exchange, upsert)
 - [x] JWT issuance and cookie handling
 - [x] JWT session middleware
-- [ ] API key auth middleware
+- [x] API key auth middleware
 - [x] RBAC middleware
 - [x] Org CRUD + membership endpoints
-- [ ] API key CRUD endpoints
+- [x] API key CRUD endpoints
 - [ ] Provider key CRUD endpoints
-- [ ] Login page UI
-- [ ] Callback page UI
-- [ ] Auth context/hook (useAuth)
-- [ ] Protected dashboard layout
+- [x] Login page UI
+- [x] Callback page UI
+- [x] Auth context/hook (useAuth)
+- [x] Protected dashboard layout
 - [ ] Org creation + switcher UI
-- [ ] API key management UI
+- [x] API key management UI
 - [ ] Provider key management UI
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Task 22.2 - Added QA integration tests for auth edge cases (expired token, wrong secret, missing code) and RBAC role matrix validation.
+- 2026-03-16 - Task 22.1 - Hardened production CORS to block localhost origins and added HSTS for production environment.
+- 2026-03-16 - Task 21.2 - Added API key create/list/revoke endpoints, SHA-256 hash-based auth middleware, and last_used_at tracking for SDK run logging.
+- 2026-03-16 - Task 20.1 - Built BYOK LLM client abstraction for browser-side provider calls using user's own API keys without backend proxying.
+- 2026-03-16 - Task 19.3 - Added prompt injection heuristics guardrail for eval input validation in shared eval utilities.
+- 2026-03-16 - Task 17.3 - Added eval config audit events for creation and update with compatibility metadata tracking changed fields and existing run presence.
+- 2026-03-16 - Task 13.3 - Added ADMIN+ release and MEMBER+ archive permission enforcement for prompt version state transitions with audit logging.
+- 2026-03-15 - Task 12.2 - Built login and callback pages with GitHub OAuth redirect, session verification, and error-specific messaging.
+- 2026-03-15 - Task 12.1 - Built protected dashboard layout with AuthProvider gate, auth-aware sidebar user menu, and logout flow.
 - 2026-03-09 - Task 11.3 - Tightened org/project RBAC enforcement with owner-management guardrails and structured audit metadata on sensitive tenancy mutations.
 - 2026-03-09 - Task 11.2 - Added org-scoped project create/list/detail/update/delete endpoints with role checks and audit logging.
 - 2026-03-09 - Task 11.1 - Added org create/list/detail/member-management and audit log endpoints with existing-user invites and last-owner safeguards.

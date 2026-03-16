@@ -23,6 +23,7 @@ import {
   type DbProject
 } from "../db/queries";
 import { ConflictError, NotFoundError } from "../lib/errors";
+import { getRequestContext } from "../lib/request-context";
 import {
   parseJsonRequestBody,
   parseRequestParams,
@@ -35,6 +36,7 @@ import {
   resolveProjectAccess
 } from "../middleware/rbac";
 import { requireDatabaseBinding } from "../middleware/auth";
+import { seedDemoData } from "../services/demo-seed";
 import type { AppEnv } from "../types";
 
 export const projectRoutes = new Hono<AppEnv>();
@@ -232,5 +234,38 @@ projectRoutes.delete(
         success: true
       })
     );
+  }
+);
+
+// ── Seed Demo Data ─────────────────────────────────────────────────────
+
+projectRoutes.post(
+  `${API_BASE_PATH}/projects/:projectId/seed-demo`,
+  validateRequestParams(projectIdParamsSchema),
+  resolveProjectAccess(),
+  requireMinimumRole("MEMBER"),
+  async (c) => {
+    const { projectId } = parseRequestParams(
+      c,
+      projectIdParamsSchema,
+      "Project path validation failed."
+    );
+    const db = requireDatabaseBinding(c);
+    const requestContext = getRequestContext(c);
+    const userId =
+      requestContext.identity.kind === "session"
+        ? requestContext.identity.userId
+        : null;
+
+    const result = await seedDemoData(db, projectId, userId ?? "system");
+
+    queueAuditEvent(c, {
+      action: "project.demo_seeded",
+      entityId: projectId,
+      entityType: "project",
+      metadata: result
+    });
+
+    return c.json({ ...result, success: true }, 201);
   }
 );

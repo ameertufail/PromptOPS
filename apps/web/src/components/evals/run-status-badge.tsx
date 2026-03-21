@@ -19,27 +19,27 @@ const statusConfig: Record<
     label: "Queued",
     icon: Clock,
     className: "text-amber-500 border-amber-500/30 bg-amber-500/10",
-    glowColor: "shadow-[inset_0_0_8px_rgba(245,158,11,0.15)]",
+    glowColor: "shadow-[inset_0_0_8px_rgba(245,158,11,0.15)]"
   },
   RUNNING: {
     label: "Running",
     icon: Loader2,
     className: "text-blue-500 border-blue-500/30 bg-blue-500/10",
     glowColor: "shadow-[inset_0_0_8px_rgba(59,130,246,0.15)]",
-    spin: true,
+    spin: true
   },
   COMPLETED: {
     label: "Completed",
     icon: CheckCircle2,
     className: "text-green-500 border-green-500/30 bg-green-500/10",
-    glowColor: "shadow-[inset_0_0_8px_rgba(34,197,94,0.15)]",
+    glowColor: "shadow-[inset_0_0_8px_rgba(34,197,94,0.15)]"
   },
   FAILED: {
     label: "Failed",
     icon: XCircle,
     className: "text-red-500 border-red-500/30 bg-red-500/10",
-    glowColor: "shadow-[inset_0_0_8px_rgba(239,68,68,0.15)]",
-  },
+    glowColor: "shadow-[inset_0_0_8px_rgba(239,68,68,0.15)]"
+  }
 };
 
 export function RunStatusBadge({ status }: { status: EvalRunStatus }) {

@@ -153,9 +153,7 @@ export default function PromptDetailPage() {
         </button>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {prompt.name}
-            </h1>
+            <h1 className="text-3xl font-bold tracking-tight">{prompt.name}</h1>
             {prompt.description && (
               <p className="mt-1.5 text-sm text-muted-foreground">
                 {prompt.description}
@@ -269,7 +267,10 @@ export default function PromptDetailPage() {
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{
-                            height: { duration: 0.3, ease: [0.25, 0.4, 0.25, 1] },
+                            height: {
+                              duration: 0.3,
+                              ease: [0.25, 0.4, 0.25, 1]
+                            },
                             opacity: { duration: 0.2, ease: "easeInOut" }
                           }}
                           className="overflow-hidden"
@@ -298,7 +299,8 @@ export default function PromptDetailPage() {
                                     </span>
                                     {version.modelConfig.model}
                                   </span>
-                                  {version.modelConfig.temperature !== undefined && (
+                                  {version.modelConfig.temperature !==
+                                    undefined && (
                                     <span>
                                       <span className="text-muted-foreground">
                                         Temp:{" "}
@@ -306,7 +308,8 @@ export default function PromptDetailPage() {
                                       {version.modelConfig.temperature}
                                     </span>
                                   )}
-                                  {version.modelConfig.maxTokens !== undefined && (
+                                  {version.modelConfig.maxTokens !==
+                                    undefined && (
                                     <span>
                                       <span className="text-muted-foreground">
                                         Max tokens:{" "}
@@ -325,7 +328,11 @@ export default function PromptDetailPage() {
                                   Variables Schema
                                 </p>
                                 <pre className="max-h-[150px] overflow-auto whitespace-pre-wrap rounded-lg border border-border/40 bg-muted/30 p-3 font-mono text-xs">
-                                  {JSON.stringify(version.variablesSchema, null, 2)}
+                                  {JSON.stringify(
+                                    version.variablesSchema,
+                                    null,
+                                    2
+                                  )}
                                 </pre>
                               </div>
                             )}
@@ -369,7 +376,10 @@ export default function PromptDetailPage() {
                                   variant="outline"
                                   className="shadow-sm transition-all duration-200 hover:shadow-md"
                                   onClick={() =>
-                                    setConfirmAction({ type: "archive", version })
+                                    setConfirmAction({
+                                      type: "archive",
+                                      version
+                                    })
                                   }
                                 >
                                   <Archive className="mr-1.5 size-3.5" />

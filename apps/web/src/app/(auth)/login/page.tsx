@@ -12,8 +12,8 @@ const stagger = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
-  },
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+  }
 };
 
 const fadeUp = {
@@ -24,9 +24,9 @@ const fadeUp = {
     filter: "blur(0px)",
     transition: {
       duration: 0.5,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-    },
-  },
+      ease: [0.25, 0.46, 0.45, 0.94] as const
+    }
+  }
 };
 
 export default function LoginPage() {

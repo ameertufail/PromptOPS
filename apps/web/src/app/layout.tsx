@@ -8,26 +8,26 @@ import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-inter"
 });
 
 const instrumentSerif = Instrument_Serif({
   weight: "400",
   style: "italic",
   subsets: ["latin"],
-  variable: "--font-instrument",
+  variable: "--font-instrument"
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
-  weight: ["400"],
+  weight: ["400"]
 });
 
 export const metadata = {
   title: "PromptOps Studio",
   description:
-    "Version prompts, evaluate against datasets, enforce guardrails, and monitor production quality.",
+    "Version prompts, evaluate against datasets, enforce guardrails, and monitor production quality."
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

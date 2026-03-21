@@ -11,7 +11,7 @@ export function StatCard({
   icon: Icon,
   iconColor = "text-primary",
   className,
-  valueClassName,
+  valueClassName
 }: {
   title: string;
   value: string | number;

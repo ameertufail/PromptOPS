@@ -13,23 +13,28 @@ Tailwind CSS + shadcn/ui (Radix + Tailwind). Icons: Lucide React. Charts: Rechar
 The landing page (`apps/web/src/app/page.tsx`) and auth pages use a shared set of custom CSS utilities defined in `globals.css`:
 
 **Background effects:**
+
 - `.aurora-bg` + `.aurora-blob-1/2/3` — Three animated gradient blobs (opacity 0.22, blur 80px) providing atmospheric depth behind the hero. Uses `@keyframes aurora-1/2/3`.
 - Mouse spotlight — Radial gradient following cursor in hero section via `onMouseMove` state.
 
 **Interactive components:**
+
 - `.shimmer-btn` — Button with `::after` shimmer sweep animation (2.5s cycle). Used on all primary CTAs.
 - `.tilt-card` — Card with CSS custom property-driven perspective tilt (max 8deg) + `::after` radial glow following mouse. Applied to feature cards.
 - `.border-beam` — Rotating conic gradient border via `@property --border-angle`. Applied to bottom CTA card.
 
 **Text effects:**
+
 - `.gradient-text` — Static purple-to-pink gradient text fill.
 - `.gradient-text-animated` — Cycling purple-blue-violet gradient (6s, 300% background-size). Used on "you control", "prompt engineering", "better prompts".
 
 **Structural:**
+
 - `.browser-frame` + `.browser-dots` — Terminal/browser chrome styling for the dashboard mockup and git clone terminal.
 - `.clay-card`, `.clay-inset`, `.glass` — Existing claymorphism utilities used throughout.
 
 **Custom inline components (defined in page.tsx):**
+
 - `BlurReveal` — Animates children from blur(10px)+opacity:0 to clear.
 - `CountUp` — Animated number counter triggered by `useInView`, using `motion/react` `animate()`.
 - `TypeWriter` — Character-by-character text reveal with blinking cursor.
@@ -38,6 +43,7 @@ The landing page (`apps/web/src/app/page.tsx`) and auth pages use a shared set o
 - `TerminalBlock` — Styled terminal with window chrome (3 colored dots), TypeWriter animation, and copy-to-clipboard button.
 
 **Feature card accent colors (one per card):**
+
 - Prompt Versioning: purple-500
 - Dataset Management: blue-500
 - Browser-Side Evals: emerald-500
@@ -46,6 +52,7 @@ The landing page (`apps/web/src/app/page.tsx`) and auth pages use a shared set o
 - SDK & Run Logging: cyan-500
 
 **Section backgrounds (alternating for visual rhythm):**
+
 - Default sections: transparent (page background shows through)
 - Features, Tech Stack, CTA: `oklch(0.20 0.006 67 / 0.5)` — subtle tint for contrast
 

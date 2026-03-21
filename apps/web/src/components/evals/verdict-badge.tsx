@@ -13,31 +13,31 @@ const verdictConfig: Record<
     label: "Improved",
     icon: ArrowUp,
     className: "text-green-500 border-green-500/30",
-    gradient: "bg-gradient-to-r from-green-500/15 to-green-500/5",
+    gradient: "bg-gradient-to-r from-green-500/15 to-green-500/5"
   },
   REGRESSED: {
     label: "Regressed",
     icon: ArrowDown,
     className: "text-red-500 border-red-500/30",
-    gradient: "bg-gradient-to-r from-red-500/15 to-red-500/5",
+    gradient: "bg-gradient-to-r from-red-500/15 to-red-500/5"
   },
   SAME: {
     label: "Same",
     icon: Equal,
     className: "text-zinc-400 border-zinc-400/30",
-    gradient: "bg-gradient-to-r from-zinc-400/15 to-zinc-400/5",
+    gradient: "bg-gradient-to-r from-zinc-400/15 to-zinc-400/5"
   },
   UNKNOWN: {
     label: "Unknown",
     icon: HelpCircle,
     className: "text-amber-500 border-amber-500/30",
-    gradient: "bg-gradient-to-r from-amber-500/15 to-amber-500/5",
-  },
+    gradient: "bg-gradient-to-r from-amber-500/15 to-amber-500/5"
+  }
 };
 
 export function VerdictBadge({
   verdict,
-  size = "default",
+  size = "default"
 }: {
   verdict: EvalRunItemVerdict;
   size?: "default" | "sm";

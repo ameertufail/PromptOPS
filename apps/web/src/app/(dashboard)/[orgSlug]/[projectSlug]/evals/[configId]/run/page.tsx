@@ -270,7 +270,11 @@ export default function EvalRunExecutionPage() {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl bg-card/30 py-16 text-center">
         <p className="text-muted-foreground">Eval config not found.</p>
-        <Button variant="link" onClick={() => router.back()} className="mt-2 hover:text-primary">
+        <Button
+          variant="link"
+          onClick={() => router.back()}
+          className="mt-2 hover:text-primary"
+        >
           Go back
         </Button>
       </div>
@@ -521,7 +525,10 @@ export default function EvalRunExecutionPage() {
                     {progressPercent}%
                   </span>
                 </div>
-                <Progress value={progressPercent} className="h-2 rounded-full" />
+                <Progress
+                  value={progressPercent}
+                  className="h-2 rounded-full"
+                />
               </div>
 
               {/* Live verdict counts */}

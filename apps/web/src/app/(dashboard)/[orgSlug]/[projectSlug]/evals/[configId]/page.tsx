@@ -116,7 +116,11 @@ const staggerContainer = {
 
 const staggerItem = {
   initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" as const } }
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: "easeOut" as const }
+  }
 };
 
 export default function EvalConfigDetailPage() {
@@ -335,15 +339,16 @@ export default function EvalConfigDetailPage() {
         </button>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {config.name}
-            </h1>
+            <h1 className="text-3xl font-bold tracking-tight">{config.name}</h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
               Dataset: {datasetName}
             </p>
           </div>
           <div className="flex items-center gap-2.5">
-            <Button asChild className="shadow-md transition-shadow hover:shadow-lg">
+            <Button
+              asChild
+              className="shadow-md transition-shadow hover:shadow-lg"
+            >
               <Link href={`${basePath}/evals/${configId}/run`}>
                 <Play className="mr-1.5 size-3.5" />
                 Run Eval
@@ -463,8 +468,9 @@ export default function EvalConfigDetailPage() {
                 LLM Judge
               </CardTitle>
               <CardDescription>
-                An AI model scores each output based on your rubric. Judge scoring
-                uses LLM calls, so it costs API credits and adds latency per item.
+                An AI model scores each output based on your rubric. Judge
+                scoring uses LLM calls, so it costs API credits and adds latency
+                per item.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -525,7 +531,9 @@ export default function EvalConfigDetailPage() {
                   {config.rules.judge.temperature !== undefined && (
                     <div className="flex justify-between">
                       <div>
-                        <span className="text-muted-foreground">Temperature</span>
+                        <span className="text-muted-foreground">
+                          Temperature
+                        </span>
                         <p className="text-[11px] text-muted-foreground/70">
                           Lower = more consistent scores, higher = more varied
                         </p>
@@ -542,7 +550,8 @@ export default function EvalConfigDetailPage() {
                   <p className="text-xs text-muted-foreground/70">
                     Without a judge, verdicts are based solely on deterministic
                     checks and guardrails. Enable judge scoring for nuanced
-                    quality assessment where pass/fail checks aren&apos;t enough.
+                    quality assessment where pass/fail checks aren&apos;t
+                    enough.
                   </p>
                 </div>
               )}
@@ -598,7 +607,9 @@ export default function EvalConfigDetailPage() {
                 <Separator className="my-2" />
                 <div className="flex justify-between">
                   <div>
-                    <span className="text-muted-foreground">Delta Threshold</span>
+                    <span className="text-muted-foreground">
+                      Delta Threshold
+                    </span>
                     <p className="text-[11px] text-muted-foreground/70">
                       Score difference needed to classify as improved/regressed
                     </p>
@@ -718,7 +729,10 @@ export default function EvalConfigDetailPage() {
           <p className="text-sm text-muted-foreground">
             No runs yet. Start your first evaluation to see results here.
           </p>
-          <Button asChild className="mt-4 shadow-md transition-shadow hover:shadow-lg">
+          <Button
+            asChild
+            className="mt-4 shadow-md transition-shadow hover:shadow-lg"
+          >
             <Link href={`${basePath}/evals/${configId}/run`}>
               <Play className="mr-1.5 size-3.5" />
               Run Eval

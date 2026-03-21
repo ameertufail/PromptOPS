@@ -113,7 +113,9 @@ export default function PromptListPage() {
                   <TableHead className="hidden font-semibold sm:table-cell">
                     Description
                   </TableHead>
-                  <TableHead className="font-semibold">Latest Version</TableHead>
+                  <TableHead className="font-semibold">
+                    Latest Version
+                  </TableHead>
                   <TableHead className="hidden font-semibold md:table-cell">
                     Status
                   </TableHead>

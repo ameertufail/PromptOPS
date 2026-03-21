@@ -43,24 +43,21 @@ function formatNumber(n: number | null | undefined) {
 const navCards = [
   {
     label: "Prompts",
-    description:
-      "Create and version prompt templates for your AI workflows.",
+    description: "Create and version prompt templates for your AI workflows.",
     icon: FileText,
     href: "/prompts",
     color: "from-violet-500/20 to-indigo-500/20"
   },
   {
     label: "Datasets",
-    description:
-      "Organize test cases for evaluating prompt performance.",
+    description: "Organize test cases for evaluating prompt performance.",
     icon: Database,
     href: "/datasets",
     color: "from-sky-500/20 to-cyan-500/20"
   },
   {
     label: "Evaluations",
-    description:
-      "Run evaluations with checks, guardrails, and judge scoring.",
+    description: "Run evaluations with checks, guardrails, and judge scoring.",
     icon: FlaskConical,
     href: "/evals",
     color: "from-emerald-500/20 to-teal-500/20"

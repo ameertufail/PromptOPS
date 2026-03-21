@@ -245,7 +245,10 @@ export default function DatasetDetailPage() {
               <h1 className="text-3xl font-bold tracking-tight">
                 {dataset.name}
               </h1>
-              <Badge variant="outline" className="rounded-md text-xs capitalize">
+              <Badge
+                variant="outline"
+                className="rounded-md text-xs capitalize"
+              >
                 {dataset.type.toLowerCase()}
               </Badge>
             </div>
@@ -340,8 +343,12 @@ export default function DatasetDetailPage() {
                     <TableHead className="hidden font-semibold sm:table-cell">
                       Expected Output
                     </TableHead>
-                    <TableHead className="hidden font-semibold md:table-cell">Tags</TableHead>
-                    <TableHead className="w-24 font-semibold">Actions</TableHead>
+                    <TableHead className="hidden font-semibold md:table-cell">
+                      Tags
+                    </TableHead>
+                    <TableHead className="w-24 font-semibold">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

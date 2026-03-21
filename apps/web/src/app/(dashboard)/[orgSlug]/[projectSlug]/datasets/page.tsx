@@ -23,10 +23,7 @@ import { Database, Plus, Layers } from "lucide-react";
 
 function DatasetTypeBadge({ type }: { type: string }) {
   return (
-    <Badge
-      variant="outline"
-      className="rounded-lg text-xs capitalize"
-    >
+    <Badge variant="outline" className="rounded-lg text-xs capitalize">
       {type.toLowerCase()}
     </Badge>
   );

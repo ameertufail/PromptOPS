@@ -1,37 +1,31 @@
-import { type ComponentPropsWithoutRef, type ReactNode } from "react"
-import { ArrowRightIcon } from "@radix-ui/react-icons"
+import { type ComponentPropsWithoutRef, type ReactNode } from "react";
+import { ArrowRightIcon } from "@radix-ui/react-icons";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 interface BentoGridProps extends ComponentPropsWithoutRef<"div"> {
-  children: ReactNode
-  className?: string
+  children: ReactNode;
+  className?: string;
 }
 
 interface BentoCardProps extends ComponentPropsWithoutRef<"div"> {
-  name: string
-  className: string
-  background: ReactNode
-  Icon: React.ElementType
-  description: string
-  href: string
-  cta: string
-  style?: React.CSSProperties
+  name: string;
+  className: string;
+  background: ReactNode;
+  Icon: React.ElementType;
+  description: string;
+  href: string;
+  cta: string;
+  style?: React.CSSProperties;
 }
 
 const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   return (
-    <div
-      className={cn(
-        "grid w-full gap-4",
-        className
-      )}
-      {...props}
-    >
+    <div className={cn("grid w-full gap-4", className)} {...props}>
       {children}
     </div>
-  )
-}
+  );
+};
 
 const BentoCard = ({
   name,
@@ -66,7 +60,7 @@ const BentoCard = ({
       className="pointer-events-none absolute inset-x-0 bottom-0 z-10 rounded-b-xl px-5 pb-4 pt-10"
       style={{
         background:
-          "linear-gradient(to top, rgba(12,12,24,0.95) 60%, transparent 100%)",
+          "linear-gradient(to top, rgba(12,12,24,0.95) 60%, transparent 100%)"
       }}
     >
       <div className="transform-gpu transition-all duration-300 lg:group-hover:-translate-y-8">
@@ -102,6 +96,6 @@ const BentoCard = ({
     {/* Hover overlay */}
     <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-[rgba(99,102,241,0.03)]" />
   </div>
-)
+);
 
-export { BentoCard, BentoGrid }
+export { BentoCard, BentoGrid };

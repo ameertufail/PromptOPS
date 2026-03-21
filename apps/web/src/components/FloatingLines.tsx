@@ -10,7 +10,7 @@ import {
   ShaderMaterial,
   Vector2,
   Vector3,
-  WebGLRenderer,
+  WebGLRenderer
 } from "three";
 
 import "./FloatingLines.css";
@@ -207,7 +207,9 @@ type FloatingLinesProps = {
 function hexToVec3(hex: string): Vector3 {
   let value = hex.trim();
   if (value.startsWith("#")) value = value.slice(1);
-  let r = 255, g = 255, b = 255;
+  let r = 255,
+    g = 255,
+    b = 255;
   if (value.length === 3) {
     r = parseInt(value[0] + value[0], 16);
     g = parseInt(value[1] + value[1], 16);
@@ -235,7 +237,7 @@ export default function FloatingLines({
   mouseDamping = 0.05,
   parallax = true,
   parallaxStrength = 0.2,
-  mixBlendMode = "screen",
+  mixBlendMode = "screen"
 }: FloatingLinesProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const targetMouseRef = useRef<Vector2>(new Vector2(-1000, -1000));
@@ -260,12 +262,22 @@ export default function FloatingLines({
   };
 
   const topLineCount = enabledWaves.includes("top") ? getLineCount("top") : 0;
-  const middleLineCount = enabledWaves.includes("middle") ? getLineCount("middle") : 0;
-  const bottomLineCount = enabledWaves.includes("bottom") ? getLineCount("bottom") : 0;
+  const middleLineCount = enabledWaves.includes("middle")
+    ? getLineCount("middle")
+    : 0;
+  const bottomLineCount = enabledWaves.includes("bottom")
+    ? getLineCount("bottom")
+    : 0;
 
-  const topLineDistance = enabledWaves.includes("top") ? getLineDistance("top") * 0.01 : 0.01;
-  const middleLineDistance = enabledWaves.includes("middle") ? getLineDistance("middle") * 0.01 : 0.01;
-  const bottomLineDistance = enabledWaves.includes("bottom") ? getLineDistance("bottom") * 0.01 : 0.01;
+  const topLineDistance = enabledWaves.includes("top")
+    ? getLineDistance("top") * 0.01
+    : 0.01;
+  const middleLineDistance = enabledWaves.includes("middle")
+    ? getLineDistance("middle") * 0.01
+    : 0.01;
+  const bottomLineDistance = enabledWaves.includes("bottom")
+    ? getLineDistance("bottom") * 0.01
+    : 0.01;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -301,13 +313,25 @@ export default function FloatingLines({
       bottomLineDistance: { value: bottomLineDistance },
 
       topWavePosition: {
-        value: new Vector3(topWavePosition?.x ?? 10.0, topWavePosition?.y ?? 0.5, topWavePosition?.rotate ?? -0.4),
+        value: new Vector3(
+          topWavePosition?.x ?? 10.0,
+          topWavePosition?.y ?? 0.5,
+          topWavePosition?.rotate ?? -0.4
+        )
       },
       middleWavePosition: {
-        value: new Vector3(middleWavePosition?.x ?? 5.0, middleWavePosition?.y ?? 0.0, middleWavePosition?.rotate ?? 0.2),
+        value: new Vector3(
+          middleWavePosition?.x ?? 5.0,
+          middleWavePosition?.y ?? 0.0,
+          middleWavePosition?.rotate ?? 0.2
+        )
       },
       bottomWavePosition: {
-        value: new Vector3(bottomWavePosition?.x ?? 2.0, bottomWavePosition?.y ?? -0.7, bottomWavePosition?.rotate ?? 0.4),
+        value: new Vector3(
+          bottomWavePosition?.x ?? 2.0,
+          bottomWavePosition?.y ?? -0.7,
+          bottomWavePosition?.rotate ?? 0.4
+        )
       },
 
       iMouse: { value: new Vector2(-1000, -1000) },
@@ -321,9 +345,12 @@ export default function FloatingLines({
       parallaxOffset: { value: new Vector2(0, 0) },
 
       lineGradient: {
-        value: Array.from({ length: MAX_GRADIENT_STOPS }, () => new Vector3(1, 1, 1)),
+        value: Array.from(
+          { length: MAX_GRADIENT_STOPS },
+          () => new Vector3(1, 1, 1)
+        )
       },
-      lineGradientCount: { value: 0 },
+      lineGradientCount: { value: 0 }
     };
 
     if (linesGradient && linesGradient.length > 0) {
@@ -331,11 +358,19 @@ export default function FloatingLines({
       uniforms.lineGradientCount.value = stops.length;
       stops.forEach((hex, i) => {
         const color = hexToVec3(hex);
-        (uniforms.lineGradient.value as Vector3[])[i].set(color.x, color.y, color.z);
+        (uniforms.lineGradient.value as Vector3[])[i].set(
+          color.x,
+          color.y,
+          color.z
+        );
       });
     }
 
-    const material = new ShaderMaterial({ uniforms, vertexShader, fragmentShader });
+    const material = new ShaderMaterial({
+      uniforms,
+      vertexShader,
+      fragmentShader
+    });
     const geometry = new PlaneGeometry(2, 2);
     const mesh = new Mesh(geometry, material);
     scene.add(mesh);
@@ -356,7 +391,9 @@ export default function FloatingLines({
 
     const ro =
       typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver(() => { if (active) setSize(); })
+        ? new ResizeObserver(() => {
+            if (active) setSize();
+          })
         : null;
     if (ro) ro.observe(container);
 
@@ -372,7 +409,10 @@ export default function FloatingLines({
         const centerY = rect.height / 2;
         const offsetX = (x - centerX) / rect.width;
         const offsetY = -(y - centerY) / rect.height;
-        targetParallaxRef.current.set(offsetX * parallaxStrength, offsetY * parallaxStrength);
+        targetParallaxRef.current.set(
+          offsetX * parallaxStrength,
+          offsetY * parallaxStrength
+        );
       }
     };
 
@@ -392,12 +432,19 @@ export default function FloatingLines({
       if (interactive) {
         currentMouseRef.current.lerp(targetMouseRef.current, mouseDamping);
         (uniforms.iMouse.value as Vector2).copy(currentMouseRef.current);
-        currentInfluenceRef.current += (targetInfluenceRef.current - currentInfluenceRef.current) * mouseDamping;
+        currentInfluenceRef.current +=
+          (targetInfluenceRef.current - currentInfluenceRef.current) *
+          mouseDamping;
         uniforms.bendInfluence.value = currentInfluenceRef.current;
       }
       if (parallax) {
-        currentParallaxRef.current.lerp(targetParallaxRef.current, mouseDamping);
-        (uniforms.parallaxOffset.value as Vector2).copy(currentParallaxRef.current);
+        currentParallaxRef.current.lerp(
+          targetParallaxRef.current,
+          mouseDamping
+        );
+        (uniforms.parallaxOffset.value as Vector2).copy(
+          currentParallaxRef.current
+        );
       }
       renderer.render(scene, camera);
       raf = requestAnimationFrame(renderLoop);
@@ -409,8 +456,14 @@ export default function FloatingLines({
       cancelAnimationFrame(raf);
       if (ro) ro.disconnect();
       if (interactive) {
-        renderer.domElement.removeEventListener("pointermove", handlePointerMove);
-        renderer.domElement.removeEventListener("pointerleave", handlePointerLeave);
+        renderer.domElement.removeEventListener(
+          "pointermove",
+          handlePointerMove
+        );
+        renderer.domElement.removeEventListener(
+          "pointerleave",
+          handlePointerLeave
+        );
       }
       geometry.dispose();
       material.dispose();
@@ -421,12 +474,26 @@ export default function FloatingLines({
       }
     };
   }, [
-    linesGradient, enabledWaves, lineCount, lineDistance,
-    topWavePosition, middleWavePosition, bottomWavePosition,
-    animationSpeed, interactive, bendRadius, bendStrength,
-    mouseDamping, parallax, parallaxStrength,
-    topLineCount, middleLineCount, bottomLineCount,
-    topLineDistance, middleLineDistance, bottomLineDistance,
+    linesGradient,
+    enabledWaves,
+    lineCount,
+    lineDistance,
+    topWavePosition,
+    middleWavePosition,
+    bottomWavePosition,
+    animationSpeed,
+    interactive,
+    bendRadius,
+    bendStrength,
+    mouseDamping,
+    parallax,
+    parallaxStrength,
+    topLineCount,
+    middleLineCount,
+    bottomLineCount,
+    topLineDistance,
+    middleLineDistance,
+    bottomLineDistance
   ]);
 
   return (

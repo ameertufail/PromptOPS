@@ -226,7 +226,8 @@ export default function RunsExplorerPage() {
                     const maxCount = Math.max(
                       ...stats.runsPerDay.map((r) => r.count)
                     );
-                    const height = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
+                    const height =
+                      maxCount > 0 ? (d.count / maxCount) * 100 : 0;
                     return (
                       <div
                         key={d.date}
@@ -285,7 +286,9 @@ export default function RunsExplorerPage() {
         <Card className="rounded-xl border shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-semibold">Run Logs</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                Run Logs
+              </CardTitle>
               <div className="flex items-center gap-2">
                 <Select
                   value={sourceFilter}
@@ -332,8 +335,12 @@ export default function RunsExplorerPage() {
                       <TableHead className="font-semibold">Source</TableHead>
                       <TableHead className="font-semibold">Input</TableHead>
                       <TableHead className="font-semibold">Output</TableHead>
-                      <TableHead className="text-right font-semibold">Latency</TableHead>
-                      <TableHead className="text-right font-semibold">Tokens</TableHead>
+                      <TableHead className="text-right font-semibold">
+                        Latency
+                      </TableHead>
+                      <TableHead className="text-right font-semibold">
+                        Tokens
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -420,7 +427,9 @@ export default function RunsExplorerPage() {
       >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Run Detail</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">
+              Run Detail
+            </DialogTitle>
           </DialogHeader>
           {selectedRun && (
             <div className="space-y-5">

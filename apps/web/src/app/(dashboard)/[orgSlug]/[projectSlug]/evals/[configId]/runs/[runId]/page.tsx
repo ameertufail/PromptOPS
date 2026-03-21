@@ -259,7 +259,11 @@ export default function EvalRunReportPage() {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl bg-card/30 py-16 text-center">
         <p className="text-muted-foreground">Eval run not found.</p>
-        <Button variant="link" onClick={() => router.back()} className="mt-2 hover:text-primary">
+        <Button
+          variant="link"
+          onClick={() => router.back()}
+          className="mt-2 hover:text-primary"
+        >
           Go back
         </Button>
       </div>
@@ -284,9 +288,7 @@ export default function EvalRunReportPage() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight">
-                Eval Report
-              </h1>
+              <h1 className="text-3xl font-bold tracking-tight">Eval Report</h1>
               <RunStatusBadge status={run.status} />
             </div>
             <p className="mt-1 text-sm text-muted-foreground">

@@ -270,7 +270,10 @@ export default function SetupPage() {
                       value={projectName}
                       onChange={(e) => {
                         setProjectName(e.target.value);
-                        if (!projectSlug || projectSlug === toSlug(projectName)) {
+                        if (
+                          !projectSlug ||
+                          projectSlug === toSlug(projectName)
+                        ) {
                           setProjectSlug(toSlug(e.target.value));
                         }
                       }}

@@ -19,8 +19,8 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 
 ## Routing (URL -> Page)
 
-- `/` - public landing page
-- `/login` - GitHub OAuth login button
+- `/` - public landing page (always visible; adapts CTAs for logged-in users instead of redirecting)
+- `/login` - GitHub OAuth login page with trust signals and back-to-home link
 - `/callback` - post-auth client landing page after the backend session is created
 - `/[orgSlug]` - org overview
 - `/[orgSlug]/[projectSlug]` - project dashboard
@@ -74,8 +74,9 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 
 **Auth Pages:**
 
-- [x] Login page
-- [x] Callback page
+- [x] Login page (redesigned: aurora background, trust signals, loading/error states, back-to-home link)
+- [x] Callback page (redesigned: matching card styling, error states with retry)
+- [x] Auth layout (redesigned: aurora background, noise texture, footer with links)
 - [x] Auth context + `useAuth`
 - [x] API client with auto-auth
 
@@ -128,12 +129,15 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 - [ ] Provider key management page
 - [ ] Empty states for all sections
 - [x] Onboarding flow (setup page with demo seed)
-- [x] Public landing page (polished for launch)
+- [x] Public landing page (full redesign: aurora background, hero with blur-reveal animation, styled terminal with typing effect, CSS dashboard mockup, animated stats, 3x2 feature grid with tilt-card hover effects per-color accents, SVG provider logos, tech stack pill grid, pricing section, border-beam CTA, 4-column footer, shimmer buttons, consistent section spacing and alternating section backgrounds)
 
 ## Completion Notes
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Landing page v3 - Fixed headline typography (removed WordRotate, whitespace-nowrap on "you control"), reverted to uniform 3x2 feature grid, tightened section spacing (py-16), enlarged dashboard mockup (max-w-5xl with border/glow), differentiated stat colors (purple/emerald/blue), differentiated navbar vs hero CTAs, uniform tech stack pill layout, wider pricing card (max-w-xl), wider CTA section (max-w-2xl, text-4xl), spacious footer, alternating section background tints, stronger aurora opacity (0.22), larger BYOK icon/logos.
+- 2026-03-16 - Landing page v2 - Complete landing page redesign: aurora background, blur-reveal hero, shimmer CTA buttons, styled terminal with typing animation, CSS dashboard mockup with prompt diff view, animated CountUp stats, TiltCard feature cards with per-color accents, inline SVG provider logos (OpenAI/Anthropic/Groq), tech stack icon grid, pricing section, border-beam CTA, 4-column footer, mouse spotlight, consistent py-24 spacing. Removed auto-redirect for logged-in users; page always renders with adaptive CTAs.
+- 2026-03-16 - Login page redesign - Redesigned auth layout with aurora background matching landing page, enlarged login card (420px, px-10 py-10), purple branded logo with glow, shimmer button, trust signals ("Your API keys never touch our servers", "Open Source · MIT License · BYOK"), back-to-home link, loading/error states on GitHub button, visible card border, rounded-xl corners. Updated callback page with matching card styling.
 - 2026-03-16 - Task 22.3 - Polished landing page with feature grid, BYOK section, tech stack badges, and CTA. Added demo seed to setup flow.
 - 2026-03-16 - Task 21.3 - Built API key management settings page, runs explorer with stats/charts/filters/run detail dialog, and dashboard stats cards on project page.
 - 2026-03-16 - Task 21.1 - Built eval run execution page, report page with summary cards/filterable results/side-by-side inspection/CSV+JSON export, and VerdictBadge/RunStatusBadge/StatCard components.

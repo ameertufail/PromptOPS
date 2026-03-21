@@ -102,6 +102,8 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-03-16 - Login page redesign - Redesigned login page: aurora background, enlarged card (420px), purple branded logo with glow, shimmer CTA button with loading state (spinner + "Redirecting..."), trust signals ("Your API keys never touch our servers"), back-to-home link. Redesigned callback error card with matching styling. Auth layout updated with aurora blobs, footer with GitHub/MIT links.
+- 2026-03-16 - Landing page auth change - Removed auto-redirect for logged-in users on `/`. Landing page now always renders; auth check runs in background and adapts CTA labels (navbar: "Dashboard"/"Sign In", hero: "Go to Dashboard"/"Get Started") without blocking page render.
 - 2026-03-16 - Task 22.2 - Added QA integration tests for auth edge cases (expired token, wrong secret, missing code) and RBAC role matrix validation.
 - 2026-03-16 - Task 22.1 - Hardened production CORS to block localhost origins and added HSTS for production environment.
 - 2026-03-16 - Task 21.2 - Added API key create/list/revoke endpoints, SHA-256 hash-based auth middleware, and last_used_at tracking for SDK run logging.

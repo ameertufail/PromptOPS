@@ -41,6 +41,30 @@ pnpm --filter @promptops/api dev
 pnpm --filter @promptops/web dev
 ```
 
+## Code Quality Commands
+
+Run all linting, formatting, and type checking in one command:
+
+```bash
+pnpm fix
+```
+
+This runs the following in sequence:
+
+1. `pnpm lint:fix` — auto-fixes ESLint errors across all packages (unused imports, formatting rules, etc.)
+2. `pnpm format` — formats all files with Prettier
+3. `pnpm typecheck` — reports TypeScript type errors (these cannot be auto-fixed)
+
+You can also run each step individually:
+
+| Command          | Description                                   |
+| ---------------- | --------------------------------------------- |
+| `pnpm lint`      | Check for lint errors (strict, zero warnings) |
+| `pnpm lint:fix`  | Auto-fix lint errors across all packages      |
+| `pnpm format`    | Format all files with Prettier                |
+| `pnpm typecheck` | Report TypeScript type errors (no auto-fix)   |
+| `pnpm fix`       | Run lint:fix + format + typecheck in sequence |
+
 ## Validated Local Runtime Baseline
 
 The following behaviors were validated for the scaffold on 2026-03-06:

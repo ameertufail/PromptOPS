@@ -167,11 +167,32 @@ Run this after pulling the Phase 7 migration files locally and before you start 
 - `GET https://promptops-api-production.promptops-ameer.workers.dev/api/health` returns `200`
 - The GitHub production OAuth app callback URL matches the Worker domain exactly
 
-## 6. Optional CI Token For Later Automation
+## 6. CI/CD — GitHub Actions Deploy
 
-When you are ready to automate Worker deploys from GitHub Actions:
+The repo includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automatically deploys the API to Cloudflare on every push to `main`. It requires two secrets in the GitHub **production** environment.
 
-1. Open Cloudflare `My Profile -> API Tokens -> Create Token`.
-2. Create a custom token with the minimum account permissions needed for Workers, D1, and R2 updates.
-3. In GitHub, open `Repository -> Settings -> Secrets and variables -> Actions`.
-4. Add a repository secret named `CLOUDFLARE_API_TOKEN`.
+### Create the Cloudflare API Token
+
+1. Go to `https://dash.cloudflare.com/profile/api-tokens`.
+2. Click **Create Token** and use the **"Edit Cloudflare Workers"** template.
+3. Ensure the token has these permissions:
+   - **Account** → Workers Scripts → Edit
+   - **Account** → D1 → Edit
+   - **Account** → Workers R2 Storage → Edit
+4. Under Account Resources, select your account.
+5. Click **Continue to summary** → **Create Token** and copy the token.
+
+### Get the Cloudflare Account ID
+
+1. Go to `https://dash.cloudflare.com`.
+2. Click **Workers & Pages** in the sidebar.
+3. Copy the **Account ID** shown on the right side of the overview page.
+
+### Add Secrets to GitHub
+
+1. Open the GitHub repo → **Settings** → **Environments** → **production**.
+2. Add two environment secrets:
+   - `CLOUDFLARE_API_TOKEN` — the token created above
+   - `CLOUDFLARE_ACCOUNT_ID` — your Cloudflare account ID
+
+Once configured, every push to `main` will automatically apply D1 migrations and deploy the Worker to production.

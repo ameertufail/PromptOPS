@@ -106,6 +106,13 @@ function isProduction(c: Context<AppEnv>) {
   return c.env?.ENVIRONMENT === "production";
 }
 
+function sessionCookieSameSite(c: Context<AppEnv>) {
+  // Production: frontend and API are on different domains, so cross-origin
+  // fetch requires SameSite=None (with Secure=true).
+  // Local: both are on localhost (same site), so Lax works fine.
+  return isProduction(c) ? ("None" as const) : ("Lax" as const);
+}
+
 function getFrontendBaseUrl(c: Context<AppEnv>) {
   return c.env?.FRONTEND_URL ?? "http://localhost:3000";
 }
@@ -246,7 +253,7 @@ export function clearSessionCookie(c: Context<AppEnv>) {
   deleteCookie(c, AUTH_SESSION_COOKIE_NAME, {
     httpOnly: true,
     path: "/",
-    sameSite: "Lax",
+    sameSite: sessionCookieSameSite(c),
     secure: isProduction(c)
   });
 }
@@ -319,7 +326,7 @@ export function setSessionCookie(
     httpOnly: true,
     maxAge: SESSION_TTL_SECONDS,
     path: "/",
-    sameSite: "Lax",
+    sameSite: sessionCookieSameSite(c),
     secure: isProduction(c)
   });
 

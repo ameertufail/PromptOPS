@@ -57,7 +57,9 @@ async function request<T>(
   if (res.status === 401) {
     if (
       typeof window !== "undefined" &&
-      !window.location.pathname.startsWith("/login")
+      !window.location.pathname.startsWith("/login") &&
+      !window.location.pathname.startsWith("/callback") &&
+      window.location.pathname !== "/"
     ) {
       window.location.href = "/login";
     }

@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { User } from "@promptops/shared";
-import { api } from "@/lib/api-client";
+import { api, storeSessionToken } from "@/lib/api-client";
 
 export default function CallbackPage() {
   const router = useRouter();
@@ -25,6 +25,13 @@ export default function CallbackPage() {
             : `Authentication error: ${authError}`
       );
       return;
+    }
+
+    const token = params.get("token");
+    if (token) {
+      storeSessionToken(token);
+      // Clean the token from the URL to avoid leaking it in browser history
+      window.history.replaceState({}, "", "/callback");
     }
 
     api

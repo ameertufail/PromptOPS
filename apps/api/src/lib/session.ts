@@ -114,13 +114,6 @@ function getBackendBaseUrl(c: Context<AppEnv>) {
   return new URL(c.req.url).origin;
 }
 
-function getOAuthRedirectBaseUrl(c: Context<AppEnv>) {
-  // In production, OAuth callbacks go through the frontend's rewrite proxy
-  // so cookies stay on the same domain as the frontend.
-  // In development, the callback goes directly to the API.
-  return isProduction(c) ? getFrontendBaseUrl(c) : getBackendBaseUrl(c);
-}
-
 function getRequiredSecret(
   c: Context<AppEnv>,
   name: "GITHUB_CLIENT_ID" | "GITHUB_CLIENT_SECRET" | "JWT_SECRET"
@@ -222,7 +215,7 @@ export function buildGithubAuthorizeUrl(c: Context<AppEnv>, state: string) {
   url.searchParams.set("client_id", getRequiredSecret(c, "GITHUB_CLIENT_ID"));
   url.searchParams.set(
     "redirect_uri",
-    `${getOAuthRedirectBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`
+    `${getBackendBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`
   );
   url.searchParams.set("scope", GITHUB_OAUTH_SCOPE);
   url.searchParams.set("state", state);
@@ -343,7 +336,7 @@ export async function exchangeGithubCode(
       client_id: getRequiredSecret(c, "GITHUB_CLIENT_ID"),
       client_secret: getRequiredSecret(c, "GITHUB_CLIENT_SECRET"),
       code,
-      redirect_uri: `${getOAuthRedirectBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`,
+      redirect_uri: `${getBackendBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`,
       state
     }),
     headers: {

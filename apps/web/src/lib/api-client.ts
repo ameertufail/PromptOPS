@@ -6,6 +6,27 @@ import type { ApiErrorResponse } from "@promptops/shared";
 // In development, calls go directly to the local API server.
 const API_URL = process.env.NEXT_PUBLIC_API_URL ? "" : "http://localhost:8787";
 
+const SESSION_TOKEN_KEY = "po_session_token";
+
+export function storeSessionToken(token: string) {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(SESSION_TOKEN_KEY, token);
+  }
+}
+
+export function clearSessionToken() {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(SESSION_TOKEN_KEY);
+  }
+}
+
+function getSessionToken() {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem(SESSION_TOKEN_KEY);
+  }
+  return null;
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -39,6 +60,11 @@ async function request<T>(
     ...(customHeaders as Record<string, string>)
   };
 
+  const token = getSessionToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const isFormData =
     typeof FormData !== "undefined" && body instanceof FormData;
 
@@ -58,6 +84,7 @@ async function request<T>(
   });
 
   if (res.status === 401) {
+    clearSessionToken();
     if (
       typeof window !== "undefined" &&
       !window.location.pathname.startsWith("/login") &&

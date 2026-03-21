@@ -9,7 +9,7 @@ import {
   type ReactNode
 } from "react";
 import type { User } from "@promptops/shared";
-import { api, ApiError } from "./api-client";
+import { api, ApiError, clearSessionToken } from "./api-client";
 
 type AuthState = {
   user: User | null;
@@ -57,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // best-effort
     }
+    clearSessionToken();
     setState({ user: null, loading: false, error: null });
     window.location.href = "/login";
   }, []);

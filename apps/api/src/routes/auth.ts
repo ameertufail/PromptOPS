@@ -114,7 +114,7 @@ authRoutes.get(`${API_AUTH_BASE_PATH}/callback`, async (c) => {
     clearOAuthStateCookie(c);
     setSessionCookie(c, sessionToken, sessionClaims);
 
-    return redirectToFrontendCallback(c);
+    return redirectToFrontendCallback(c, { token: sessionToken });
   } catch {
     clearOAuthStateCookie(c);
     clearSessionCookie(c);

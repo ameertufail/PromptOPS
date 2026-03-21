@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { VerdictBadge } from "@/components/evals/verdict-badge";
+
 import { api, ApiError } from "@/lib/api-client";
 import { EvalEngine } from "@/lib/eval/engine";
 import type { EvalEngineProgress } from "@/lib/eval/types";

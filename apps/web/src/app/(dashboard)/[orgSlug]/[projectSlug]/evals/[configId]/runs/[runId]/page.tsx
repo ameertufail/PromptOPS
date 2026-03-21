@@ -6,7 +6,6 @@ import type {
   EvalRun,
   EvalRunDetailsResponse,
   EvalRunItem,
-  EvalRunItemVerdict,
   EvalRunItemsResponse,
   EvalRunSummary
 } from "@promptops/shared";
@@ -52,8 +51,7 @@ import {
   Clock,
   Download,
   Equal,
-  Eye,
-  Target
+  Eye
 } from "lucide-react";
 import { motion } from "motion/react";
 import { toast } from "sonner";

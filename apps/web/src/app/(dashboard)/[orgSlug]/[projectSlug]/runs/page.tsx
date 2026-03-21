@@ -7,8 +7,6 @@ import {
   ChevronRight,
   Clock,
   Filter,
-  Loader2,
-  Search,
   Zap
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -20,7 +18,7 @@ import type {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,

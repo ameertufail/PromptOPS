@@ -29,7 +29,7 @@ import {
 import {
   requireApiKeyIdentity,
   requireDatabaseBinding,
-  requireSessionIdentity
+  _requireSessionIdentity
 } from "../middleware/auth";
 import { createApiKeyRateLimitMiddleware } from "../middleware/rate-limit";
 import { requireMinimumRole, resolveProjectAccess } from "../middleware/rbac";

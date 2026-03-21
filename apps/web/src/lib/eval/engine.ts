@@ -17,7 +17,6 @@ import type {
   CreateEvalRunItemRequest,
   DatasetItem,
   EvalItemMetrics,
-  EvalRules,
   ProviderType
 } from "@promptops/shared";
 import {

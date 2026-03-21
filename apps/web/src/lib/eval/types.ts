@@ -6,7 +6,6 @@ import type {
   CreateEvalRunItemRequest,
   DatasetItem,
   EvalConfig,
-  EvalRules,
   EvalRun,
   EvalRunItem,
   PromptVersion

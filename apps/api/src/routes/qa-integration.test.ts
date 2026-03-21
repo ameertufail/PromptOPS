@@ -18,7 +18,7 @@ import {
 } from "@promptops/shared";
 import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
 import { createApp, type AppBindings } from "../index";
-import { createResult, MockDb } from "../test-utils/d1";
+import { _createResult, MockDb } from "../test-utils/d1";
 import {
   createSessionClaims,
   getOAuthStateCookieName,
@@ -49,7 +49,7 @@ const TEST_USER_SHARED = {
   name: TEST_USER.name
 };
 
-async function makeSessionToken(secret = "test-jwt-secret") {
+async function _makeSessionToken(secret = "test-jwt-secret") {
   return signSessionToken(secret, createSessionClaims(TEST_USER_SHARED));
 }
 

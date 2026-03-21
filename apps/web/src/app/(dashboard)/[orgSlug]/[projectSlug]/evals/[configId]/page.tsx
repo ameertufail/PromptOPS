@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { RunStatusBadge } from "@/components/evals/run-status-badge";
-import { VerdictBadge } from "@/components/evals/verdict-badge";
+
 import { api, ApiError } from "@/lib/api-client";
 import { useOrg } from "@/lib/org-context";
 import { useProject } from "@/lib/project-context";
@@ -98,12 +98,6 @@ type EditableRules = {
     minJudgeScore: number | null;
     noGuardrailFailures: boolean;
   };
-};
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4, ease: "easeOut" as const }
 };
 
 const staggerContainer = {

@@ -18,7 +18,7 @@ import {
 } from "@promptops/shared";
 import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
 import { createApp, type AppBindings } from "../index";
-import { _createResult, MockDb } from "../test-utils/d1";
+import { MockDb } from "../test-utils/d1";
 import {
   createSessionClaims,
   getOAuthStateCookieName,

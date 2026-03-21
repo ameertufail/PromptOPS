@@ -12,6 +12,7 @@
   "scripts": {
     "build": "tsc --noEmit",
     "lint": "eslint src --ext .ts --max-warnings=0",
+    "lint:fix": "eslint src --ext .ts --fix",
     "test": "vitest run packages/shared/src --config vitest.config.ts --root ../../",
     "typecheck": "tsc --noEmit"
   },

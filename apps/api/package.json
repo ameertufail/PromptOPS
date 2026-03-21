@@ -13,6 +13,7 @@
     "build": "tsc --noEmit",
     "deploy": "wrangler deploy",
     "lint": "eslint src --ext .ts --max-warnings=0",
+    "lint:fix": "eslint src --ext .ts --fix",
     "test": "vitest run apps/api/src --config vitest.config.ts --root ../../",
     "typecheck": "tsc --noEmit"
   },

@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src --ext .ts,.tsx --max-warnings=0",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "test": "vitest run apps/web/src --config vitest.config.ts --root ../../",
     "typecheck": "tsc --noEmit"
   },

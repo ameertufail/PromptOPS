@@ -106,19 +106,19 @@ function isProduction(c: Context<AppEnv>) {
   return c.env?.ENVIRONMENT === "production";
 }
 
-function sessionCookieSameSite(c: Context<AppEnv>) {
-  // Production: frontend and API are on different domains, so cross-origin
-  // fetch requires SameSite=None (with Secure=true).
-  // Local: both are on localhost (same site), so Lax works fine.
-  return isProduction(c) ? ("None" as const) : ("Lax" as const);
-}
-
 function getFrontendBaseUrl(c: Context<AppEnv>) {
   return c.env?.FRONTEND_URL ?? "http://localhost:3000";
 }
 
 function getBackendBaseUrl(c: Context<AppEnv>) {
   return new URL(c.req.url).origin;
+}
+
+function getOAuthRedirectBaseUrl(c: Context<AppEnv>) {
+  // In production, OAuth callbacks go through the frontend's rewrite proxy
+  // so cookies stay on the same domain as the frontend.
+  // In development, the callback goes directly to the API.
+  return isProduction(c) ? getFrontendBaseUrl(c) : getBackendBaseUrl(c);
 }
 
 function getRequiredSecret(
@@ -222,7 +222,7 @@ export function buildGithubAuthorizeUrl(c: Context<AppEnv>, state: string) {
   url.searchParams.set("client_id", getRequiredSecret(c, "GITHUB_CLIENT_ID"));
   url.searchParams.set(
     "redirect_uri",
-    `${getBackendBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`
+    `${getOAuthRedirectBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`
   );
   url.searchParams.set("scope", GITHUB_OAUTH_SCOPE);
   url.searchParams.set("state", state);
@@ -253,7 +253,7 @@ export function clearSessionCookie(c: Context<AppEnv>) {
   deleteCookie(c, AUTH_SESSION_COOKIE_NAME, {
     httpOnly: true,
     path: "/",
-    sameSite: sessionCookieSameSite(c),
+    sameSite: "Lax",
     secure: isProduction(c)
   });
 }
@@ -326,7 +326,7 @@ export function setSessionCookie(
     httpOnly: true,
     maxAge: SESSION_TTL_SECONDS,
     path: "/",
-    sameSite: sessionCookieSameSite(c),
+    sameSite: "Lax",
     secure: isProduction(c)
   });
 
@@ -343,7 +343,7 @@ export async function exchangeGithubCode(
       client_id: getRequiredSecret(c, "GITHUB_CLIENT_ID"),
       client_secret: getRequiredSecret(c, "GITHUB_CLIENT_SECRET"),
       code,
-      redirect_uri: `${getBackendBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`,
+      redirect_uri: `${getOAuthRedirectBaseUrl(c)}${API_AUTH_BASE_PATH}/callback`,
       state
     }),
     headers: {

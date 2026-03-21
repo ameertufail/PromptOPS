@@ -1,7 +1,10 @@
 import { API_BASE_PATH } from "@promptops/shared";
 import type { ApiErrorResponse } from "@promptops/shared";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+// In production, API calls use relative paths (/api/...) so they go through
+// the Next.js rewrite proxy, keeping cookies on the same domain.
+// In development, calls go directly to the local API server.
+const API_URL = process.env.NEXT_PUBLIC_API_URL ? "" : "http://localhost:8787";
 
 export class ApiError extends Error {
   constructor(

@@ -6,7 +6,7 @@ import { Github, ArrowLeft, ShieldCheck, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ? "" : "http://localhost:8787";
 
 const stagger = {
   hidden: { opacity: 0 },

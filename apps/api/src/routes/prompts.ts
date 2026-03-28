@@ -64,6 +64,15 @@ import type { AppEnv } from "../types";
 
 export const promptRoutes = new Hono<AppEnv>();
 
+function safeJsonParse(value: string | null): unknown {
+  if (!value) return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
 function toSharedPrompt(prompt: DbPrompt): Prompt {
   return promptSchema.parse({
     createdAt: prompt.created_at,
@@ -81,12 +90,10 @@ function toSharedPromptVersion(version: DbPromptVersion): PromptVersion {
     createdAt: version.created_at,
     createdBy: version.created_by,
     id: version.id,
-    modelConfig: version.model_config ? JSON.parse(version.model_config) : null,
+    modelConfig: safeJsonParse(version.model_config),
     promptId: version.prompt_id,
     status: version.status,
-    variablesSchema: version.variables_schema
-      ? JSON.parse(version.variables_schema)
-      : null,
+    variablesSchema: safeJsonParse(version.variables_schema),
     versionNumber: version.version_number
   });
 }

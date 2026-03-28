@@ -27,12 +27,16 @@ const UUID_PATTERN =
 function isValidRequestId(value: string | undefined): value is string {
   if (!value) return false;
   const trimmed = value.trim();
-  return trimmed.length > 0 && trimmed.length <= 128 && UUID_PATTERN.test(trimmed);
+  return (
+    trimmed.length > 0 && trimmed.length <= 128 && UUID_PATTERN.test(trimmed)
+  );
 }
 
 const requestContextMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
   const clientId = c.req.header("X-Request-Id");
-  const requestId = isValidRequestId(clientId) ? clientId.trim() : crypto.randomUUID();
+  const requestId = isValidRequestId(clientId)
+    ? clientId.trim()
+    : crypto.randomUUID();
 
   c.header("X-Request-Id", requestId);
   c.set("requestContext", createRequestContext(requestId));

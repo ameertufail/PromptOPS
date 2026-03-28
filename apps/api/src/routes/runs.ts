@@ -36,12 +36,21 @@ import type { AppEnv } from "../types";
 
 export const runRoutes = new Hono<AppEnv>();
 
+function safeJsonParse(value: string | null): unknown {
+  if (!value) return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
 function toSharedRun(run: DbRun): Run {
   return runSchema.parse({
     createdAt: run.created_at,
     id: run.id,
-    input: JSON.parse(run.input),
-    metrics: run.metrics ? JSON.parse(run.metrics) : null,
+    input: safeJsonParse(run.input),
+    metrics: safeJsonParse(run.metrics),
     output: run.output,
     projectId: run.project_id,
     promptVersionId: run.prompt_version_id,

@@ -136,10 +136,11 @@ export async function listApiKeysByProject(
   const result = await db
     .prepare(
       `
-        SELECT id, project_id, name, key_hash, key_prefix, last_used_at, created_by, created_at
+        SELECT id, project_id, name, key_prefix, last_used_at, created_by, created_at
         FROM api_keys
         WHERE project_id = ?
         ORDER BY created_at DESC
+        LIMIT 100
       `
     )
     .bind(input.projectId)

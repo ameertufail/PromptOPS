@@ -114,8 +114,9 @@ authRoutes.get(`${API_AUTH_BASE_PATH}/callback`, async (c) => {
     clearOAuthStateCookie(c);
     setSessionCookie(c, sessionToken, sessionClaims);
 
-    return redirectToFrontendCallback(c, { token: sessionToken });
-  } catch {
+    return redirectToFrontendCallback(c, {});
+  } catch (error) {
+    console.error("[auth] OAuth callback failed:", error instanceof Error ? error.message : error);
     clearOAuthStateCookie(c);
     clearSessionCookie(c);
 
@@ -140,7 +141,7 @@ authRoutes.get(`${API_AUTH_BASE_PATH}/me`, requireSessionIdentity(), (c) => {
   );
 });
 
-authRoutes.post(`${API_AUTH_BASE_PATH}/logout`, (c) => {
+authRoutes.post(`${API_AUTH_BASE_PATH}/logout`, requireSessionIdentity(), (c) => {
   clearSessionCookie(c);
 
   return c.json(authLogoutResponseSchema.parse({ success: true }));

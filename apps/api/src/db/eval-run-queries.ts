@@ -333,6 +333,7 @@ export async function getAllEvalRunItems(
         FROM eval_run_items
         WHERE eval_run_id = ?
         ORDER BY created_at ASC
+        LIMIT 10000
       `
     )
     .bind(input.evalRunId)

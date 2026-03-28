@@ -20,10 +20,8 @@ type JwtHeader = {
 };
 
 export type SessionClaims = {
-  email: string;
   exp: number;
   iat: number;
-  name: string;
   sub: string;
 };
 
@@ -102,8 +100,8 @@ async function verifyValue(value: string, signature: string, secret: string) {
   );
 }
 
-function isProduction(c: Context<AppEnv>) {
-  return c.env?.ENVIRONMENT === "production";
+function isSecureContext(c: Context<AppEnv>) {
+  return !c.req.url.startsWith("http://localhost");
 }
 
 function getFrontendBaseUrl(c: Context<AppEnv>) {
@@ -111,7 +109,7 @@ function getFrontendBaseUrl(c: Context<AppEnv>) {
 }
 
 function getBackendBaseUrl(c: Context<AppEnv>) {
-  return new URL(c.req.url).origin;
+  return c.env?.BACKEND_URL ?? new URL(c.req.url).origin;
 }
 
 function getRequiredSecret(
@@ -229,7 +227,7 @@ export function setOAuthStateCookie(c: Context<AppEnv>, state: string) {
     maxAge: OAUTH_STATE_MAX_AGE_SECONDS,
     path: API_AUTH_BASE_PATH,
     sameSite: "Lax",
-    secure: isProduction(c)
+    secure: isSecureContext(c)
   });
 }
 
@@ -238,7 +236,7 @@ export function clearOAuthStateCookie(c: Context<AppEnv>) {
     httpOnly: true,
     path: API_AUTH_BASE_PATH,
     sameSite: "Lax",
-    secure: isProduction(c)
+    secure: isSecureContext(c)
   });
 }
 
@@ -247,7 +245,7 @@ export function clearSessionCookie(c: Context<AppEnv>) {
     httpOnly: true,
     path: "/",
     sameSite: "Lax",
-    secure: isProduction(c)
+    secure: isSecureContext(c)
   });
 }
 
@@ -255,10 +253,8 @@ export function createSessionClaims(user: User): SessionClaims {
   const issuedAt = Math.floor(Date.now() / 1000);
 
   return {
-    email: user.email,
     exp: issuedAt + SESSION_TTL_SECONDS,
     iat: issuedAt,
-    name: user.name,
     sub: user.id
   };
 }
@@ -320,7 +316,7 @@ export function setSessionCookie(
     maxAge: SESSION_TTL_SECONDS,
     path: "/",
     sameSite: "Lax",
-    secure: isProduction(c)
+    secure: isSecureContext(c)
   });
 
   return getSessionExpiryIso(claims);

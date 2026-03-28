@@ -164,6 +164,7 @@ export async function listProjectPrompts(
           )
         WHERE p.project_id = ?
         ORDER BY LOWER(p.name) ASC, p.created_at ASC
+        LIMIT 200
       `
     )
     .bind(input.projectId)
@@ -206,6 +207,7 @@ export async function listPromptVersions(
         FROM prompt_versions
         WHERE prompt_id = ?
         ORDER BY version_number DESC
+        LIMIT 100
       `
     )
     .bind(input.promptId)
@@ -228,6 +230,10 @@ export async function createPromptVersion(
   const createId = getIdFactory(options);
   const versionId = createId();
   const session = db.withSession("first-primary");
+  // The UNIQUE(prompt_id, version_number) constraint in the schema protects
+  // against duplicate version numbers if two concurrent inserts race on the
+  // same prompt_id.  The losing insert will receive a UNIQUE constraint
+  // violation and can be safely retried by the caller.
   const [, versionResult] = await session.batch<DbPromptVersion>([
     session
       .prepare(

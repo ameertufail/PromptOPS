@@ -12,6 +12,18 @@ export function computeLineDiff(
   const m = baseLines.length;
   const n = candidateLines.length;
 
+  // Size guard: avoid O(m*n) LCS for very large inputs
+  if (m * n > 1_000_000) {
+    const hunks: DiffHunk[] = [];
+    if (baseText) {
+      hunks.push({ content: baseText, type: "removed" });
+    }
+    if (candidateText) {
+      hunks.push({ content: candidateText, type: "added" });
+    }
+    return hunks;
+  }
+
   const dp: number[][] = [];
 
   for (let i = 0; i <= m; i++) {

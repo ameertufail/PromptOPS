@@ -49,6 +49,15 @@ import type { AppEnv } from "../types";
 
 export const evalConfigRoutes = new Hono<AppEnv>();
 
+function safeJsonParse(value: string | null): unknown {
+  if (!value) return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
 // ── Shared Helpers ──────────────────────────────────────────────────────
 
 function toSharedEvalConfig(config: DbEvalConfig): EvalConfig {
@@ -59,7 +68,7 @@ function toSharedEvalConfig(config: DbEvalConfig): EvalConfig {
     id: config.id,
     name: config.name,
     projectId: config.project_id,
-    rules: JSON.parse(config.rules)
+    rules: safeJsonParse(config.rules)
   });
 }
 

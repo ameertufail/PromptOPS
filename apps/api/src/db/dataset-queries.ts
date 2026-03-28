@@ -285,6 +285,7 @@ export async function getAllDatasetItems(
         FROM dataset_items
         WHERE dataset_id = ?
         ORDER BY sort_order ASC, id ASC
+        LIMIT 10000
       `
     )
     .bind(input.datasetId)
@@ -505,7 +506,8 @@ export async function bulkCreateDatasetItems(
         .bind(batch.length, input.datasetId)
     );
 
-    await db.batch(statements);
+    const session = db.withSession("first-primary");
+    await session.batch(statements);
     totalInserted += batch.length;
   }
 

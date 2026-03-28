@@ -32,6 +32,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install:ci
 
+      # IMPORTANT: This step re-runs ALL migration files on every deploy.
+      # All SQL migrations MUST be idempotent (use IF NOT EXISTS, IF EXISTS,
+      # CREATE TABLE IF NOT EXISTS, etc.) so that re-applying an already-applied
+      # migration is a safe no-op. Failing to do so will cause deploy failures
+      # or data corruption.
       - name: Apply D1 migrations to production
         working-directory: apps/api
         env:

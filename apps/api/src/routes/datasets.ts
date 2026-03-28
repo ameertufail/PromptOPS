@@ -68,6 +68,15 @@ import type { AppEnv } from "../types";
 
 export const datasetRoutes = new Hono<AppEnv>();
 
+function safeJsonParse(value: string | null): unknown {
+  if (!value) return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
 // ── Shared Helpers ──────────────────────────────────────────────────────
 
 function toSharedDataset(dataset: DbDataset): Dataset {
@@ -87,14 +96,12 @@ function toSharedDatasetItem(item: DbDatasetItem): DatasetItem {
   return datasetItemSchema.parse({
     createdAt: item.created_at,
     datasetId: item.dataset_id,
-    expectedOutput: item.expected_output
-      ? JSON.parse(item.expected_output)
-      : null,
+    expectedOutput: safeJsonParse(item.expected_output),
     id: item.id,
-    input: JSON.parse(item.input),
-    rubric: item.rubric ? JSON.parse(item.rubric) : null,
+    input: safeJsonParse(item.input),
+    rubric: safeJsonParse(item.rubric),
     sortOrder: item.sort_order,
-    tags: item.tags ? JSON.parse(item.tags) : []
+    tags: safeJsonParse(item.tags) ?? []
   });
 }
 

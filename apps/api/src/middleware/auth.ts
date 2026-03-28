@@ -69,7 +69,10 @@ export const resolveRequestIdentity: MiddlewareHandler<AppEnv> = async (
         return;
       }
     } catch (error) {
-      console.error("[auth] Authentication error:", error instanceof Error ? error.message : "unknown");
+      console.error(
+        "[auth] Authentication error:",
+        error instanceof Error ? error.message : "unknown"
+      );
       // Fall through to anonymous
     }
 
@@ -104,7 +107,10 @@ export const resolveRequestIdentity: MiddlewareHandler<AppEnv> = async (
     authenticateSession(c, user.id);
     setAuthenticatedUser(c, toUser(user), getSessionExpiryIso(claims));
   } catch (error) {
-    console.error("[auth] Authentication error:", error instanceof Error ? error.message : "unknown");
+    console.error(
+      "[auth] Authentication error:",
+      error instanceof Error ? error.message : "unknown"
+    );
     setRequestIdentity(c, { kind: "anonymous" });
     clearAuthenticatedUser(c);
     clearSessionCookie(c);

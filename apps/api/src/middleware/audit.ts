@@ -29,20 +29,30 @@ export const auditMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
     return;
   }
 
-  const statements = requestContext.auditEvents.map((auditEvent) => {
-    const orgId =
-      auditEvent.orgId ??
-      requestContext.org?.id ??
-      requestContext.project?.orgId;
-    const actorUserId =
-      auditEvent.actorUserId ??
-      (requestContext.identity.kind === "session"
-        ? requestContext.identity.userId
-        : null);
+  const statements = requestContext.auditEvents
+    .map((auditEvent) => {
+      const orgId =
+        auditEvent.orgId ??
+        requestContext.org?.id ??
+        requestContext.project?.orgId;
 
-    return db
-      .prepare(
-        `
+      if (!orgId) {
+        console.warn(
+          `[audit] Skipping audit event "${auditEvent.action}" for entity ` +
+            `${auditEvent.entityType}/${auditEvent.entityId}: orgId is null`
+        );
+        return null;
+      }
+
+      const actorUserId =
+        auditEvent.actorUserId ??
+        (requestContext.identity.kind === "session"
+          ? requestContext.identity.userId
+          : null);
+
+      return db
+        .prepare(
+          `
         INSERT INTO audit_events (
           id,
           org_id,
@@ -54,19 +64,25 @@ export const auditMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
         )
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `
-      )
-      .bind(
-        createUlid(),
-        orgId ?? null,
-        actorUserId,
-        auditEvent.action,
-        auditEvent.entityType,
-        auditEvent.entityId,
-        auditEvent.metadata === undefined
-          ? null
-          : JSON.stringify(auditEvent.metadata)
-      );
-  });
+        )
+        .bind(
+          createUlid(),
+          orgId,
+          actorUserId,
+          auditEvent.action,
+          auditEvent.entityType,
+          auditEvent.entityId,
+          auditEvent.metadata === undefined
+            ? null
+            : JSON.stringify(auditEvent.metadata)
+        );
+    })
+    .filter((s): s is NonNullable<typeof s> => s !== null);
+
+  if (statements.length === 0) {
+    clearAuditEvents(c);
+    return;
+  }
 
   await db.batch(statements);
   clearAuditEvents(c);

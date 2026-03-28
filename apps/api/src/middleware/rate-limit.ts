@@ -13,6 +13,10 @@ type RateLimitBucket = {
   resetAt: number;
 };
 
+// Limitation: In-memory rate limit state is per-isolate and not shared across
+// Cloudflare Worker instances. Under high traffic, each isolate maintains its
+// own independent bucket map, so the effective limit may be higher than
+// configured. Consider Durable Objects or an external store for strict limits.
 const apiKeyBuckets = new Map<string, RateLimitBucket>();
 
 export function resetRateLimitState() {

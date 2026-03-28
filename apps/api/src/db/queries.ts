@@ -552,6 +552,7 @@ export async function listOrgMembers(db: D1Database, input: { orgId: string }) {
         INNER JOIN users u ON u.id = om.user_id
         WHERE om.org_id = ?
         ORDER BY LOWER(u.name) ASC, LOWER(u.email) ASC
+        LIMIT 200
       `
     )
     .bind(input.orgId)
@@ -727,6 +728,7 @@ export async function listOrgProjects(
         FROM projects
         WHERE org_id = ?
         ORDER BY LOWER(name) ASC, created_at ASC
+        LIMIT 200
       `
     )
     .bind(input.orgId)

@@ -197,6 +197,7 @@ export async function getRunStats(
           SELECT metrics
           FROM runs
           WHERE ${whereClause} AND metrics IS NOT NULL
+          LIMIT 10000
         `
       )
       .bind(...bindings)

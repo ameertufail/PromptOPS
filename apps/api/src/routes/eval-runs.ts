@@ -77,6 +77,15 @@ import type { AppEnv } from "../types";
 
 export const evalRunRoutes = new Hono<AppEnv>();
 
+function safeJsonParse(value: string | null): unknown {
+  if (!value) return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
 // ── Shared Helpers ──────────────────────────────────────────────────────
 
 function toSharedEvalRun(run: DbEvalRun): EvalRun {
@@ -92,21 +101,19 @@ function toSharedEvalRun(run: DbEvalRun): EvalRun {
     progressCurrent: run.progress_current,
     progressTotal: run.progress_total,
     status: run.status,
-    summary: run.summary ? JSON.parse(run.summary) : null
+    summary: safeJsonParse(run.summary)
   });
 }
 
 function toSharedEvalRunItem(item: DbEvalRunItem): EvalRunItem {
   return evalRunItemSchema.parse({
-    baseMetrics: item.base_metrics ? JSON.parse(item.base_metrics) : null,
+    baseMetrics: safeJsonParse(item.base_metrics),
     baseOutput: item.base_output,
-    candidateMetrics: item.candidate_metrics
-      ? JSON.parse(item.candidate_metrics)
-      : null,
+    candidateMetrics: safeJsonParse(item.candidate_metrics),
     candidateOutput: item.candidate_output,
     createdAt: item.created_at,
     datasetItemId: item.dataset_item_id,
-    delta: item.delta ? JSON.parse(item.delta) : null,
+    delta: safeJsonParse(item.delta),
     evalRunId: item.eval_run_id,
     id: item.id,
     verdict: item.verdict
@@ -121,7 +128,7 @@ function toSharedEvalConfig(config: DbEvalConfig): EvalConfig {
     id: config.id,
     name: config.name,
     projectId: config.project_id,
-    rules: JSON.parse(config.rules)
+    rules: safeJsonParse(config.rules)
   });
 }
 
@@ -131,10 +138,10 @@ function toSharedPromptVersion(v: DbPromptVersion): PromptVersion {
     createdAt: v.created_at,
     createdBy: v.created_by,
     id: v.id,
-    modelConfig: v.model_config ? JSON.parse(v.model_config) : null,
+    modelConfig: safeJsonParse(v.model_config),
     promptId: v.prompt_id,
     status: v.status,
-    variablesSchema: v.variables_schema ? JSON.parse(v.variables_schema) : null,
+    variablesSchema: safeJsonParse(v.variables_schema),
     versionNumber: v.version_number
   });
 }
@@ -148,7 +155,7 @@ function toSharedDatasetItem(item: DbDatasetItem): DatasetItem {
     input: item.input,
     rubric: item.rubric,
     sortOrder: item.sort_order,
-    tags: item.tags ? JSON.parse(item.tags) : []
+    tags: safeJsonParse(item.tags) ?? []
   });
 }
 
@@ -247,13 +254,21 @@ evalRunRoutes.post(
       );
     }
 
-    // Check minimum role (MEMBER)
-    const roleOrder = { OWNER: 0, ADMIN: 1, MEMBER: 2, VIEWER: 3 };
-    if (roleOrder[access.membership.role] > roleOrder.MEMBER) {
-      throw new AuthorizationError(
-        "You must be at least a MEMBER to create eval runs."
-      );
-    }
+    // Set resolved context for standard RBAC checks
+    setResolvedOrgContext(c, {
+      id: access.org.id,
+      role: access.membership.role,
+      source: "membership"
+    });
+    setResolvedProjectContext(c, {
+      id: access.project.id,
+      orgId: access.project.org_id,
+      role: access.membership.role,
+      source: "membership"
+    });
+
+    // Check minimum role (MEMBER) using the standard middleware helper
+    await requireMinimumRole("MEMBER")(c, async () => {});
 
     // Validate both prompt versions exist
     const [baseVersion, candidateVersion] = await Promise.all([

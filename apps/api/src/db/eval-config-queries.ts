@@ -106,6 +106,7 @@ export async function listProjectEvalConfigs(
         FROM eval_configs
         WHERE project_id = ?
         ORDER BY LOWER(name) ASC, created_at ASC
+        LIMIT 200
       `
     )
     .bind(input.projectId)

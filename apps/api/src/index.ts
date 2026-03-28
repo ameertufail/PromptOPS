@@ -21,8 +21,18 @@ type CreateAppOptions = {
   configureApp?: (app: Hono<AppEnv>) => void;
 };
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidRequestId(value: string | undefined): value is string {
+  if (!value) return false;
+  const trimmed = value.trim();
+  return trimmed.length > 0 && trimmed.length <= 128 && UUID_PATTERN.test(trimmed);
+}
+
 const requestContextMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
-  const requestId = c.req.header("X-Request-Id")?.trim() || crypto.randomUUID();
+  const clientId = c.req.header("X-Request-Id");
+  const requestId = isValidRequestId(clientId) ? clientId.trim() : crypto.randomUUID();
 
   c.header("X-Request-Id", requestId);
   c.set("requestContext", createRequestContext(requestId));

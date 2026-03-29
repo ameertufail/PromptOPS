@@ -192,7 +192,8 @@ Respond with a JSON object: {"category": "<category>", "confidence": "<high|medi
         userId,
         now
       ),
-    // Dataset
+    // Dataset – type 'GOLDEN' is valid per the expanded CHECK constraint
+    // added in migration 008_security_fixes.sql.
     session
       .prepare(
         `INSERT INTO datasets (id, project_id, name, description, type, item_count, created_by, created_at)

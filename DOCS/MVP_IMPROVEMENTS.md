@@ -9,6 +9,7 @@
 ## How This Document Works
 
 Each domain agent analyzes their area of the codebase and contributes:
+
 1. **What exists now** — current state summary
 2. **What needs improvement** — prioritized list of enhancements for MVP polish
 3. **PostHog integration points** — where to add analytics events for their domain
@@ -19,6 +20,7 @@ Each domain agent analyzes their area of the codebase and contributes:
 ## PostHog Integration Strategy
 
 ### Setup
+
 - **Package:** `posthog-js` (frontend), `posthog-node` (backend/SDK)
 - **Hosting:** PostHog Cloud free tier (1M events/month)
 - **Privacy:** No PII in events. User identified by anonymous hash of user ID. Org/project scoped with group analytics.
@@ -28,17 +30,19 @@ Each domain agent analyzes their area of the codebase and contributes:
   - SDK: Optional opt-in telemetry for SDK usage patterns
 
 ### Core PostHog Events (Cross-Domain)
-| Event | Trigger | Properties |
-|-------|---------|------------|
-| `user_signed_up` | First OAuth login | `auth_provider` |
-| `user_logged_in` | Subsequent login | `auth_provider` |
-| `org_created` | New org | `member_count` |
-| `project_created` | New project | `org_id` |
-| `feature_used` | Any key feature | `feature_name`, `context` |
+
+| Event             | Trigger           | Properties                |
+| ----------------- | ----------------- | ------------------------- |
+| `user_signed_up`  | First OAuth login | `auth_provider`           |
+| `user_logged_in`  | Subsequent login  | `auth_provider`           |
+| `org_created`     | New org           | `member_count`            |
+| `project_created` | New project       | `org_id`                  |
+| `feature_used`    | Any key feature   | `feature_name`, `context` |
 
 ---
 
 ## Domain: Frontend
+
 ### What Exists Now
 
 The frontend is a Next.js 14 App Router application at `apps/web/`. It uses Tailwind CSS, shadcn/ui components, Framer Motion (`motion/react`), Recharts, and the Geist font family. Dark mode is the default and only theme. The codebase is structured as:
@@ -68,118 +72,137 @@ The frontend is a Next.js 14 App Router application at `apps/web/`. It uses Tail
 ### MVP Improvements (Prioritized)
 
 #### 1. Global Error Boundary and Error Recovery
+
 - **Why** -- Currently, uncaught errors in any page component crash the entire app with a blank screen. Users lose all context and have to refresh. Every `catch` block either silently swallows errors (`// silent`) or shows a single toast, with no retry affordance in most places.
 - **What to do** -- Create an `error.tsx` file at `src/app/(dashboard)/error.tsx` using Next.js App Router error boundaries. Include a "Something went wrong" UI with a "Retry" button that calls `reset()`. Add per-page error boundaries for critical sections (eval execution, report rendering). Refactor the `// silent` catch blocks in `PromptListPage`, `DatasetListPage`, `EvalConfigListPage`, and `RunsExplorerPage` to set an `error` state and display a retry banner instead of failing silently. Add an `ErrorAlert` reusable component with retry button.
 - **Effort** -- M
 
 #### 2. Skeleton Loading States for All Data-Fetching Pages
+
 - **Why** -- Several pages already have basic skeleton loading (e.g., `ProjectDashboardPage`, `PromptDetailPage`), but the skeleton patterns are inconsistent. The prompt list, dataset list, and eval config list pages use generic repeated `Skeleton` bars that do not match the actual content layout (table headers, columns). This makes the loading state feel disconnected from the loaded state.
 - **What to do** -- Create a `TableSkeleton` component that matches the table structure (correct number of columns, row heights matching real rows). Apply it to prompts list (`src/app/(dashboard)/[orgSlug]/[projectSlug]/prompts/page.tsx`), datasets list, eval configs list, runs explorer, and settings. For the project dashboard, add skeleton versions of the nav cards. For eval report, add skeleton stat cards and table.
 - **Effort** -- S
 
 #### 3. Optimistic Updates for Mutations
+
 - **Why** -- Every create, update, and delete action currently waits for the server response before updating the UI. For example, creating a prompt shows a spinner, waits for the API, then re-fetches the entire list. Deleting a dataset item does the same. This makes the app feel sluggish even on fast connections.
 - **What to do** -- Implement optimistic updates for: prompt creation (append to list immediately, rollback on error), dataset item creation/deletion (add/remove from local state immediately), version release/archive (update badge immediately), API key revocation (remove from list immediately). Use a pattern where the mutation updates local state first, fires the API call, and rolls back on failure with a toast error.
 - **Effort** -- M
 
 #### 4. Keyboard Shortcuts and Navigation
+
 - **Why** -- Power users (developers using an LLMOps tool) expect keyboard-driven workflows. Currently, the app has zero keyboard shortcuts. There is no way to navigate between sections, create new items, or dismiss dialogs without a mouse.
 - **What to do** -- Add a `useHotkeys` hook (or integrate `@mantine/hooks` hotkeys). Implement: `Cmd/Ctrl+K` for a command palette (search prompts, datasets, configs, navigate to sections), `Cmd/Ctrl+N` for "New" (context-aware: new prompt on prompts page, new dataset on datasets page), `Escape` already works for dialogs (shadcn default), `J/K` for table row navigation on list pages. Display shortcut hints in tooltips on buttons. Add a `?` shortcut to show a keyboard shortcuts overlay.
 - **Effort** -- L
 
 #### 5. Search and Filtering on List Pages
+
 - **Why** -- The prompt list, dataset list, eval config list, and runs explorer have no client-side search. As users accumulate tens or hundreds of prompts/datasets, finding a specific one requires scrolling through the entire table. The runs explorer has a source filter but no text search or date range filter.
 - **What to do** -- Add a search input with debounced filtering to: `PromptListPage` (filter by name, description), `DatasetListPage` (filter by name, type), `EvalConfigListPage` (filter by name). For the runs explorer, add date range picker and text search on prompt name/version. Add a `SearchInput` reusable component with a search icon, clear button, and `Cmd+K` hint. Filter locally for small lists; add API-side filtering parameters when lists exceed ~100 items.
 - **Effort** -- M
 
 #### 6. Responsive Design Improvements
+
 - **Why** -- The sidebar hides at `lg:` breakpoint and uses a sheet overlay on mobile, which is good. However, several page layouts break on small screens: the project dashboard nav cards stack awkwardly, the eval run execution page's 2-column grid becomes a single column but the API key card is below the fold, table columns hide at `sm:`/`md:` breakpoints but the remaining columns are too cramped, and the eval report's side-by-side inspection dialog has no mobile layout.
 - **What to do** -- (1) For tables on mobile, switch to a card-based layout below `sm:` breakpoint instead of hiding columns. Create a `ResponsiveTable` wrapper component or use CSS to display table rows as stacked cards. (2) For the eval run setup grid (`evals/[configId]/run/page.tsx`), move the API key card above the version selection on mobile since users need to see the config summary first. (3) For the side-by-side inspection dialog in the eval report, stack the two outputs vertically on mobile with swipe-between tabs. (4) Add `max-w` constraints and horizontal scroll to `<pre>` blocks displaying JSON/template content on mobile.
 - **Effort** -- M
 
 #### 7. Toast Notification Consistency and Context
+
 - **Why** -- Toast messages are inconsistent. Some use `toast.success("Project created!")`, others `toast.success("Project created! Redirecting...")`, and error messages range from specific (`"An organization with this slug already exists."`) to generic (`"Failed to create project."`). Some error paths show no toast at all (the `// silent` catches). The toasts also lack action buttons for retry or undo.
 - **What to do** -- Audit all toast calls (approximately 35+ across the codebase). Standardize the format: success toasts should be brief and consistent ("Prompt created", "Version released"), error toasts should include context and a "Retry" action where applicable (`toast.error("Failed to load prompts", { action: { label: "Retry", onClick: fetchPrompts } })`). Replace all `// silent` catch blocks with user-visible error state or toast. Add undo toasts for destructive actions (delete dataset item, revoke API key).
 - **Effort** -- S
 
 #### 8. Empty States with Guided Actions
+
 - **Why** -- Empty states exist for most list pages (prompts, datasets, eval configs, API keys), which is good. However, the project dashboard shows nothing when there are zero runs (the stat cards section is completely hidden). The eval config detail page has no empty state for the runs history table. The org overview page shows a generic skeleton when projects exist but it is still redirecting.
 - **What to do** -- (1) For the project dashboard with zero runs, show a "Getting started" guide with steps: "1. Create a prompt, 2. Create a dataset, 3. Run your first eval" with links to each section. Track which steps the user has completed and show checkmarks. (2) For the eval config detail runs history, show "No runs yet. Start your first evaluation." with a "Run Evaluation" button. (3) For the org overview page, replace the skeleton-during-redirect with a brief loading indicator that explains "Loading your projects...". (4) Add contextual tips to all empty states explaining the feature's purpose and a link to documentation.
 - **Effort** -- M
 
 #### 9. Data Refresh and Stale Data Indicators
+
 - **Why** -- Pages fetch data once on mount and never refresh unless the user navigates away and back. If a user opens the prompt list in one tab and creates a prompt in another, the first tab shows stale data indefinitely. The runs explorer and eval report pages have no auto-refresh even though runs may be actively coming in from the SDK.
 - **What to do** -- (1) Add a "Last updated X seconds ago" indicator to the project dashboard and runs explorer, with a manual "Refresh" button. (2) Add auto-polling (every 30 seconds) to the runs explorer page when the page is visible (using `document.visibilityState`). (3) Add `focus` event refetching to context providers (`OrgProvider`, `ProjectProvider`) so that switching browser tabs triggers a data refresh. (4) Show a subtle "New data available" banner at the top of list pages when a background check detects changes.
 - **Effort** -- M
 
 #### 10. Accessibility Improvements
+
 - **Why** -- The app has minimal accessibility support. Interactive elements like the version expand/collapse button in `PromptDetailPage` use a raw `<button>` with no `aria-expanded` or `aria-controls`. The sidebar navigation lacks `aria-current="page"`. Tables lack `aria-label` descriptions. The mobile sidebar trigger has an `aria-label` (good), but the breadcrumb nav does not use a `<nav aria-label="Breadcrumb">` pattern. The eval run progress bar lacks `aria-valuenow`/`aria-valuemax`. Color-only verdict indicators (green/red/yellow dots) are inaccessible to colorblind users.
 - **What to do** -- (1) Add `aria-expanded`, `aria-controls` to all expandable sections (version timeline, dataset item rows). (2) Add `aria-current="page"` to the active sidebar nav item. (3) Add `aria-label` to all table elements and the breadcrumb `<nav>`. (4) Add text labels alongside color indicators for verdict counts in the eval run execution page. (5) Ensure all icon-only buttons have `aria-label` or `sr-only` text. (6) Add `role="status"` and `aria-live="polite"` to the eval progress section. (7) Test and fix tab order through all dialogs.
 - **Effort** -- M
 
 #### 11. Code Splitting and Bundle Optimization
+
 - **Why** -- The landing page (`src/app/page.tsx`) is a single large file that includes `motion/react`, `FlickeringGrid`, `AnimatedBeam`, `BentoGrid`, and multiple inline component definitions (`CountUp`, `TypeWriter`, `TiltCard`, `DashboardMockup`, `TerminalBlock`). This creates a large initial bundle for the most visited page. The eval engine (`src/lib/eval/`) and LLM clients (`src/lib/llm/`) are imported statically even though they are only used on the eval run execution page.
 - **What to do** -- (1) Use `next/dynamic` with `ssr: false` for below-the-fold landing page sections (features, pricing, CTA, footer). `FloatingLines` is already dynamically imported, extend this pattern. (2) Move `EvalEngine` and LLM client imports to dynamic imports within the run execution page. (3) Extract the inline components from `page.tsx` into separate files under `src/components/landing/` to improve tree-shaking. (4) Add `next/bundle-analyzer` to CI to track bundle size regressions.
 - **Effort** -- M
 
 #### 12. Form Validation Improvements
+
 - **Why** -- Form validation is minimal. The setup page's slug field allows any input and only validates client-side with `toSlug()`. The eval wizard's JSON schema field validates on "Next" but shows the error below the field only after navigation attempt. The API key name field has no max length or character validation. There is no inline validation feedback as the user types.
 - **What to do** -- (1) Add inline validation to slug fields with a real-time "valid slug" checkmark or error icon as the user types, using debounced validation against `[a-z0-9-]+` pattern. (2) Add character count indicators to text inputs with max lengths (org name: 100, project name: 100, prompt name: 200, API key name: 50). (3) Add real-time JSON validation to the eval wizard's JSON schema field with syntax highlighting of errors. (4) Add `required` field indicators (asterisks) to all mandatory form fields. (5) Prevent form submission on Enter key in multi-field forms (currently some dialogs submit on Enter from any field).
 - **Effort** -- S
 
 #### 13. Prompt Template Editor Enhancement
+
 - **Why** -- The create version dialog (`src/components/prompts/create-version-dialog.tsx`) uses a plain `<Textarea>` for template editing. Template variables like `{{query}}` are extracted but not highlighted in the editor. There is no syntax highlighting, no line numbers, no auto-closing braces, and no variable autocomplete. For a tool that is about prompt engineering, the editing experience should be noticeably better than a generic textarea.
 - **What to do** -- (1) Replace the textarea with a lightweight code editor component (CodeMirror 6 or Monaco with minimal config). (2) Add syntax highlighting for `{{variable}}` placeholders with a distinct color (e.g., purple from the theme). (3) Add line numbers and a minimap for long templates. (4) Show a live variable extraction panel beside the editor that updates as the user types. (5) Add an "Insert variable" dropdown for commonly used variables.
 - **Effort** -- L
 
 #### 14. Dark Mode Contrast and Theming Consistency
+
 - **Why** -- The app is dark mode only, which is good for the target audience. However, some elements have low contrast: `text-muted-foreground/50` and `text-muted-foreground/35` on the login page are hard to read, the `border-border/40` borders on cards are barely visible, and the `bg-card/60` with `backdrop-blur-xl` pattern makes text harder to read when aurora blobs overlap. The landing page uses hardcoded colors (`text-emerald-400`, `text-purple-500`) that do not consistently use theme tokens.
 - **What to do** -- (1) Audit all opacity modifiers below `/50` and raise them to meet WCAG AA contrast ratio (4.5:1 for text). (2) Replace hardcoded color classes in the landing page with theme token equivalents where possible. (3) Add a light mode toggle to the root layout (even if dark is default, some users work in bright environments). (4) Ensure all interactive states (hover, focus, active) have visible contrast changes. (5) Test the landing page tilt cards and aurora background for readability at various viewport sizes.
 - **Effort** -- M
 
 #### 15. Provider Key Management Page
+
 - **Why** -- The `CONTEXT_FRONTEND.md` marks "Provider key management page" as incomplete (unchecked). The settings page only has API key management. Users currently have to enter their LLM provider key manually on every eval run via the BYOK input. There is no way to save and reuse provider keys across eval runs, which adds friction to the core eval workflow.
 - **What to do** -- Build `src/app/(dashboard)/[orgSlug]/[projectSlug]/settings/provider-keys/page.tsx` or add a second card to the existing settings page. Include: add provider key form (provider dropdown: OpenAI/Anthropic/Groq, key name, encrypted key), list of saved provider keys with mask/reveal toggle, delete with confirmation, and auto-populate the eval run execution page's API key field from saved provider keys. The API paths (`api.paths.projectProviderKeys`, `api.paths.providerKey`) already exist in the client.
 - **Effort** -- M
 
 #### 16. Bulk Actions on List Pages
+
 - **Why** -- There is no way to perform operations on multiple items at once. If a user wants to archive 5 old prompt versions, they must do it one by one. If they want to delete multiple dataset items, each requires a separate click-confirm-wait cycle. As data grows, this becomes painful.
 - **What to do** -- Add checkbox selection to table rows on: dataset items table (bulk delete, bulk tag), prompt versions timeline (bulk archive), eval configs list (bulk delete). Implement a floating action bar that appears at the bottom of the page when items are selected, showing the count and available bulk actions. Start with dataset items (most impactful since JSONL imports can create many items).
 - **Effort** -- L
 
 #### 17. Onboarding Tour for First-Time Users
+
 - **Why** -- The setup flow creates an org and project with demo data, which is a good start. But once the user lands on the project dashboard, there is no guidance about what to do next, what the demo data contains, or how the prompt-version-eval workflow works. First-time users may not understand the relationship between prompts, datasets, eval configs, and runs.
 - **What to do** -- (1) After demo seed, show a brief onboarding modal explaining what was seeded ("We created a sample prompt with 2 versions, a test dataset, and an eval config"). (2) Add tooltip popovers to the sidebar nav items on first visit (using localStorage flag) explaining each section in one sentence. (3) Add a "Getting Started" checklist widget on the project dashboard that tracks: created a prompt, created a dataset, configured an eval, ran an evaluation, viewed a report. (4) Add `?help=true` URL parameter support that re-triggers tooltips.
 - **Effort** -- L
 
 #### 18. Export and Sharing Improvements
+
 - **Why** -- The eval report page has CSV and JSON export, which is good. However, there is no way to share a report link with a teammate, no PDF export for stakeholders, no copy-as-markdown for pasting into PRs/issues, and no way to export prompt versions or datasets.
 - **What to do** -- (1) Add a "Copy link" button to the eval report page that copies the current URL (already shareable if the user is authenticated). (2) Add "Copy as Markdown" to the eval report summary that formats the stat cards and verdict distribution as a markdown table. (3) Add CSV export to the dataset detail page (export all items). (4) Add "Copy template" button to the prompt version expanded view for quick copying of the template content.
 - **Effort** -- S
 
 ### PostHog Integration Points
 
-| Event Name | Trigger | Properties | Why Track |
-|------------|---------|------------|-----------|
-| `page_viewed` | Every route navigation via Next.js router | `path`, `orgSlug`, `projectSlug`, `referrer` | Understand navigation patterns, identify most/least visited pages, detect drop-off points |
-| `prompt_created` | Successful prompt creation in `CreatePromptDialog` | `projectId`, `hasDescription` | Track adoption of prompt versioning feature, measure time-to-first-prompt |
-| `prompt_version_created` | Successful version creation in `CreateVersionDialog` | `promptId`, `versionNumber`, `hasModelConfig`, `hasVariablesSchema`, `provider`, `model` | Understand version creation frequency, popular model configs |
-| `prompt_version_action` | Release or archive action in `PromptDetailPage` | `action` (release/archive), `promptId`, `versionNumber`, `previousStatus` | Track version lifecycle, identify if users release or archive more |
-| `dataset_created` | Successful dataset creation in `CreateDatasetDialog` | `projectId`, `type` (GENERATION/EXTRACTION/CLASSIFICATION) | Track dataset adoption, popular dataset types |
-| `dataset_items_imported` | Successful JSONL upload in `JsonlUploadDialog` | `datasetId`, `imported`, `failed`, `fileSize` | Measure bulk import usage, identify import error rates |
-| `eval_config_created` | Successful config creation (wizard or quick create) | `projectId`, `creationMethod` (wizard/quick), `checksEnabled`, `guardrailsEnabled`, `judgeEnabled`, `judgeProvider` | Understand which eval features users configure, wizard vs quick create preference |
-| `eval_run_started` | User clicks "Start Evaluation" in run execution page | `configId`, `baseVersionId`, `candidateVersionId`, `provider` | Track eval execution frequency, measure funnel from config to run |
-| `eval_run_completed` | Eval engine finishes (phase becomes "done") | `configId`, `runId`, `totalItems`, `duration_ms`, `verdictDistribution` | Measure eval completion rate, identify slow evals, understand typical dataset sizes |
-| `eval_run_aborted` | User clicks "Stop" during eval execution | `configId`, `runId`, `completedItems`, `totalItems`, `reason` | Identify why users abort, detect evals that are too slow |
-| `eval_report_exported` | User clicks CSV or JSON export in report page | `runId`, `format` (csv/json), `itemCount`, `verdictFilter` | Track export adoption, understand reporting needs |
-| `eval_report_item_inspected` | User opens side-by-side inspection dialog | `runId`, `verdict`, `itemIndex` | Understand how deeply users review results, which verdicts get inspected |
-| `api_key_created` | Successful API key creation in settings page | `projectId` | Track SDK adoption funnel (key created -> SDK installed -> first run logged) |
-| `onboarding_step_completed` | User completes setup step (org created, project created) | `step` (org/project), `hasDemoSeed`, `duration_ms` | Measure onboarding completion rate, identify drop-off points |
-| `search_used` | User types in search input on any list page (after implementing search) | `page` (prompts/datasets/evals/runs), `queryLength`, `resultCount` | Validate search feature adoption, identify common search patterns |
+| Event Name                   | Trigger                                                                 | Properties                                                                                                          | Why Track                                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `page_viewed`                | Every route navigation via Next.js router                               | `path`, `orgSlug`, `projectSlug`, `referrer`                                                                        | Understand navigation patterns, identify most/least visited pages, detect drop-off points |
+| `prompt_created`             | Successful prompt creation in `CreatePromptDialog`                      | `projectId`, `hasDescription`                                                                                       | Track adoption of prompt versioning feature, measure time-to-first-prompt                 |
+| `prompt_version_created`     | Successful version creation in `CreateVersionDialog`                    | `promptId`, `versionNumber`, `hasModelConfig`, `hasVariablesSchema`, `provider`, `model`                            | Understand version creation frequency, popular model configs                              |
+| `prompt_version_action`      | Release or archive action in `PromptDetailPage`                         | `action` (release/archive), `promptId`, `versionNumber`, `previousStatus`                                           | Track version lifecycle, identify if users release or archive more                        |
+| `dataset_created`            | Successful dataset creation in `CreateDatasetDialog`                    | `projectId`, `type` (GENERATION/EXTRACTION/CLASSIFICATION)                                                          | Track dataset adoption, popular dataset types                                             |
+| `dataset_items_imported`     | Successful JSONL upload in `JsonlUploadDialog`                          | `datasetId`, `imported`, `failed`, `fileSize`                                                                       | Measure bulk import usage, identify import error rates                                    |
+| `eval_config_created`        | Successful config creation (wizard or quick create)                     | `projectId`, `creationMethod` (wizard/quick), `checksEnabled`, `guardrailsEnabled`, `judgeEnabled`, `judgeProvider` | Understand which eval features users configure, wizard vs quick create preference         |
+| `eval_run_started`           | User clicks "Start Evaluation" in run execution page                    | `configId`, `baseVersionId`, `candidateVersionId`, `provider`                                                       | Track eval execution frequency, measure funnel from config to run                         |
+| `eval_run_completed`         | Eval engine finishes (phase becomes "done")                             | `configId`, `runId`, `totalItems`, `duration_ms`, `verdictDistribution`                                             | Measure eval completion rate, identify slow evals, understand typical dataset sizes       |
+| `eval_run_aborted`           | User clicks "Stop" during eval execution                                | `configId`, `runId`, `completedItems`, `totalItems`, `reason`                                                       | Identify why users abort, detect evals that are too slow                                  |
+| `eval_report_exported`       | User clicks CSV or JSON export in report page                           | `runId`, `format` (csv/json), `itemCount`, `verdictFilter`                                                          | Track export adoption, understand reporting needs                                         |
+| `eval_report_item_inspected` | User opens side-by-side inspection dialog                               | `runId`, `verdict`, `itemIndex`                                                                                     | Understand how deeply users review results, which verdicts get inspected                  |
+| `api_key_created`            | Successful API key creation in settings page                            | `projectId`                                                                                                         | Track SDK adoption funnel (key created -> SDK installed -> first run logged)              |
+| `onboarding_step_completed`  | User completes setup step (org created, project created)                | `step` (org/project), `hasDemoSeed`, `duration_ms`                                                                  | Measure onboarding completion rate, identify drop-off points                              |
+| `search_used`                | User types in search input on any list page (after implementing search) | `page` (prompts/datasets/evals/runs), `queryLength`, `resultCount`                                                  | Validate search feature adoption, identify common search patterns                         |
 
 ---
 
 ## Domain: Backend API
+
 ### What Exists Now
 
 The backend is a Hono.js application running on Cloudflare Workers (`apps/api/src/index.ts`) with D1 (SQLite) as the database and R2 for storage (binding defined but not yet used in any route). The middleware pipeline applies request context, security headers, CORS, identity resolution (session JWT + API key), and audit event flushing on every `/api/*` request.
@@ -198,6 +221,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Health** (`routes/health.ts`): `GET /api/health`.
 
 **Infrastructure:**
+
 - In-memory rate limiting per API key (100 req/min) -- acknowledged per-isolate limitation in `middleware/rate-limit.ts`.
 - Audit event pipeline: events queued during request handling, batch-inserted via `waitUntil` after response (`middleware/audit.ts`).
 - 5 middleware layers: request context, security headers + HSTS, CORS, identity resolution (session + API key), audit flush.
@@ -207,124 +231,144 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 ### MVP Improvements (Prioritized)
 
 #### 1. Provider Key CRUD Routes
+
 - **Why** -- The context doc (`DOCS/CONTEXT/CONTEXT_BACKEND.md` line 109) marks provider key routes as the only unchecked task item. Users cannot configure their own LLM provider keys (OpenAI, Anthropic) through the API, which blocks the eval engine from calling external models on their behalf.
 - **What to do** -- Create `routes/provider-keys.ts` with `POST /api/projects/:projectId/provider-keys`, `GET /api/projects/:projectId/provider-keys`, `DELETE /api/provider-keys/:keyId`. Encrypt the secret value using the `ENCRYPTION_KEY` binding (already provisioned in `types.ts` but unused). Store encrypted blob in D1 alongside provider name, key alias, and project scope. Add `db/provider-key-queries.ts` with typed helpers. Wire into `routes/index.ts`. Require ADMIN role for all operations.
 - **Effort** -- M
 
 #### 2. Prompt Update and Delete Endpoints
+
 - **Why** -- There is no way to rename, change description, or delete a prompt once created. Users who make a typo in the prompt name are stuck. These are the only CRUD operations missing from the prompt entity in `routes/prompts.ts`.
 - **What to do** -- Add `PATCH /api/prompts/:promptId` (update name/description, MEMBER+) and `DELETE /api/prompts/:promptId` (ADMIN+, with cascade check for versions/eval runs referencing it) in `routes/prompts.ts`. Add `updatePrompt` and `deletePrompt` query helpers in `db/prompt-queries.ts`.
 - **Effort** -- S
 
 #### 3. Eval Config Delete Endpoint
+
 - **Why** -- Eval configs can be created and updated but never deleted. Stale configs clutter the project. `routes/eval-configs.ts` has no DELETE handler.
 - **What to do** -- Add `DELETE /api/eval-configs/:configId` with ADMIN+ role. Check for in-progress eval runs referencing the config via the existing `hasEvalRunsForConfig` helper in `db/eval-config-queries.ts` before allowing deletion. Add `deleteEvalConfig` to the same queries file. Emit `eval_config.deleted` audit event.
 - **Effort** -- S
 
 #### 4. Consistent Pagination Across All List Endpoints
+
 - **Why** -- Pagination behavior is inconsistent. Org members (`db/queries.ts` `listOrgMembers`), org projects (`db/queries.ts` `listOrgProjects`), prompts (`db/prompt-queries.ts` `listProjectPrompts`), eval configs (`db/eval-config-queries.ts` `listProjectEvalConfigs`), and API keys (`db/api-key-queries.ts` `listApiKeysByProject`) all return hard-limited arrays (100-200 rows) without total counts or page metadata. Meanwhile eval runs, eval run items, SDK runs, and audit events return `{ items, total, page, limit }`. Dataset items use cursor-based pagination. Users have no way to know if they have hit the limit on the non-paginated endpoints.
 - **What to do** -- Standardize all list endpoints to return `{ data, total, page, limit }` for offset-paginated resources. Add `page` and `limit` query params (with defaults from `DEFAULT_PAGE_SIZE`) to prompts, datasets, org members, org projects, eval configs, and API keys. Keep cursor pagination for dataset items (high cardinality). Add a COUNT query alongside each list query using `db.batch()` for a single round-trip.
 - **Effort** -- M
 
 #### 5. Search and Filtering on Prompts and Datasets
+
 - **Why** -- As projects grow, users cannot search or filter. The prompt list endpoint in `routes/prompts.ts` and dataset list endpoint in `routes/datasets.ts` have no query parameters for name search, status filtering, or sort order.
 - **What to do** -- Add optional query parameters: `search` (LIKE on name/description), `status` (for prompts: filter by latest version status), `sortBy` (name, createdAt), `sortOrder` (asc, desc). Apply in `listProjectPrompts` and `listProjectDatasets` queries in their respective query files. Add corresponding Zod schemas in `@promptops/shared`.
 - **Effort** -- M
 
 #### 6. Bulk Delete Operations
+
 - **Why** -- Cleaning up test data requires deleting items one by one. No bulk operations exist for dataset items, prompts, or eval runs.
 - **What to do** -- Add `POST /api/datasets/:datasetId/items/bulk-delete` accepting `{ itemIds: string[] }` (max 100). Add `POST /api/projects/:projectId/prompts/bulk-delete` accepting `{ promptIds: string[] }`. Use D1 batch statements. Update `item_count` atomically in `db/dataset-queries.ts`. Require MEMBER+ role.
 - **Effort** -- M
 
 #### 7. Eval Run Cancel/Fail Endpoint
+
 - **Why** -- If an eval run stalls (e.g., the frontend tab closes mid-run), there is no way to mark it as FAILED. The only state transition from RUNNING is via `PATCH /eval-runs/:runId/complete` which sets `status: "COMPLETED"`. Stale RUNNING runs will confuse users forever.
 - **What to do** -- Add `PATCH /api/eval-runs/:runId/cancel` that sets `status = 'FAILED'`, `error_message = 'Cancelled by user'`, and `finished_at = now` using the existing `completeEvalRun` helper in `db/eval-run-queries.ts` (which already accepts `status: "FAILED"`). Allow MEMBER+ to cancel. Also add a timeout check: a scheduled Durable Object or cron trigger that marks runs stuck in RUNNING for >30 minutes as FAILED automatically.
 - **Effort** -- S (cancel endpoint alone), L (with auto-timeout)
 
 #### 8. Distributed Rate Limiting
+
 - **Why** -- The current rate limiter in `middleware/rate-limit.ts` is in-memory per Worker isolate, which means under high traffic the effective limit is `100 * num_isolates`. The file itself documents this limitation (line 16-19). For SDK endpoints that could be hammered, this is insufficient for production.
 - **What to do** -- Replace the in-memory `Map<string, RateLimitBucket>` with Cloudflare Rate Limiting rules (available via `wrangler.toml` config) for the `POST /api/runs` endpoint. Alternatively, use a Durable Object per API key to maintain a single counter with `alarm()` for window expiry. Keep the existing middleware as a fast-path check but back it with a binding. Preserve the `X-RateLimit-*` response headers already implemented.
 - **Effort** -- L
 
 #### 9. API Versioning Strategy
+
 - **Why** -- The API has no versioning. All routes live at `/api/`. Once external SDK consumers depend on response shapes, breaking changes will be painful. The SDK package already ships, making this pressing.
 - **What to do** -- Introduce path-based versioning: `/api/v1/`. Create a `v1` Hono sub-app in `routes/index.ts` that mounts the current route files. Keep `/api/health` and `/api/auth/*` unversioned. Set an `X-API-Version: v1` response header. Document that bare `/api/` paths are deprecated but will continue to work for 6 months via a compatibility redirect or alias.
 - **Effort** -- M
 
 #### 10. OpenAPI/Swagger Auto-Generation
+
 - **Why** -- No API documentation exists for external developers or SDK consumers. The Zod schemas in `@promptops/shared` already define the entire request/response contract, but there is no machine-readable spec.
 - **What to do** -- Add `@hono/zod-openapi` to convert existing route definitions into OpenAPI 3.1 spec. Add `GET /api/docs` serving Swagger UI (or Scalar). Generate the spec from the shared Zod schemas already used for validation. Publish the spec JSON at `GET /api/openapi.json`.
 - **Effort** -- L
 
 #### 11. Webhook/Notification Support for Eval Completion
+
 - **Why** -- Eval runs are long-running (dataset items processed one-by-one by the frontend eval engine). Users have no way to be notified when a run completes. Slack/Discord integration is a high-value feature for teams.
 - **What to do** -- Add a `webhooks` table (project_id, url, secret, events[], active). Add `POST/GET/DELETE /api/projects/:projectId/webhooks` endpoints. After `completeEvalRun` in `routes/eval-runs.ts`, dispatch a signed webhook payload via `c.executionCtx.waitUntil(fetch(...))`. Start with `eval_run.completed` event. Use HMAC-SHA256 signing with the webhook secret for consumer-side verification.
 - **Effort** -- L
 
 #### 12. Response Compression and Stats Query Optimization
+
 - **Why** -- The `getRunStats` query in `db/run-queries.ts` (line 130-267) fetches up to 10,000 metrics rows to compute percentiles in JavaScript. This is memory-intensive and the response payload can be large. Cloudflare Workers auto-compress only for large-enough responses with `Accept-Encoding`.
 - **What to do** -- Move percentile computation to SQL using a subquery with NTILE or ORDER BY + LIMIT-based approximate percentiles, eliminating the need to load 10K rows into memory. Reduce the `LIMIT 10000` on the metrics query to a sampled approach (e.g., reservoir sampling or just take the most recent 1000). Verify CF auto-compression is active by testing response headers.
 - **Effort** -- S
 
 #### 13. R2 Storage Integration for Dataset Export/Import
+
 - **Why** -- The `STORAGE` R2 binding is provisioned in `types.ts` (line 12) but never used anywhere. Large dataset imports (JSONL) are processed entirely in-memory in `routes/datasets.ts` line 571-637. There is no export functionality.
 - **What to do** -- Add `GET /api/datasets/:datasetId/export` that streams all items as JSONL to R2, then returns a signed URL. For large imports, accept an R2 object key instead of inline body. Add `POST /api/datasets/:datasetId/import-url` that returns a presigned R2 upload URL. Process the uploaded file asynchronously via Cloudflare Queues.
 - **Effort** -- L
 
 #### 14. Request Body Size Limits
+
 - **Why** -- The JSONL bulk import endpoint (`routes/datasets.ts` line 584) reads the entire body with `c.req.text()` without any size check. A malicious or accidental large upload could exhaust Worker memory (128MB limit).
 - **What to do** -- Add a `Content-Length` check middleware for import endpoints (max 5MB). Return `413 Payload Too Large` if exceeded. Add a shared `requireMaxContentLength(bytes)` middleware in `middleware/security.ts`. Apply to `POST .../items/bulk` and `POST /api/runs`.
 - **Effort** -- S
 
 #### 15. Idempotency Keys for Mutation Endpoints
+
 - **Why** -- Network retries on `POST` endpoints (create prompt, create eval run, create API key) can cause duplicate resources. The eval run item endpoint already handles idempotency via the `dataset_item_id` uniqueness check in `db/eval-run-queries.ts`, but no other creation endpoint does.
 - **What to do** -- Accept an optional `Idempotency-Key` header on all POST endpoints. Store the key + response in a short-lived D1 table or KV namespace with 24h TTL. Return the cached response for duplicate keys. Start with `POST /api/eval-runs` and `POST /api/runs` (highest traffic).
 - **Effort** -- M
 
 #### 16. Error Response Enrichment
+
 - **Why** -- Validation errors from Zod include field-level issues via `formatValidationIssues` in `lib/errors.ts`, but business logic errors return only a flat message string. For example, `"The referenced dataset does not exist."` (in `routes/eval-configs.ts` line 148) does not tell the client which field was wrong.
 - **What to do** -- Add a `field` property to business validation errors. For example, when dataset cross-project validation fails, include `{ field: "datasetId" }` in the error details. Extend the `ValidationError` class in `lib/errors.ts` to accept an optional `field` parameter. Standardize the pattern across all routes that throw `ValidationError`.
 - **Effort** -- S
 
 #### 17. Eval Run Comparison Endpoint
+
 - **Why** -- Users want to compare two eval runs side-by-side (e.g., same config, different prompt versions). Currently they must fetch both runs and all items separately, then join client-side.
 - **What to do** -- Add `GET /api/eval-runs/:runId/compare/:otherRunId` that returns a merged view: for each dataset item, show base/candidate outputs and metrics from both runs, with a delta. Use a single SQL query joining `eval_run_items` on `dataset_item_id` across both runs. Validate that both runs belong to the same eval config (same dataset). Require VIEWER+ on the parent project.
 - **Effort** -- M
 
 #### 18. Project-Level Stats Aggregation Endpoint
+
 - **Why** -- The dashboard needs a summary view: total prompts, total datasets, total eval runs, recent activity. Currently the frontend must call multiple list endpoints and count client-side.
 - **What to do** -- Add `GET /api/projects/:projectId/stats` returning `{ promptCount, datasetCount, evalRunCount, latestEvalRun, sdkRunsLast24h, activeApiKeys }`. Use a single D1 batch with COUNT queries for a single round-trip. Optionally cache the result via `Cache API` or a KV namespace with a 60-second TTL.
 - **Effort** -- S
 
 #### 19. Audit Event Filtering
+
 - **Why** -- The audit events endpoint (`routes/orgs.ts` `GET /api/orgs/:orgId/audit-events`) only supports `page` and `limit` query params. Users cannot filter by entity type, action, date range, or actor -- limiting the utility of the audit log for compliance or debugging.
 - **What to do** -- Add optional query params: `entityType`, `action`, `actorUserId`, `from`, `to` to `auditEventsQuerySchema` in `@promptops/shared`. Update `listOrgAuditEvents` in `db/queries.ts` to build dynamic WHERE clauses. This mirrors the pattern already used in `listRunsByProject` in `db/run-queries.ts` (line 59-128).
 - **Effort** -- S
 
 #### 20. Background Job Queue for Long-Running Operations
+
 - **Why** -- Dataset exports, large JSONL imports, and eval run auto-timeout checks need background processing. Currently everything runs synchronously within the Worker request handler's CPU time limit.
 - **What to do** -- Use Cloudflare Queues (new binding: `QUEUE`) for fire-and-forget tasks. Add a queue consumer Worker that handles `dataset.export`, `eval_run.timeout_check`, and future webhook delivery. Enqueue from route handlers via `c.env.QUEUE.send()`. This keeps the request-response cycle fast. Define the queue binding in `types.ts` alongside the existing bindings.
 - **Effort** -- L
 
 ### PostHog Integration Points
 
-| Event Name | Trigger | Properties | Why Track |
-|------------|---------|------------|-----------|
-| `api.eval_run_started` | `POST /api/eval-runs` creates a new run | `eval_config_id`, `dataset_item_count`, `project_id` | Measure eval adoption rate and dataset sizes users test against |
-| `api.eval_run_completed` | `PATCH /api/eval-runs/:runId/complete` succeeds | `run_id`, `duration_seconds`, `total_items`, `improved_count`, `regressed_count`, `pass_rate_delta` | Track eval quality trends; identify users seeing regressions |
-| `api.sdk_run_logged` | `POST /api/runs` ingests a run | `project_id`, `source`, `has_metrics`, `has_prompt_version_id` | Measure SDK adoption; detect projects using the SDK without linking prompt versions |
-| `api.api_key_created` | `POST /api/projects/:projectId/api-keys` | `project_id`, `is_first_key` (boolean) | Track SDK onboarding funnel -- key creation is the first step |
-| `api.api_key_revoked` | `DELETE /api/api-keys/:keyId` | `project_id`, `key_age_days` | Detect key rotation patterns and hygiene |
-| `api.rate_limit_hit` | Rate limit middleware returns 429 in `middleware/rate-limit.ts` | `api_key_id`, `project_id`, `endpoint`, `bucket_count` | Identify customers who need higher limits; detect abuse patterns |
-| `api.dataset_imported` | `POST /api/datasets/:datasetId/items/bulk` completes | `dataset_id`, `imported_count`, `failed_count`, `content_type` | Measure JSONL import adoption and error rates |
-| `api.prompt_version_released` | `PATCH /api/prompt-versions/:versionId/release` | `prompt_id`, `version_number`, `project_id` | Track deployment velocity -- how often users ship new prompt versions |
-| `api.prompt_diff_viewed` | `GET /api/prompts/:promptId/diff` | `prompt_id`, `base_version`, `candidate_version` | Measure diff feature usage to justify further investment |
-| `api.demo_seed_used` | `POST /api/projects/:projectId/seed-demo` | `project_id` | Track onboarding: how many new users seed demo data vs. start from scratch |
-| `api.error_rate` | Any route handler returns 4xx or 5xx (sampled in global error handler in `index.ts`) | `status_code`, `error_code`, `endpoint`, `method` | Monitor API reliability; detect broken flows early |
-| `api.auth_callback_failed` | OAuth callback catches an error in `routes/auth.ts` line 118 | `error_type`, `has_state_cookie` | Detect OAuth integration issues (misconfigured redirect URIs, GitHub outages) |
-| `api.org_member_added` | `POST /api/orgs/:orgId/members` | `org_id`, `invited_role`, `org_member_count` | Measure team growth and collaboration adoption |
-| `api.webhook_delivered` | (Future) Webhook dispatch succeeds or fails | `project_id`, `event_type`, `status_code`, `latency_ms` | Monitor webhook reliability once the feature ships |
-| `api.request_duration` | Every API request (sampled at 10% via random in the request context middleware) | `endpoint`, `method`, `duration_ms`, `status_code`, `auth_type` | P50/P95 latency tracking per endpoint; identify slow queries before users complain |
+| Event Name                    | Trigger                                                                              | Properties                                                                                          | Why Track                                                                           |
+| ----------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `api.eval_run_started`        | `POST /api/eval-runs` creates a new run                                              | `eval_config_id`, `dataset_item_count`, `project_id`                                                | Measure eval adoption rate and dataset sizes users test against                     |
+| `api.eval_run_completed`      | `PATCH /api/eval-runs/:runId/complete` succeeds                                      | `run_id`, `duration_seconds`, `total_items`, `improved_count`, `regressed_count`, `pass_rate_delta` | Track eval quality trends; identify users seeing regressions                        |
+| `api.sdk_run_logged`          | `POST /api/runs` ingests a run                                                       | `project_id`, `source`, `has_metrics`, `has_prompt_version_id`                                      | Measure SDK adoption; detect projects using the SDK without linking prompt versions |
+| `api.api_key_created`         | `POST /api/projects/:projectId/api-keys`                                             | `project_id`, `is_first_key` (boolean)                                                              | Track SDK onboarding funnel -- key creation is the first step                       |
+| `api.api_key_revoked`         | `DELETE /api/api-keys/:keyId`                                                        | `project_id`, `key_age_days`                                                                        | Detect key rotation patterns and hygiene                                            |
+| `api.rate_limit_hit`          | Rate limit middleware returns 429 in `middleware/rate-limit.ts`                      | `api_key_id`, `project_id`, `endpoint`, `bucket_count`                                              | Identify customers who need higher limits; detect abuse patterns                    |
+| `api.dataset_imported`        | `POST /api/datasets/:datasetId/items/bulk` completes                                 | `dataset_id`, `imported_count`, `failed_count`, `content_type`                                      | Measure JSONL import adoption and error rates                                       |
+| `api.prompt_version_released` | `PATCH /api/prompt-versions/:versionId/release`                                      | `prompt_id`, `version_number`, `project_id`                                                         | Track deployment velocity -- how often users ship new prompt versions               |
+| `api.prompt_diff_viewed`      | `GET /api/prompts/:promptId/diff`                                                    | `prompt_id`, `base_version`, `candidate_version`                                                    | Measure diff feature usage to justify further investment                            |
+| `api.demo_seed_used`          | `POST /api/projects/:projectId/seed-demo`                                            | `project_id`                                                                                        | Track onboarding: how many new users seed demo data vs. start from scratch          |
+| `api.error_rate`              | Any route handler returns 4xx or 5xx (sampled in global error handler in `index.ts`) | `status_code`, `error_code`, `endpoint`, `method`                                                   | Monitor API reliability; detect broken flows early                                  |
+| `api.auth_callback_failed`    | OAuth callback catches an error in `routes/auth.ts` line 118                         | `error_type`, `has_state_cookie`                                                                    | Detect OAuth integration issues (misconfigured redirect URIs, GitHub outages)       |
+| `api.org_member_added`        | `POST /api/orgs/:orgId/members`                                                      | `org_id`, `invited_role`, `org_member_count`                                                        | Measure team growth and collaboration adoption                                      |
+| `api.webhook_delivered`       | (Future) Webhook dispatch succeeds or fails                                          | `project_id`, `event_type`, `status_code`, `latency_ms`                                             | Monitor webhook reliability once the feature ships                                  |
+| `api.request_duration`        | Every API request (sampled at 10% via random in the request context middleware)      | `endpoint`, `method`, `duration_ms`, `status_code`, `auth_type`                                     | P50/P95 latency tracking per endpoint; identify slow queries before users complain  |
 
 ---
 
@@ -437,21 +481,21 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 
 ### PostHog Integration Points
 
-| Event Name | Trigger | Properties | Why Track |
-|---|---|---|---|
-| `auth_login_started` | User clicks a login provider button | `provider` (github, google, email) | Measure login funnel entry; detect provider preference |
-| `auth_login_completed` | Session cookie set after successful OAuth callback | `provider`, `is_new_user` (boolean), `user_id_hash` | Track sign-up vs. returning user ratio; compute conversion from started to completed |
-| `auth_login_failed` | OAuth callback returns an error or session verification fails | `provider`, `error_code` (oauth_state_mismatch, auth_callback_failed, etc.) | Monitor auth failure rate; detect broken OAuth config or attacks |
-| `auth_logout` | User clicks logout | `session_age_seconds` | Understand session duration; detect forced logouts from 401 |
-| `auth_session_expired` | Frontend receives 401 on `/auth/me` during `AuthProvider` mount | `last_known_session_age_seconds` | Measure how often users hit stale sessions; inform JWT TTL tuning |
-| `invite_sent` | Admin sends an org invite | `org_id_hash`, `role`, `method` (email, link) | Track invite funnel entry; measure team growth drivers |
-| `invite_accepted` | User accepts an org invite | `org_id_hash`, `role`, `time_to_accept_seconds` | Measure invite conversion rate and latency |
-| `invite_expired_or_revoked` | Invite expires or is manually revoked | `org_id_hash`, `reason` (expired, revoked) | Detect invite friction; optimize expiry window |
-| `role_changed` | Admin changes a member's role | `org_id_hash`, `previous_role`, `new_role` | Understand RBAC usage patterns; detect permission escalation trends |
-| `api_key_created` | Admin creates a new API key | `project_id_hash`, `scope`, `has_expiration` | Track SDK onboarding; measure key scoping adoption |
-| `api_key_revoked` | Admin revokes an API key | `project_id_hash`, `key_age_days`, `usage_count` | Monitor key lifecycle; detect unused keys being cleaned up |
-| `mfa_enabled` | User enables TOTP MFA | `user_id_hash` | Measure security feature adoption across the user base |
-| `account_deleted` | User deletes their account | `account_age_days`, `org_count`, `was_sole_owner` | Track churn; detect if ownership-transfer friction causes abandoned orgs |
+| Event Name                  | Trigger                                                         | Properties                                                                  | Why Track                                                                            |
+| --------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `auth_login_started`        | User clicks a login provider button                             | `provider` (github, google, email)                                          | Measure login funnel entry; detect provider preference                               |
+| `auth_login_completed`      | Session cookie set after successful OAuth callback              | `provider`, `is_new_user` (boolean), `user_id_hash`                         | Track sign-up vs. returning user ratio; compute conversion from started to completed |
+| `auth_login_failed`         | OAuth callback returns an error or session verification fails   | `provider`, `error_code` (oauth_state_mismatch, auth_callback_failed, etc.) | Monitor auth failure rate; detect broken OAuth config or attacks                     |
+| `auth_logout`               | User clicks logout                                              | `session_age_seconds`                                                       | Understand session duration; detect forced logouts from 401                          |
+| `auth_session_expired`      | Frontend receives 401 on `/auth/me` during `AuthProvider` mount | `last_known_session_age_seconds`                                            | Measure how often users hit stale sessions; inform JWT TTL tuning                    |
+| `invite_sent`               | Admin sends an org invite                                       | `org_id_hash`, `role`, `method` (email, link)                               | Track invite funnel entry; measure team growth drivers                               |
+| `invite_accepted`           | User accepts an org invite                                      | `org_id_hash`, `role`, `time_to_accept_seconds`                             | Measure invite conversion rate and latency                                           |
+| `invite_expired_or_revoked` | Invite expires or is manually revoked                           | `org_id_hash`, `reason` (expired, revoked)                                  | Detect invite friction; optimize expiry window                                       |
+| `role_changed`              | Admin changes a member's role                                   | `org_id_hash`, `previous_role`, `new_role`                                  | Understand RBAC usage patterns; detect permission escalation trends                  |
+| `api_key_created`           | Admin creates a new API key                                     | `project_id_hash`, `scope`, `has_expiration`                                | Track SDK onboarding; measure key scoping adoption                                   |
+| `api_key_revoked`           | Admin revokes an API key                                        | `project_id_hash`, `key_age_days`, `usage_count`                            | Monitor key lifecycle; detect unused keys being cleaned up                           |
+| `mfa_enabled`               | User enables TOTP MFA                                           | `user_id_hash`                                                              | Measure security feature adoption across the user base                               |
+| `account_deleted`           | User deletes their account                                      | `account_age_days`, `org_count`, `was_sole_owner`                           | Track churn; detect if ownership-transfer friction causes abandoned orgs             |
 
 ---
 
@@ -463,24 +507,24 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 
 **Schema (14 tables across 8 migrations):**
 
-| Table | Purpose | PK | Key relationships |
-|-------|---------|----|--------------------|
-| `_migrations` | Tracks applied migration files | `name TEXT` | None |
-| `users` | OAuth user profiles | `id TEXT (ULID)` | `github_id UNIQUE`, `email UNIQUE` (added in 008) |
-| `orgs` | Organizations / tenants | `id TEXT (ULID)` | `slug UNIQUE` |
-| `org_members` | User-to-org membership with RBAC role | `(org_id, user_id)` composite | FK to `orgs`, `users` with CASCADE |
-| `projects` | Workspaces scoped to orgs | `id TEXT (ULID)` | FK to `orgs` CASCADE; `UNIQUE(org_id, slug)` |
-| `prompts` | Named prompt templates | `id TEXT (ULID)` | FK to `projects` CASCADE, `created_by` FK to `users` |
-| `prompt_versions` | Versioned prompt content with model config | `id TEXT (ULID)` | FK to `prompts` CASCADE; `UNIQUE(prompt_id, version_number)` |
-| `datasets` | Collections of test data | `id TEXT (ULID)` | FK to `projects` CASCADE; denormalized `item_count` |
-| `dataset_items` | Individual test rows with input/expected output | `id TEXT (ULID)` | FK to `datasets` CASCADE |
-| `eval_configs` | Evaluation rule configurations | `id TEXT (ULID)` | FK to `projects` CASCADE, `datasets` RESTRICT |
-| `eval_runs` | Execution instances of evaluations | `id TEXT (ULID)` | FK to `eval_configs` CASCADE, `prompt_versions` RESTRICT |
-| `eval_run_items` | Per-item results within an eval run | `id TEXT (ULID)` | FK to `eval_runs` CASCADE, `dataset_items`; `UNIQUE(eval_run_id, dataset_item_id)` |
-| `runs` | SDK/UI/eval prompt execution logs | `id TEXT (ULID)` | FK to `projects` CASCADE, `prompt_versions` |
-| `api_keys` | Hashed project-scoped API keys | `id TEXT (ULID)` | FK to `projects` CASCADE; `key_hash` indexed |
-| `provider_keys` | LLM provider credentials (column named `encrypted_key` but no actual encryption) | `id TEXT (ULID)` | FK to `projects` CASCADE; `UNIQUE(project_id, provider)` |
-| `audit_events` | Org-level action log | `id TEXT (ULID)` | FK to `orgs` CASCADE |
+| Table             | Purpose                                                                          | PK                            | Key relationships                                                                  |
+| ----------------- | -------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------- |
+| `_migrations`     | Tracks applied migration files                                                   | `name TEXT`                   | None                                                                               |
+| `users`           | OAuth user profiles                                                              | `id TEXT (ULID)`              | `github_id UNIQUE`, `email UNIQUE` (added in 008)                                  |
+| `orgs`            | Organizations / tenants                                                          | `id TEXT (ULID)`              | `slug UNIQUE`                                                                      |
+| `org_members`     | User-to-org membership with RBAC role                                            | `(org_id, user_id)` composite | FK to `orgs`, `users` with CASCADE                                                 |
+| `projects`        | Workspaces scoped to orgs                                                        | `id TEXT (ULID)`              | FK to `orgs` CASCADE; `UNIQUE(org_id, slug)`                                       |
+| `prompts`         | Named prompt templates                                                           | `id TEXT (ULID)`              | FK to `projects` CASCADE, `created_by` FK to `users`                               |
+| `prompt_versions` | Versioned prompt content with model config                                       | `id TEXT (ULID)`              | FK to `prompts` CASCADE; `UNIQUE(prompt_id, version_number)`                       |
+| `datasets`        | Collections of test data                                                         | `id TEXT (ULID)`              | FK to `projects` CASCADE; denormalized `item_count`                                |
+| `dataset_items`   | Individual test rows with input/expected output                                  | `id TEXT (ULID)`              | FK to `datasets` CASCADE                                                           |
+| `eval_configs`    | Evaluation rule configurations                                                   | `id TEXT (ULID)`              | FK to `projects` CASCADE, `datasets` RESTRICT                                      |
+| `eval_runs`       | Execution instances of evaluations                                               | `id TEXT (ULID)`              | FK to `eval_configs` CASCADE, `prompt_versions` RESTRICT                           |
+| `eval_run_items`  | Per-item results within an eval run                                              | `id TEXT (ULID)`              | FK to `eval_runs` CASCADE, `dataset_items`; `UNIQUE(eval_run_id, dataset_item_id)` |
+| `runs`            | SDK/UI/eval prompt execution logs                                                | `id TEXT (ULID)`              | FK to `projects` CASCADE, `prompt_versions`                                        |
+| `api_keys`        | Hashed project-scoped API keys                                                   | `id TEXT (ULID)`              | FK to `projects` CASCADE; `key_hash` indexed                                       |
+| `provider_keys`   | LLM provider credentials (column named `encrypted_key` but no actual encryption) | `id TEXT (ULID)`              | FK to `projects` CASCADE; `UNIQUE(project_id, provider)`                           |
+| `audit_events`    | Org-level action log                                                             | `id TEXT (ULID)`              | FK to `orgs` CASCADE                                                               |
 
 **Indexes (27 total from migrations 007 + 008):** Single-column FK lookups, composite covering indexes on hot paths (`runs(project_id, created_at)`, `eval_run_items(eval_run_id, verdict, created_at)`, `audit_events(org_id, created_at)`), unique constraint indexes on `users.email` and `eval_run_items(eval_run_id, dataset_item_id)`.
 
@@ -497,6 +541,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 ### MVP Improvements (Prioritized)
 
 #### 1. Provider Key Encryption -- Implement real encryption for LLM API keys
+
 - **Why:** The `encrypted_key` column in `provider_keys` currently stores plaintext. If the D1 database is compromised or a SQL injection is found, all provider API keys (OpenAI, Anthropic, etc.) are exposed in the clear. This is the single highest-severity security gap in the data layer.
 - **What to do:**
   - Use the Web Crypto API (`crypto.subtle`) available in Cloudflare Workers to implement AES-256-GCM encryption.
@@ -508,6 +553,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** M
 
 #### 2. Cursor-Based Pagination -- Migrate remaining offset queries to cursor-based
+
 - **Why:** Offset pagination degrades as datasets grow -- `OFFSET 10000` requires SQLite to scan and discard 10,000 rows. Audit events and runs are append-only and will grow unboundedly. The separate `COUNT(*)` query doubles read cost on every paginated list call.
 - **What to do:**
   - **`listOrgAuditEvents`:** Replace `LIMIT ? OFFSET ?` with `WHERE (created_at, id) < (?, ?) ORDER BY created_at DESC, id DESC LIMIT ?`. Accept `cursor` (the `id` of the last item) instead of `page`. Look up the cursor row's `created_at` inline with a scalar subquery. Return `nextCursor` (last item's `id`) instead of `total`.
@@ -519,6 +565,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** M
 
 #### 3. Soft Deletes -- Recoverable deletion for prompts, datasets, and projects
+
 - **Why:** `DOCS/main.md` already specifies `DELETE /api/projects/:projectId` as "soft delete (requires OWNER)" but the current `deleteProject` query does a hard `DELETE FROM projects WHERE id = ?` with CASCADE, which permanently destroys all child prompts, versions, datasets, eval configs, eval runs, runs, and API keys. One accidental click can wipe an entire project.
 - **What to do:**
   - Add a migration that adds `deleted_at TEXT DEFAULT NULL` to `projects`, `prompts`, and `datasets`.
@@ -531,6 +578,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** M
 
 #### 4. Missing `updated_at` Columns -- Track when entities were last modified
+
 - **Why:** No table has an `updated_at` timestamp. This means the frontend cannot sort by "recently modified", API clients cannot use `If-Modified-Since` caching, and there is no lightweight indicator of when configurations changed beyond the audit_events log.
 - **What to do:**
   - Add `updated_at TEXT DEFAULT NULL` to `projects`, `prompts`, `prompt_versions`, `datasets`, `eval_configs`, and `provider_keys` via a new migration.
@@ -539,6 +587,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** S
 
 #### 5. Analytics Pre-Aggregation -- Replace client-side stats computation with materialized summaries
+
 - **Why:** `getRunStats` currently fetches up to 10,000 raw `metrics` JSON rows, parses every one in JavaScript, sorts latencies client-side, and counts guardrail failures in a loop. At scale this will blow through D1 read limits and incur significant Worker CPU time. The three `json_extract()` aggregations in the same query also force a full table scan on every call.
 - **What to do:**
   - Create a `run_daily_stats` table: `(project_id TEXT, prompt_version_id TEXT, date TEXT, source TEXT, run_count INTEGER, total_latency_ms REAL, total_token_count REAL, total_cost REAL, min_latency_ms REAL, max_latency_ms REAL, PRIMARY KEY(project_id, date, prompt_version_id, source))`.
@@ -549,6 +598,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** L
 
 #### 6. Full-Text Search -- FTS5 for prompt content, dataset items, and run output
+
 - **Why:** Users currently have no way to search across their prompt content, dataset inputs, or run outputs. As the number of prompts and datasets grows, scanning by name alone is insufficient. SQLite FTS5 is supported in D1 and is the standard approach for text search in SQLite.
 - **What to do:**
   - Create FTS5 virtual tables in a migration:
@@ -563,6 +613,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** M
 
 #### 7. Data Archival Strategy -- Prevent unbounded table growth for runs, eval_run_items, and audit_events
+
 - **Why:** The `runs` table receives a row for every SDK/UI/eval execution and has no TTL. On D1 free tier (5GB limit), a moderately active project logging 100 runs/day with ~2KB per row would consume ~70MB/year for runs alone. `eval_run_items` and `audit_events` are similarly append-only and unbounded.
 - **What to do:**
   - **Cold storage tier:** Add an R2 archival pipeline. When runs are older than 90 days, export them as NDJSON to the R2 `STORAGE` bucket (path: `archive/{project_id}/runs/{year}/{month}.ndjson.gz`), then delete the D1 rows. The same pattern applies to `eval_run_items` (archive by eval_run) and `audit_events` (archive by month).
@@ -573,6 +624,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** L
 
 #### 8. Migration Tooling -- Proper rollback support and migration testing
+
 - **Why:** The current migration system is append-only numbered SQL files tracked in `_migrations`. There is no rollback mechanism. If a migration introduces a bug, the only fix is a forward migration. The `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` pattern makes migrations appear idempotent but masks failures silently. The table-recreation approach in migration 008 (drop + rename) is inherently destructive and non-reversible.
 - **What to do:**
   - **Rollback scripts:** For each migration `NNN_name.sql`, create a companion `NNN_name.down.sql` with the reverse DDL. Store in `apps/api/src/db/migrations/down/`.
@@ -583,6 +635,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** M
 
 #### 9. Backup Strategy -- D1 backup and export/import tooling
+
 - **Why:** There is no documented backup strategy. D1 provides automatic point-in-time recovery, but there is no user-facing export or self-service restore. If a user accidentally deletes data (and soft deletes are not yet in place), there is no recovery path short of Cloudflare support.
 - **What to do:**
   - **Automated D1 backups:** Use `wrangler d1 backup create` in a scheduled GitHub Action (daily). Store backup IDs in a log file committed to the repo or pushed to R2.
@@ -593,6 +646,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** M
 
 #### 10. Query Helper Deduplication and Shared Utilities
+
 - **Why:** The functions `requireFirstResult`, `getIdFactory`, and the `IdFactoryOptions` type are copy-pasted identically across `queries.ts`, `prompt-queries.ts`, `dataset-queries.ts`, `eval-config-queries.ts`, `eval-run-queries.ts`, and `api-key-queries.ts` (6 copies of each). This is a maintenance burden and a source of drift if one copy is updated and others are not.
 - **What to do:**
   - Extract `requireFirstResult`, `getIdFactory`, and `IdFactoryOptions` into a shared `apps/api/src/db/db-utils.ts` module.
@@ -601,6 +655,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** S
 
 #### 11. Schema Constraints -- Missing CHECK constraints and NOT NULL tightening
+
 - **Why:** Several columns are more permissive than the application logic expects, allowing invalid data to be written if a bug bypasses the application layer validation.
 - **What to do:**
   - `audit_events.action`: Add `CHECK (length(action) > 0)` to prevent empty action strings.
@@ -613,6 +668,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 - **Effort:** S
 
 #### 12. Unbounded List Queries -- Add safety limits and truncation indicators
+
 - **Why:** `listProjectDatasets` has no `LIMIT` clause, meaning a project with thousands of datasets would return all of them in one response. `getAllDatasetItems` and `getAllEvalRunItems` use `LIMIT 10000` which silently truncates results without any indication to the caller.
 - **What to do:**
   - Add `LIMIT 200` to `listProjectDatasets` (matching the pattern in `listProjectPrompts`, `listOrgMembers`, `listProjectEvalConfigs`, etc.).
@@ -624,18 +680,18 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 
 ### PostHog Integration Points
 
-| Event Name | Trigger | Properties | Why Track |
-|------------|---------|------------|-----------|
-| `db_migration_applied` | Each migration file applied successfully | `migration_name`, `duration_ms`, `environment` | Track migration health, detect slow migrations, confirm production parity |
-| `db_migration_failed` | Migration throws an error | `migration_name`, `error_message`, `environment` | Alert on broken schema changes, measure migration reliability |
-| `db_query_slow` | Any query helper exceeds 500ms latency | `query_name`, `duration_ms`, `table`, `project_id` | Identify performance regressions, find hot queries needing index optimization |
-| `db_storage_usage` | Scheduled weekly check (cron) | `total_rows_by_table`, `estimated_size_mb`, `d1_read_count_today`, `d1_write_count_today` | Monitor growth trends, predict when D1 free tier limits will be hit, plan archival timing |
-| `db_archival_completed` | After R2 archival cron runs | `table`, `rows_archived`, `rows_deleted`, `r2_object_key`, `duration_ms` | Confirm archival pipeline is running correctly, measure data lifecycle |
-| `db_bulk_import` | `bulkCreateDatasetItems` completes | `dataset_id`, `items_imported`, `batch_count`, `duration_ms` | Understand import patterns, optimize batch sizes, detect large imports that strain D1 write limits |
-| `db_run_stats_computed` | `getRunStats` returns | `project_id`, `total_runs`, `duration_ms`, `rows_scanned` | Track the most expensive analytics query, justify and measure impact of pre-aggregation work |
-| `db_provider_key_created` | Provider key saved | `provider`, `project_id` (never any key material) | Understand which LLM providers are popular, prioritize provider integrations |
-| `db_eval_run_completed` | `completeEvalRun` persists summary | `eval_run_id`, `status`, `total_items`, `improved_count`, `regressed_count`, `duration_ms` | Measure eval throughput, detect failure patterns, track feature adoption |
-| `db_backup_created` | Scheduled D1 backup completes | `backup_id`, `environment`, `duration_ms` | Confirm backups are running on schedule, alert immediately on failures |
+| Event Name                | Trigger                                  | Properties                                                                                 | Why Track                                                                                          |
+| ------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `db_migration_applied`    | Each migration file applied successfully | `migration_name`, `duration_ms`, `environment`                                             | Track migration health, detect slow migrations, confirm production parity                          |
+| `db_migration_failed`     | Migration throws an error                | `migration_name`, `error_message`, `environment`                                           | Alert on broken schema changes, measure migration reliability                                      |
+| `db_query_slow`           | Any query helper exceeds 500ms latency   | `query_name`, `duration_ms`, `table`, `project_id`                                         | Identify performance regressions, find hot queries needing index optimization                      |
+| `db_storage_usage`        | Scheduled weekly check (cron)            | `total_rows_by_table`, `estimated_size_mb`, `d1_read_count_today`, `d1_write_count_today`  | Monitor growth trends, predict when D1 free tier limits will be hit, plan archival timing          |
+| `db_archival_completed`   | After R2 archival cron runs              | `table`, `rows_archived`, `rows_deleted`, `r2_object_key`, `duration_ms`                   | Confirm archival pipeline is running correctly, measure data lifecycle                             |
+| `db_bulk_import`          | `bulkCreateDatasetItems` completes       | `dataset_id`, `items_imported`, `batch_count`, `duration_ms`                               | Understand import patterns, optimize batch sizes, detect large imports that strain D1 write limits |
+| `db_run_stats_computed`   | `getRunStats` returns                    | `project_id`, `total_runs`, `duration_ms`, `rows_scanned`                                  | Track the most expensive analytics query, justify and measure impact of pre-aggregation work       |
+| `db_provider_key_created` | Provider key saved                       | `provider`, `project_id` (never any key material)                                          | Understand which LLM providers are popular, prioritize provider integrations                       |
+| `db_eval_run_completed`   | `completeEvalRun` persists summary       | `eval_run_id`, `status`, `total_items`, `improved_count`, `regressed_count`, `duration_ms` | Measure eval throughput, detect failure patterns, track feature adoption                           |
+| `db_backup_created`       | Scheduled D1 backup completes            | `backup_id`, `environment`, `duration_ms`                                                  | Confirm backups are running on schedule, alert immediately on failures                             |
 
 ---
 
@@ -646,6 +702,7 @@ The backend is a Hono.js application running on Cloudflare Workers (`apps/api/sr
 The eval engine runs entirely in the browser (locked architecture decision for MVP 0/1/2). The frontend orchestrates everything: template rendering, BYOK provider calls, deterministic checks, guardrails, LLM-as-judge scoring, verdict calculation, and result persistence.
 
 **Deterministic Checks** (`packages/shared/src/eval/checks.ts`):
+
 - JSON validity (`checkJsonValid`)
 - JSON schema validation via Ajv (`checkJsonSchema`)
 - Regex match (`checkRegexMatch`) with ReDoS protection (pattern length limit, nested quantifier detection)
@@ -653,27 +710,32 @@ The eval engine runs entirely in the browser (locked architecture decision for M
 - Aggregated `runChecks()` wrapper with per-check enable/disable
 
 **Guardrails** (`packages/shared/src/eval/guardrails.ts`):
+
 - PII detection: email, phone, SSN, credit card (Luhn-validated), IP address, with redacted output
 - Prompt injection heuristics: 10 regex patterns covering common injection vectors
 - `runGuardrails()` aggregator that checks output for PII and raw input for injection
 
 **LLM-as-Judge** (`apps/web/src/lib/llm/judge.ts`):
+
 - Single-criteria rubric-based scoring with configurable scale (default 1-5)
 - XML-delimited prompt with anti-injection instructions
 - JSON response parsing with score range validation
 - Uses the user's own BYOK key via the same LLM client
 
 **LLM Providers** (`apps/web/src/lib/llm/`):
+
 - OpenAI (native adapter), Anthropic (native adapter), Groq (native adapter)
 - Together AI (OpenAI-compatible, custom base URL)
 - Custom (OpenAI-compatible, user-provided base URL with SSRF validation)
 - All clients: 60s fetch timeout, API key redaction in error messages, response structure validation
 
 **Verdict Calculation** (`packages/shared/src/eval/verdict.ts`):
+
 - Priority: check/guardrail pass divergence > judge score delta > SAME
 - Configurable `deltaThreshold` for judge score comparison
 
 **Engine Orchestrator** (`apps/web/src/lib/eval/engine.ts`):
+
 - Controlled concurrency (default 3)
 - Retry once after 2s, then mark as ERROR
 - Auto-pause after 5 consecutive errors
@@ -681,6 +743,7 @@ The eval engine runs entirely in the browser (locked architecture decision for M
 - Per-item progress callbacks
 
 **Backend** (`apps/api/src/routes/eval-runs.ts`, `apps/api/src/services/eval-summary.ts`):
+
 - Eval run lifecycle: create (RUNNING), store items (idempotent), complete (COMPLETED/FAILED)
 - Summary computation: totalItems, pass rates, avg scores, improved/regressed/same counts, top regressions
 - RBAC: MEMBER to create/run, VIEWER to read
@@ -688,6 +751,7 @@ The eval engine runs entirely in the browser (locked architecture decision for M
 - CSV and JSON export from the report page
 
 **UI Pages** (`apps/web/src/app/(dashboard)/[orgSlug]/[projectSlug]/evals/`):
+
 - Eval config list with rules summary
 - Config wizard (5-step) and quick-create dialog
 - Run execution page with setup (prompt version + API key selection), live progress, verdict counters, pause/resume/abort
@@ -696,124 +760,144 @@ The eval engine runs entirely in the browser (locked architecture decision for M
 ### MVP Improvements (Prioritized)
 
 #### 1. Contains / Not-Contains Check
+
 - **Why** -- The most commonly needed eval check in practice. Users running classification, extraction, or Q&A evals need to verify that specific strings appear (or are absent) in outputs without writing regex.
 - **What to do** -- Add `checkContains(output, substring, caseSensitive?)` and `checkNotContains(output, substring, caseSensitive?)` to `packages/shared/src/eval/checks.ts`. Extend `EvalChecks` in `evalChecksSchema` with `contains: z.array(z.string()).nullable().default(null)` and `notContains: z.array(z.string()).nullable().default(null)`. Wire into `runChecks()`. Add corresponding UI fields in the config wizard checks step. Add unit tests.
 - **Effort** -- S
 
 #### 2. Output Length Limit Guardrail
+
 - **Why** -- Runaway outputs waste tokens and money. Users need a hard upper bound on output length, especially for classification and structured extraction tasks.
 - **What to do** -- Add `maxOutputLength: z.number().int().positive().nullable().default(null)` to `evalGuardrailsSchema`. Implement `checkOutputLength(output, maxLength)` in `guardrails.ts`. Wire into `runGuardrails()`. When flagged, include the actual length vs. the limit in the failure message. Add UI toggle + numeric input in the config wizard guardrails step.
 - **Effort** -- S
 
 #### 3. Cosine Similarity / Semantic Similarity Check
+
 - **Why** -- Exact match is too strict for most NLP evals. Cosine similarity against an expected output (or a reference embedding) is the standard way to measure semantic closeness. Critical for summarization, paraphrase, and translation evals.
 - **What to do** -- Add `checkCosineSimilarity(output, expected, threshold)` to `checks.ts`. For MVP, use a lightweight browser-side embedding approach: call the user's BYOK OpenAI embeddings endpoint (`text-embedding-3-small`) for both strings and compute cosine similarity. Add `cosineSimilarity: z.object({ threshold: z.number().min(0).max(1), model: z.string().optional() }).nullable().default(null)` to `evalChecksSchema`. The check passes if similarity >= threshold. Store the raw similarity score in `CheckResult.details`. Requires extending `EvalEngine` to pass the LLM client to the checks layer for embedding calls.
 - **Effort** -- M
 
 #### 4. Multi-Criteria Judge with Rubric Templates
+
 - **Why** -- The current judge scores on a single rubric string. Real-world evals need multiple criteria (accuracy, fluency, safety, relevance) each scored independently, with a weighted aggregate. Rubric templates reduce setup time and improve consistency.
 - **What to do** -- Extend `evalJudgeSchema` with `criteria: z.array(z.object({ name: z.string(), rubric: z.string(), weight: z.number().min(0).max(1) })).optional()`. When `criteria` is present, `scoreWithJudge` iterates over each criterion, produces per-criterion scores, and computes a weighted aggregate. Store per-criterion scores in `judgeReasons` or a new `judgeCriteria` field on `EvalItemMetrics`. Add 4-5 built-in rubric templates (Summarization Quality, Q&A Accuracy, Classification Correctness, Code Quality, Safety/Toxicity) as JSON presets selectable in the config wizard. Display per-criterion breakdown in the item inspection dialog.
 - **Effort** -- M
 
 #### 5. Confidence Scores on Judge Output
+
 - **Why** -- Users need to know when to trust the judge's score. A judge that is uncertain about a score should be flagged so users can manually review those items.
 - **What to do** -- Update the judge prompt to request a `confidence` field (0-1) alongside `score` and `reasons`. Parse it in `parseJudgeResponse`. Store in `EvalItemMetrics` as `judgeConfidence: number | null`. In the report UI, add a "Low Confidence" filter (e.g., confidence < 0.6) and surface a warning icon on items with low confidence. Include `avgConfidence` in the eval run summary.
 - **Effort** -- S
 
 #### 6. Google Gemini Provider
+
 - **Why** -- Gemini is the third most popular LLM provider. Many users have Gemini API keys and want to eval Gemini-powered prompts directly.
 - **What to do** -- Add `"GEMINI"` to `PROVIDER_TYPES` in `constants.ts`. Create `apps/web/src/lib/llm/gemini-client.ts` implementing `LLMClient`. The Gemini REST API (`generativelanguage.googleapis.com/v1beta/models/{model}:generateContent`) uses a Bearer token. Map `LLMGenerateRequest` fields to Gemini's `contents` format. Add to `createLLMClient` factory and `getDefaultModel` (default: `gemini-2.0-flash`). Handle Gemini-specific response structure (`candidates[0].content.parts[0].text`) and token counting.
 - **Effort** -- M
 
 #### 7. Ollama (Local) Provider
+
 - **Why** -- Users running local models via Ollama need to eval them without paying for API calls. This is especially valuable for enterprises with data privacy requirements.
 - **What to do** -- Add `"OLLAMA"` to `PROVIDER_TYPES`. Since Ollama exposes an OpenAI-compatible API at `http://localhost:11434/v1`, implement it as an OpenAI adapter with a localhost base URL. Relax the SSRF validation in `validateBaseUrl()` to allow `localhost` and `127.0.0.1` explicitly (already partially allowed). Add to `createLLMClient` factory. Default model: `llama3.2`. Add a note in the UI that Ollama must be running locally with CORS headers enabled.
 - **Effort** -- S
 
 #### 8. Azure OpenAI Provider
+
 - **Why** -- Enterprise customers use Azure OpenAI rather than direct OpenAI. The API format differs (custom base URL with deployment name in the path, `api-key` header instead of `Bearer` token, `api-version` query parameter).
 - **What to do** -- Add `"AZURE_OPENAI"` to `PROVIDER_TYPES`. Create `apps/web/src/lib/llm/azure-openai-client.ts` implementing `LLMClient`. Require `baseUrl` (the Azure resource endpoint), `deploymentName`, and `apiVersion` in the config. The endpoint pattern is `{baseUrl}/openai/deployments/{deployment}/chat/completions?api-version={version}`. Auth via `api-key` header. Add to factory. Add deployment name and API version fields in the eval run setup UI when Azure is selected.
 - **Effort** -- M
 
 #### 9. Toxicity Detection Guardrail
+
 - **Why** -- PII detection alone is insufficient for safety. Users need to detect toxic, harmful, or offensive content in LLM outputs, especially for user-facing applications.
 - **What to do** -- Add `toxicityCheck: z.boolean().default(false)` to `evalGuardrailsSchema`. Implement `detectToxicity(text)` in `guardrails.ts` using a keyword/phrase-based heuristic approach (similar to prompt injection detection) covering profanity, slurs, violence, self-harm, and hate speech categories. Use a curated blocklist of ~200 high-confidence patterns. Return `GuardrailResult` with matched categories. For MVP, this is deterministic (no LLM call). Wire into `runGuardrails()`. Add UI toggle in config wizard.
 - **Effort** -- M
 
 #### 10. Custom Blocklist Guardrail
+
 - **Why** -- Every domain has its own banned terms (competitor names, internal codenames, restricted medical/legal terms). Users need to define their own blocklists without writing regex.
 - **What to do** -- Add `customBlocklist: z.array(z.string()).nullable().default(null)` to `evalGuardrailsSchema`. Implement `checkCustomBlocklist(output, blocklist)` in `guardrails.ts` using case-insensitive substring matching. Wire into `runGuardrails()`. In the config wizard, add a textarea for comma-separated or newline-separated blocked terms. Report which specific blocked term was found.
 - **Effort** -- S
 
 #### 11. Eval Run Comparison View (Side-by-Side Runs)
+
 - **Why** -- Users run evals iteratively and need to compare two runs to see what improved and what regressed between prompt iterations. This is the core feedback loop of prompt engineering.
 - **What to do** -- Add a new page at `evals/[configId]/compare` that takes two `runId` query parameters. Fetch both runs' summaries and items. Display side-by-side summary cards (delta of deltas). Show a table with matched dataset items: left column = run A verdict/score, right column = run B verdict/score, with regression highlighting (items that were IMPROVED in run A but REGRESSED in run B get a red highlight). Add a "Compare" button on the config detail page that lets users select two runs. Add trend sparkline charts for score averages across all runs of a config.
 - **Effort** -- L
 
 #### 12. Cost Tracking (Token Usage and Cost Estimation)
+
 - **Why** -- Users need to know how much an eval run costs before they spend money on a 500-item dataset. Post-run, they need to see total token usage and estimated cost for budgeting.
 - **What to do** -- The `LLMGenerateResponse` already includes `tokenCount`. Aggregate token counts into `EvalItemMetrics` as `inputTokens` and `outputTokens` (update all 3 client adapters to report these separately from the provider's `usage` response). Add `totalTokens`, `estimatedCostUsd` to `EvalRunSummary`. Implement a cost estimation helper with per-provider, per-model pricing tables (hardcoded for top 10 models, with a fallback estimate). Show cost in the run report summary cards. Add a pre-run cost estimate on the run execution page based on dataset size and average prompt length.
 - **Effort** -- M
 
 #### 13. BLEU/ROUGE Scores Check
+
 - **Why** -- Standard NLP evaluation metrics for translation (BLEU) and summarization (ROUGE). Expected by ML teams who are used to these benchmarks.
 - **What to do** -- Implement lightweight BLEU-1/BLEU-2 and ROUGE-L scoring functions in `packages/shared/src/eval/checks.ts` (pure TypeScript, no external dependencies). BLEU uses n-gram precision with brevity penalty. ROUGE-L uses longest common subsequence. Add `bleuScore: z.object({ threshold: z.number().min(0).max(1) }).nullable().default(null)` and `rougeScore: z.object({ threshold: z.number().min(0).max(1), variant: z.enum(["rouge-l"]) }).nullable().default(null)` to `evalChecksSchema`. Store the raw score in `CheckResult.details`. These require an `expectedOutput` in the dataset item.
 - **Effort** -- M
 
 #### 14. Eval Templates (Pre-Built Configs)
+
 - **Why** -- New users don't know which checks, guardrails, and judge settings to use. Pre-built templates for common use cases dramatically reduce time-to-first-eval and teach best practices.
 - **What to do** -- Create a `packages/shared/src/eval/templates.ts` file exporting an array of `EvalTemplate` objects: `{ id, name, description, category, rules: EvalRules }`. Include 6 templates: (1) Summarization Quality -- ROUGE check + judge with summarization rubric; (2) Q&A Accuracy -- exact match + contains check + judge with accuracy rubric; (3) Classification -- exact match + contains check; (4) JSON API Response -- JSON validity + JSON schema + PII guardrail; (5) Safe Chatbot -- PII + prompt injection + toxicity guardrails + judge with safety rubric; (6) Code Generation -- regex check for code blocks + judge with code quality rubric. In the config wizard, add a "Start from template" option in step 1 that pre-fills all rules. Show template cards with descriptions.
 - **Effort** -- M
 
 #### 15. Scheduled Evals (Automated Recurring Runs)
+
 - **Why** -- Prompt quality can degrade over time as models update or data drifts. Scheduled evals catch regressions automatically without manual intervention.
 - **What to do** -- Add a `schedules` table in the database: `id, eval_config_id, cron_expression, last_run_at, next_run_at, enabled, base_version_id, candidate_version_id, provider_key_id, created_by`. Create CRUD API endpoints for schedules. On the backend, use Cloudflare Workers Cron Triggers (since the backend runs on Workers) to check for due schedules every 15 minutes. For scheduled runs, the backend must orchestrate the eval (not the browser), which means adding a server-side eval execution path using stored provider keys. This is a significant architecture extension. For MVP, limit to a "reminder" notification (email or in-app) that prompts the user to run the eval manually.
 - **Effort** -- L
 
 #### 16. A/B Testing (Split Traffic Between Prompt Versions)
+
 - **Why** -- After eval shows a candidate is better, users need to gradually roll out the new prompt version to production traffic and measure real-world impact before fully committing.
 - **What to do** -- Add a `traffic_split` column to the prompt version or a new `ab_tests` table: `id, prompt_id, base_version_id, candidate_version_id, split_percentage, status, started_at, ended_at`. Update the SDK's `getPrompt` endpoint to return the appropriate version based on the split percentage (deterministic hash of a session/user ID). Add a simple A/B test dashboard page showing live traffic distribution and SDK-reported metrics per version. Track `ab_test_started`, `ab_test_impression`, `ab_test_completed` events. This depends on SDK logging infrastructure already in place.
 - **Effort** -- L
 
 #### 17. Streaming Support
+
 - **Why** -- Many LLM applications use streaming responses. The eval engine currently waits for full responses, which adds latency and prevents real-time output display during eval runs.
 - **What to do** -- Add a `stream` option to `LLMGenerateRequest`. Implement SSE parsing in OpenAI and Anthropic clients (Groq already uses OpenAI-compatible streaming). Buffer chunks and return the full response when complete, but emit partial output via a callback for UI display. Update `EvalEngine.processItemCore` to accept an optional `onChunk` callback. Show streaming output in the run execution page for the currently-processing item. Time-to-first-token (TTFT) metric added to `EvalItemMetrics`.
 - **Effort** -- M
 
 #### 18. Custom Scorers (User-Defined JavaScript Functions)
+
 - **Why** -- Power users need domain-specific scoring logic that can't be expressed as checks or judge rubrics (e.g., "count the number of bullet points", "verify the output sums to 100%", "check that the date is in ISO format").
 - **What to do** -- Add `customScorers: z.array(z.object({ name: z.string(), code: z.string().max(10_000) })).nullable().default(null)` to `evalRulesSchema`. Execute user code in a sandboxed Web Worker with a 5-second timeout and no network/DOM access. The scorer function signature is `(input: string, output: string, expected?: string) => { pass: boolean, score?: number, reason?: string }`. Store results in `EvalItemMetrics.customScorers`. Add a code editor (Monaco) in the config wizard for writing scorer functions with TypeScript hints. Security: use `new Function()` inside a Worker with `importScripts` blocked.
 - **Effort** -- L
 
 #### 19. Language Detection Guardrail
+
 - **Why** -- Multilingual applications need to ensure outputs are in the expected language. A French customer service bot producing English responses is a regression.
 - **What to do** -- Add `expectedLanguage: z.string().length(2).nullable().default(null)` to `evalGuardrailsSchema` (ISO 639-1 code). Implement `detectLanguage(text)` in `guardrails.ts` using a trigram-based language detection approach (pure TypeScript, ~50 languages). The `franc` npm package is a good lightweight option (~200KB). Guardrail fails if detected language does not match expected. Store detected language in the guardrail result details.
 - **Effort** -- M
 
 #### 20. Regression Highlighting and Trend Charts
+
 - **Why** -- Users need to see at a glance whether prompt quality is trending up or down across multiple eval runs. Individual run reports are not enough.
 - **What to do** -- On the eval config detail page, add a "Trends" section below the run history table. Fetch the last 20 runs' summaries. Render: (1) Line chart of candidateAvgScore over time; (2) Stacked bar chart of improved/regressed/same counts per run; (3) Line chart of candidatePassRate over time. Use a lightweight charting library (recharts, already common in Next.js projects). Highlight runs where regression count spiked. Add a "regression alert" badge on the config list page if the most recent run has more regressions than the previous run.
 - **Effort** -- M
 
 ### PostHog Integration Points
 
-| Event Name | Trigger | Properties | Why Track |
-|------------|---------|------------|-----------|
-| `eval_config_created` | User creates a new eval config (wizard or quick-create) | `project_id`, `checks_enabled` (list), `guardrails_enabled` (list), `judge_enabled`, `template_used` (if from template) | Track which checks/guardrails are most popular; measure template adoption rate |
-| `eval_run_started` | User clicks "Start Evaluation" on the run execution page | `eval_config_id`, `project_id`, `provider`, `model`, `dataset_item_count`, `concurrency`, `checks_enabled`, `judge_enabled` | Measure eval adoption, dataset sizes, and provider distribution |
-| `eval_run_completed` | Eval engine finishes all items and backend computes summary | `eval_config_id`, `run_id`, `total_items`, `improved_count`, `regressed_count`, `same_count`, `duration_seconds`, `error_count`, `provider` | Core success metric; measure completion rates and eval quality trends |
-| `eval_run_failed` | Eval engine encounters a fatal error or user aborts | `eval_config_id`, `run_id`, `error_message`, `items_completed`, `items_total`, `failure_reason` (abort/error/pause_timeout), `provider` | Debug provider failures; measure reliability per provider |
-| `eval_run_paused` | Engine auto-pauses after 5 consecutive errors | `eval_config_id`, `run_id`, `consecutive_errors`, `last_error_message`, `items_completed`, `provider` | Identify problematic provider/model combinations; tune auto-pause threshold |
-| `eval_run_resumed` | User clicks Resume after a pause | `eval_config_id`, `run_id`, `items_remaining` | Measure recovery rate; determine if auto-pause is too aggressive |
-| `eval_check_result` | Each deterministic check completes (sampled at 10% to avoid event volume) | `check_type` (jsonValid/schema/regex/exact/contains/cosine/bleu/rouge), `passed`, `eval_config_id` | Track check pass/fail rates; identify most-failed checks to improve UX guidance |
-| `eval_guardrail_triggered` | A guardrail flags content | `guardrail_type` (pii/injection/toxicity/blocklist/language/outputLength), `eval_config_id`, `match_category` (for PII: email/phone/ssn etc.) | Measure guardrail trigger rates; identify which PII categories are most common |
-| `eval_judge_scored` | Judge returns a score for one item (sampled at 10%) | `score`, `confidence`, `scale_min`, `scale_max`, `model`, `latency_ms`, `criteria_count` | Track judge score distributions; identify calibration issues; measure judge latency |
-| `eval_provider_call` | Each LLM API call completes (sampled at 10%) | `provider`, `model`, `latency_ms`, `token_count`, `is_judge_call`, `status` (success/error) | Provider performance benchmarking; cost attribution; identify slow providers |
-| `eval_report_viewed` | User opens the run report page | `run_id`, `eval_config_id`, `time_since_run_completed_seconds` | Measure how quickly users check results; report page engagement |
-| `eval_report_exported` | User exports CSV or JSON from the report page | `run_id`, `format` (csv/json), `item_count` | Track export adoption; identify users who need programmatic access (SDK opportunity) |
-| `eval_item_inspected` | User opens the side-by-side item inspection dialog | `run_id`, `verdict`, `has_judge_score` | Measure deep-dive behavior; do users inspect regressions more than improvements? |
-| `eval_comparison_viewed` | User opens the run comparison page (future feature) | `config_id`, `run_a_id`, `run_b_id` | Validate that comparison is used; measure iterative eval workflow adoption |
-| `eval_template_selected` | User picks a pre-built eval template (future feature) | `template_id`, `template_name`, `project_id` | Measure template adoption; identify most popular templates to prioritize improvements |
+| Event Name                 | Trigger                                                                   | Properties                                                                                                                                    | Why Track                                                                             |
+| -------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `eval_config_created`      | User creates a new eval config (wizard or quick-create)                   | `project_id`, `checks_enabled` (list), `guardrails_enabled` (list), `judge_enabled`, `template_used` (if from template)                       | Track which checks/guardrails are most popular; measure template adoption rate        |
+| `eval_run_started`         | User clicks "Start Evaluation" on the run execution page                  | `eval_config_id`, `project_id`, `provider`, `model`, `dataset_item_count`, `concurrency`, `checks_enabled`, `judge_enabled`                   | Measure eval adoption, dataset sizes, and provider distribution                       |
+| `eval_run_completed`       | Eval engine finishes all items and backend computes summary               | `eval_config_id`, `run_id`, `total_items`, `improved_count`, `regressed_count`, `same_count`, `duration_seconds`, `error_count`, `provider`   | Core success metric; measure completion rates and eval quality trends                 |
+| `eval_run_failed`          | Eval engine encounters a fatal error or user aborts                       | `eval_config_id`, `run_id`, `error_message`, `items_completed`, `items_total`, `failure_reason` (abort/error/pause_timeout), `provider`       | Debug provider failures; measure reliability per provider                             |
+| `eval_run_paused`          | Engine auto-pauses after 5 consecutive errors                             | `eval_config_id`, `run_id`, `consecutive_errors`, `last_error_message`, `items_completed`, `provider`                                         | Identify problematic provider/model combinations; tune auto-pause threshold           |
+| `eval_run_resumed`         | User clicks Resume after a pause                                          | `eval_config_id`, `run_id`, `items_remaining`                                                                                                 | Measure recovery rate; determine if auto-pause is too aggressive                      |
+| `eval_check_result`        | Each deterministic check completes (sampled at 10% to avoid event volume) | `check_type` (jsonValid/schema/regex/exact/contains/cosine/bleu/rouge), `passed`, `eval_config_id`                                            | Track check pass/fail rates; identify most-failed checks to improve UX guidance       |
+| `eval_guardrail_triggered` | A guardrail flags content                                                 | `guardrail_type` (pii/injection/toxicity/blocklist/language/outputLength), `eval_config_id`, `match_category` (for PII: email/phone/ssn etc.) | Measure guardrail trigger rates; identify which PII categories are most common        |
+| `eval_judge_scored`        | Judge returns a score for one item (sampled at 10%)                       | `score`, `confidence`, `scale_min`, `scale_max`, `model`, `latency_ms`, `criteria_count`                                                      | Track judge score distributions; identify calibration issues; measure judge latency   |
+| `eval_provider_call`       | Each LLM API call completes (sampled at 10%)                              | `provider`, `model`, `latency_ms`, `token_count`, `is_judge_call`, `status` (success/error)                                                   | Provider performance benchmarking; cost attribution; identify slow providers          |
+| `eval_report_viewed`       | User opens the run report page                                            | `run_id`, `eval_config_id`, `time_since_run_completed_seconds`                                                                                | Measure how quickly users check results; report page engagement                       |
+| `eval_report_exported`     | User exports CSV or JSON from the report page                             | `run_id`, `format` (csv/json), `item_count`                                                                                                   | Track export adoption; identify users who need programmatic access (SDK opportunity)  |
+| `eval_item_inspected`      | User opens the side-by-side item inspection dialog                        | `run_id`, `verdict`, `has_judge_score`                                                                                                        | Measure deep-dive behavior; do users inspect regressions more than improvements?      |
+| `eval_comparison_viewed`   | User opens the run comparison page (future feature)                       | `config_id`, `run_a_id`, `run_b_id`                                                                                                           | Validate that comparison is used; measure iterative eval workflow adoption            |
+| `eval_template_selected`   | User picks a pre-built eval template (future feature)                     | `template_id`, `template_name`, `project_id`                                                                                                  | Measure template adoption; identify most popular templates to prioritize improvements |
 
 ---
 
@@ -825,6 +909,7 @@ The eval engine runs entirely in the browser (locked architecture decision for M
 The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that exports a `PromptOpsClient` class. It supports two methods: `logRun()` for direct run logging and `instrumentedGenerate()` for wrapping async LLM calls with automatic latency measurement. The client authenticates via project-scoped API keys (`po_sk_` prefix) sent as Bearer tokens. It includes retry logic (3 retries with exponential backoff + jitter on 5xx), fire-and-forget error handling (never throws to crash user apps), AbortController-based timeouts (default 5s), and an `onLogError` callback hook. The SDK depends on `@promptops/shared` for constants (`API_RUNS_PATH`, `SDK_DEFAULT_BASE_URL`, `SDK_DEFAULT_TIMEOUT_MS`) and types (`LogRunRequest`, `LogRunResponse`, `JsonObject`). Distribution is currently GitHub-only (`npm install github:...`); no npm publish workflow exists. There are 13 unit tests covering constructor validation, logRun HTTP behavior, retry logic, and instrumentedGenerate. The SDK has no build step -- `package.json` exports the raw TypeScript source (`"exports": { ".": "./src/index.ts" }`), which means consumers must have a TypeScript-compatible build pipeline.
 
 **Deployment:**
+
 - **Frontend:** Next.js on Vercel free tier (100GB bandwidth/month) with automatic preview deploys from PRs and production deploys from `main`. Next.js config includes security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, X-DNS-Prefetch-Control) and a rewrite proxy (`/api/:path*` to the Cloudflare Worker) so cookies stay on the same domain.
 - **Backend:** Cloudflare Workers free tier (100K req/day) with D1 (5M reads/day, 100K writes/day, 5GB) and R2 (10GB, 10M reads/month). `wrangler.toml` defines separate `development` and `production` environments with distinct `FRONTEND_URL` and `ENVIRONMENT` vars. Both environments share the same D1 database ID (`5e57380c-...`), which means dev and prod use the same physical database. Secrets (JWT_SECRET, GITHUB_CLIENT_ID/SECRET, ENCRYPTION_KEY) are in Wrangler's secret store.
 - **CI:** GitHub Actions (`ci.yml`) runs format:check, lint, typecheck, test on push and PR. The `deploy.yml` workflow applies all 8 D1 migrations (must be idempotent), deploys the Worker, and runs a health-check curl. The `CLOUDFLARE_API_TOKEN` GitHub secret is documented but not yet configured, meaning the deploy workflow is not yet operational.
@@ -837,6 +922,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 ### MVP Improvements (Prioritized)
 
 #### 1. NPM Publishing Workflow
+
 - **Why** -- The current GitHub-based install (`npm install github:promptops/studio#packages/sdk`) is fragile, slow, and unfamiliar to most developers. A proper npm package at `@promptops/sdk` is table stakes for any SDK adoption. Additionally, the SDK currently ships raw TypeScript source (`"exports": { ".": "./src/index.ts" }`) meaning consumers must have a TypeScript-compatible build pipeline, which excludes plain JavaScript projects entirely.
 - **What to do**
   - Add a `tsconfig.build.json` to `packages/sdk/` that compiles to `dist/` with ESM output and declaration files (`declaration: true`, `outDir: "dist"`, `rootDir: "src"`).
@@ -852,6 +938,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- S
 
 #### 2. Batch Logging
+
 - **Why** -- Production apps generating hundreds of LLM calls per minute will fire one HTTP request per `logRun` call, wasting network resources and risking the 100 req/min per-key rate limit. Batching reduces network overhead by 10-50x and eliminates rate limit concerns for high-throughput users.
 - **What to do**
   - Add a `BatchQueue` class in `packages/sdk/src/batch.ts` with configurable `maxBatchSize` (default 25), `flushIntervalMs` (default 5000), and `maxQueueSize` (default 1000).
@@ -866,6 +953,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- M
 
 #### 3. Offline Support / Queue Resilience
+
 - **Why** -- SDK users in edge environments, serverless cold starts, mobile backends, or flaky networks will lose run data when all 3 retries fail. A persistent queue prevents silent data loss and ensures eventual delivery.
 - **What to do**
   - Extend the `BatchQueue` with a `PersistenceAdapter` interface: `save(items: LogRunRequest[]): Promise<void>`, `load(): Promise<LogRunRequest[]>`, `clear(): Promise<void>`.
@@ -880,6 +968,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- M
 
 #### 4. Auto-Instrumentation
+
 - **Why** -- Manual `logRun` calls are tedious and error-prone. Developers forget to instrument calls, pass wrong fields, or do it inconsistently across their codebase. Auto-instrumentation provides zero-effort observability by wrapping existing LLM client objects.
 - **What to do**
   - Create `packages/sdk/src/instrument/openai.ts` that monkey-patches the OpenAI client:
@@ -896,6 +985,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- L
 
 #### 5. Framework Integrations
+
 - **Why** -- LangChain, LlamaIndex, and Vercel AI SDK are the dominant frameworks for building LLM applications. Native integrations let users adopt PromptOps without changing their application code, just by adding a callback handler or middleware.
 - **What to do**
   - **Vercel AI SDK middleware:** Create `packages/sdk/src/integrations/vercel-ai.ts` implementing the Vercel AI SDK `LanguageModelMiddleware` interface. Intercept `doGenerate` and `doStream` calls, extract input/output/usage from `LanguageModelRequestMetadata` and the result, log via the PromptOps client. Export as `@promptops/sdk/vercel-ai`. Example usage: `const model = wrapLanguageModel({ model: openai("gpt-4o"), middleware: promptopsMiddleware(client) })`.
@@ -906,6 +996,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- L
 
 #### 6. Python SDK
+
 - **Why** -- The majority of AI/ML teams use Python. Without a Python SDK, PromptOps is invisible to the largest segment of LLM application developers. Many production setups run Python backends with TypeScript frontends, and they need a native SDK for server-side logging.
 - **What to do**
   - Create `packages/sdk-python/` as a standalone Python package (`promptops`) with:
@@ -923,6 +1014,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- L
 
 #### 7. SDK Documentation and Developer Portal
+
 - **Why** -- The current README is a minimal API reference. Developers need interactive examples, copy-paste quickstart guides, framework-specific integration guides, and troubleshooting docs to adopt the SDK quickly. Poor documentation is the number one reason developers abandon SDKs.
 - **What to do**
   - Add a `/docs` section to the web app (or a separate documentation site using Starlight/Mintlify) with:
@@ -937,6 +1029,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- M
 
 #### 8. Preview Environments (Per-PR API Backend)
+
 - **Why** -- Vercel provides frontend previews automatically, but there is no isolated API backend for PR testing. This means PR reviewers cannot verify backend changes (new endpoints, migration changes, auth changes) end-to-end without manually running the API locally. This slows down review cycles and increases the risk of shipping broken backend code.
 - **What to do**
   - Create `.github/workflows/preview.yml` triggered on `pull_request` events (opened, synchronize, reopened).
@@ -952,6 +1045,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- L
 
 #### 9. Staging Environment
+
 - **Why** -- There is no environment between local development and production. Changes merged to `main` deploy straight to production via `deploy.yml`, with no staging gate for integration testing, migration validation, or QA.
 - **What to do**
   - Create a separate D1 database for staging: `wrangler d1 create promptops-db-staging`.
@@ -965,6 +1059,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- M
 
 #### 10. Monitoring and Alerting
+
 - **Why** -- The only monitoring today is manual inspection of the Cloudflare and Vercel dashboards. There is no automated alerting for downtime, elevated error rates, or approaching free-tier quota limits. A production outage would go unnoticed until a user reports it.
 - **What to do**
   - **Uptime monitoring:** Set up a free uptime monitor (Better Uptime, UptimeRobot, or Checkly free tier) pinging `GET /api/health` every 60 seconds with Slack/Discord webhook notifications on downtime.
@@ -976,6 +1071,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- M
 
 #### 11. CDN and Edge Caching
+
 - **Why** -- Static and semi-static API responses (health check, public project metadata, eval config details) are re-computed on every request. Caching improves latency for users, reduces D1 read consumption (critical on the 5M reads/day free tier), and lowers Worker request counts (critical on the 100K/day limit).
 - **What to do**
   - Add `Cache-Control` headers to appropriate read-only API responses:
@@ -989,6 +1085,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- S
 
 #### 12. Custom Domains
+
 - **Why** -- The production URLs (`promptops-api-production.promptops-ameer.workers.dev` and `prompt-ops-web.vercel.app`) look unprofessional, are hard to remember, make OAuth callback configuration fragile, and would be disruptive to change later after users have configured their SDK `baseUrl`. Custom domains should be set up before any public launch.
 - **What to do**
   - Register or configure a domain (e.g., `promptops.dev` or `promptops.io`).
@@ -1003,6 +1100,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- S
 
 #### 13. Infrastructure as Code
+
 - **Why** -- The current infrastructure is set up via manual CLI commands and dashboard clicks, as documented in `CONTEXT_DEPLOYMENT.md`. This is fragile, poorly reproducible, and makes onboarding new contributors or recreating environments (staging, preview) error-prone. As the number of environments grows (production + staging + per-PR previews), manual management becomes untenable.
 - **What to do**
   - Adopt Pulumi (TypeScript, natural fit for this monorepo) or Terraform for Cloudflare resource management.
@@ -1015,6 +1113,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- L
 
 #### 14. Log Aggregation
+
 - **Why** -- `wrangler tail` is ephemeral (only shows live-streamed logs) and cannot be searched, filtered, or correlated after the fact. There is no way to investigate a production error from yesterday, build dashboards on API usage patterns, or measure latency percentiles. This is a hard blocker for any production debugging workflow.
 - **What to do**
   - Integrate with **Axiom** (free tier: 500MB/month ingest, 30-day retention) as the primary log aggregation target. Axiom has a native Cloudflare Workers integration and is well-suited for structured JSON logs.
@@ -1031,20 +1130,30 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 - **Effort** -- M
 
 #### 15. PostHog Provider Component (Frontend)
+
 - **Why** -- Without product analytics, the team has no visibility into which features are used, where users drop off, what causes churn, or which pages are slow. PostHog provides product analytics, session replay, and feature flags in a single tool on a generous free tier (1M events/month).
 - **What to do**
   - Install `posthog-js` in `apps/web/`: `pnpm --filter @promptops/web add posthog-js`.
   - Create `apps/web/src/components/providers/posthog-provider.tsx`:
+
     ```tsx
     "use client";
     import posthog from "posthog-js";
-    import { PostHogProvider as PHProvider, usePostHog } from "posthog-js/react";
+    import {
+      PostHogProvider as PHProvider,
+      usePostHog
+    } from "posthog-js/react";
     import { useEffect } from "react";
 
     const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-    const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+    const POSTHOG_HOST =
+      process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
-    export function PostHogProvider({ children }: { children: React.ReactNode }) {
+    export function PostHogProvider({
+      children
+    }: {
+      children: React.ReactNode;
+    }) {
       useEffect(() => {
         if (!POSTHOG_KEY) return;
         posthog.init(POSTHOG_KEY, {
@@ -1054,7 +1163,7 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
           capture_pageleave: true,
           loaded: (ph) => {
             if (process.env.NODE_ENV === "development") ph.debug();
-          },
+          }
         });
       }, []);
 
@@ -1069,18 +1178,22 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
       };
     }
     ```
+
   - Wrap the root layout (`apps/web/src/app/layout.tsx`) children with `<PostHogProvider>` as the outermost provider.
   - Call `useIdentifyUser()` in the `AuthProvider` after successful `/auth/me` response.
   - Set up group analytics on org/project selection (see PostHog Implementation Plan below).
   - Add `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` to Vercel env vars (both preview and production).
   - Add `NEXT_PUBLIC_POSTHOG_KEY` to `apps/web/.env.local.example` with a placeholder value.
+
 - **Effort** -- S
 
 #### 16. PostHog Server Client (Cloudflare Worker)
+
 - **Why** -- Backend events (API key usage, SDK run logging, eval completions, migration success/failure) happen server-side and are invisible to the frontend PostHog client. Server-side analytics are essential for capturing the full product usage picture, especially for SDK interactions that never touch the web UI.
 - **What to do**
   - **Compatibility note:** `posthog-node` v3+ uses `fetch` internally, which is available in Cloudflare Workers. However, it also uses `setTimeout` for flush intervals and may reference Node.js globals. Recommended approach: use the raw PostHog HTTP batch API directly for maximum Workers compatibility and zero dependencies.
   - Create `apps/api/src/lib/analytics.ts` with a Worker-compatible PostHog client:
+
     ```typescript
     type CaptureEvent = {
       event: string;
@@ -1093,7 +1206,10 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
     const buffer: CaptureEvent[] = [];
 
     export function capture(event: CaptureEvent): void {
-      buffer.push({ ...event, timestamp: event.timestamp ?? new Date().toISOString() });
+      buffer.push({
+        ...event,
+        timestamp: event.timestamp ?? new Date().toISOString()
+      });
     }
 
     export async function flush(apiKey: string): Promise<void> {
@@ -1103,17 +1219,22 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
         await fetch("https://us.i.posthog.com/batch/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ api_key: apiKey, batch }),
+          body: JSON.stringify({ api_key: apiKey, batch })
         });
-      } catch { /* fire-and-forget */ }
+      } catch {
+        /* fire-and-forget */
+      }
     }
     ```
+
   - Add `POSTHOG_API_KEY` to Wrangler secrets: `wrangler secret put POSTHOG_API_KEY --env production`.
   - In request handlers, call `capture(...)` for key events, then `ctx.waitUntil(flush(env.POSTHOG_API_KEY))` at the end of the request to send analytics without blocking the response.
   - Key backend events to capture: `run_logged_via_sdk`, `api_key_created`, `api_key_first_used`, `eval_run_completed`, `eval_run_failed`.
+
 - **Effort** -- S
 
 #### 17. PostHog SDK Opt-In Telemetry
+
 - **Why** -- Understanding SDK usage patterns (which methods are called, error rates, retry frequency, version distribution across the user base) is essential for prioritizing SDK improvements. This must be strictly opt-in to respect developer trust and avoid any perception of spyware in the SDK.
 - **What to do**
   - Add `telemetry: boolean` option to `PromptOpsClientConfig` (default `false`).
@@ -1134,22 +1255,22 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 
 ### PostHog Integration Points
 
-| Event Name | Trigger | Properties | Why Track |
-|---|---|---|---|
-| `sdk_installed` | First `logRun` call from a previously-unseen API key (backend-side, check `api_keys.last_used_at IS NULL`) | `sdk_version` (from User-Agent), `sdk_language` (ts/python), `project_id` | Track SDK adoption velocity; measure time from key creation to first use |
-| `sdk_initialized` | `new PromptOpsClient()` constructor completes (telemetry opt-in only) | `sdk_version`, `runtime` (node/bun/deno/edge), `node_version`, `has_batching`, `has_persistence`, `has_timeout_override` | Understand SDK configuration patterns and runtime environment distribution |
-| `sdk_log_run_success` | `logRun` receives a 201 response from the backend | `latency_ms`, `retry_count`, `has_metadata`, `has_metrics`, `has_prompt_version_id` | Monitor SDK reliability; understand which optional fields users populate |
-| `sdk_log_run_failure` | `logRun` returns null after exhausting retries | `error_type` (timeout/4xx/5xx/network), `retry_count`, `total_duration_ms` | Identify reliability problems; detect backend issues from the SDK perspective |
-| `sdk_batch_flush` | Batch queue flushed (interval, size threshold, or manual) | `batch_size`, `queue_depth_before`, `flush_trigger` (interval/size/manual/shutdown), `flush_latency_ms` | Tune default batch size and flush interval based on real usage patterns |
-| `api_key_created` | `POST /api/projects/:id/api-keys` (backend) | `project_id`, `org_id`, `key_scope` (if scoping is implemented), `has_expiration` | Track SDK onboarding funnel; measure how quickly new projects create keys |
-| `api_key_first_used` | First authenticated request with an API key where `last_used_at` was NULL (backend) | `project_id`, `org_id`, `hours_since_creation` | Measure activation metric: time from key creation to first SDK call |
-| `run_logged_via_sdk` | `POST /api/runs` with source=SDK succeeds (backend) | `project_id`, `has_prompt_version_id`, `has_metrics`, `has_metadata`, `latency_ms`, `input_size_bytes`, `output_size_bytes` | Core product usage metric; understand SDK adoption depth per project |
-| `deploy_succeeded` | `deploy.yml` health check passes after Worker deployment | `deploy_duration_s`, `migration_count`, `commit_sha`, `deployer` (github-actions) | Monitor deployment health; track deployment frequency and duration trends |
-| `deploy_failed` | `deploy.yml` health check fails or any step errors out | `failed_step` (migrate/deploy/health-check), `error_message`, `commit_sha` | Alert on deployment regressions; correlate failures with specific changes |
-| `ci_build_completed` | `ci.yml` workflow finishes (success or failure) | `duration_s`, `status` (pass/fail), `trigger` (push/pr), `failed_step` (if failed) | Track CI performance, flakiness rate, and identify slow steps |
-| `api_latency_sampled` | Every Nth API request, sampled at 10% rate (backend middleware) | `method`, `path`, `status`, `latency_ms`, `cf_colo` (Cloudflare data center), `cf_country` | Build latency percentile dashboards (p50/p95/p99); detect regional issues |
-| `free_tier_usage_checked` | Hourly cron trigger in the Worker (scheduled event) | `d1_reads_pct`, `d1_writes_pct`, `d1_storage_gb`, `r2_reads_pct`, `r2_storage_gb`, `worker_requests_pct` | Alert before hitting free-tier limits; plan capacity and upgrade timing |
-| `sdk_version_seen` | Any SDK request (extracted from User-Agent header, backend middleware) | `sdk_version`, `sdk_language` (ts/python), `project_id`, `is_latest` (boolean) | Track SDK version adoption curve; measure upgrade velocity after releases |
+| Event Name                | Trigger                                                                                                    | Properties                                                                                                                  | Why Track                                                                     |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `sdk_installed`           | First `logRun` call from a previously-unseen API key (backend-side, check `api_keys.last_used_at IS NULL`) | `sdk_version` (from User-Agent), `sdk_language` (ts/python), `project_id`                                                   | Track SDK adoption velocity; measure time from key creation to first use      |
+| `sdk_initialized`         | `new PromptOpsClient()` constructor completes (telemetry opt-in only)                                      | `sdk_version`, `runtime` (node/bun/deno/edge), `node_version`, `has_batching`, `has_persistence`, `has_timeout_override`    | Understand SDK configuration patterns and runtime environment distribution    |
+| `sdk_log_run_success`     | `logRun` receives a 201 response from the backend                                                          | `latency_ms`, `retry_count`, `has_metadata`, `has_metrics`, `has_prompt_version_id`                                         | Monitor SDK reliability; understand which optional fields users populate      |
+| `sdk_log_run_failure`     | `logRun` returns null after exhausting retries                                                             | `error_type` (timeout/4xx/5xx/network), `retry_count`, `total_duration_ms`                                                  | Identify reliability problems; detect backend issues from the SDK perspective |
+| `sdk_batch_flush`         | Batch queue flushed (interval, size threshold, or manual)                                                  | `batch_size`, `queue_depth_before`, `flush_trigger` (interval/size/manual/shutdown), `flush_latency_ms`                     | Tune default batch size and flush interval based on real usage patterns       |
+| `api_key_created`         | `POST /api/projects/:id/api-keys` (backend)                                                                | `project_id`, `org_id`, `key_scope` (if scoping is implemented), `has_expiration`                                           | Track SDK onboarding funnel; measure how quickly new projects create keys     |
+| `api_key_first_used`      | First authenticated request with an API key where `last_used_at` was NULL (backend)                        | `project_id`, `org_id`, `hours_since_creation`                                                                              | Measure activation metric: time from key creation to first SDK call           |
+| `run_logged_via_sdk`      | `POST /api/runs` with source=SDK succeeds (backend)                                                        | `project_id`, `has_prompt_version_id`, `has_metrics`, `has_metadata`, `latency_ms`, `input_size_bytes`, `output_size_bytes` | Core product usage metric; understand SDK adoption depth per project          |
+| `deploy_succeeded`        | `deploy.yml` health check passes after Worker deployment                                                   | `deploy_duration_s`, `migration_count`, `commit_sha`, `deployer` (github-actions)                                           | Monitor deployment health; track deployment frequency and duration trends     |
+| `deploy_failed`           | `deploy.yml` health check fails or any step errors out                                                     | `failed_step` (migrate/deploy/health-check), `error_message`, `commit_sha`                                                  | Alert on deployment regressions; correlate failures with specific changes     |
+| `ci_build_completed`      | `ci.yml` workflow finishes (success or failure)                                                            | `duration_s`, `status` (pass/fail), `trigger` (push/pr), `failed_step` (if failed)                                          | Track CI performance, flakiness rate, and identify slow steps                 |
+| `api_latency_sampled`     | Every Nth API request, sampled at 10% rate (backend middleware)                                            | `method`, `path`, `status`, `latency_ms`, `cf_colo` (Cloudflare data center), `cf_country`                                  | Build latency percentile dashboards (p50/p95/p99); detect regional issues     |
+| `free_tier_usage_checked` | Hourly cron trigger in the Worker (scheduled event)                                                        | `d1_reads_pct`, `d1_writes_pct`, `d1_storage_gb`, `r2_reads_pct`, `r2_storage_gb`, `worker_requests_pct`                    | Alert before hitting free-tier limits; plan capacity and upgrade timing       |
+| `sdk_version_seen`        | Any SDK request (extracted from User-Agent header, backend middleware)                                     | `sdk_version`, `sdk_language` (ts/python), `project_id`, `is_latest` (boolean)                                              | Track SDK version adoption curve; measure upgrade velocity after releases     |
 
 ---
 
@@ -1157,19 +1278,19 @@ The TypeScript SDK is a single-file package (`src/index.ts`, ~146 lines) that ex
 
 #### 1. Package Installation Map
 
-| Workspace | Package | Install Command | Notes |
-|---|---|---|---|
-| `apps/web` | `posthog-js` | `pnpm --filter @promptops/web add posthog-js` | Frontend auto-capture, custom events, session replay, feature flags |
-| `apps/api` | None (raw `fetch` to PostHog HTTP API) | N/A | `posthog-node` may not be fully compatible with Cloudflare Workers runtime due to Node.js-specific APIs (`setTimeout` for flush, `os` module). Use the raw HTTP batch ingest API directly for maximum compatibility. Zero new dependencies. |
-| `packages/sdk` | None | N/A | Telemetry uses raw `fetch` (already available in all SDK target runtimes). Zero new dependencies -- critical to keep the SDK lightweight. |
+| Workspace      | Package                                | Install Command                               | Notes                                                                                                                                                                                                                                       |
+| -------------- | -------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web`     | `posthog-js`                           | `pnpm --filter @promptops/web add posthog-js` | Frontend auto-capture, custom events, session replay, feature flags                                                                                                                                                                         |
+| `apps/api`     | None (raw `fetch` to PostHog HTTP API) | N/A                                           | `posthog-node` may not be fully compatible with Cloudflare Workers runtime due to Node.js-specific APIs (`setTimeout` for flush, `os` module). Use the raw HTTP batch ingest API directly for maximum compatibility. Zero new dependencies. |
+| `packages/sdk` | None                                   | N/A                                           | Telemetry uses raw `fetch` (already available in all SDK target runtimes). Zero new dependencies -- critical to keep the SDK lightweight.                                                                                                   |
 
 **Environment Variables to Add:**
 
-| Variable | Where | Value |
-|---|---|---|
-| `NEXT_PUBLIC_POSTHOG_KEY` | Vercel env vars (preview + production) | PostHog project API key (public, safe to expose) |
-| `NEXT_PUBLIC_POSTHOG_HOST` | Vercel env vars | `https://us.i.posthog.com` (or EU: `https://eu.i.posthog.com`) |
-| `POSTHOG_API_KEY` | Wrangler secrets (production + staging) | Same PostHog project API key (used server-side) |
+| Variable                   | Where                                   | Value                                                          |
+| -------------------------- | --------------------------------------- | -------------------------------------------------------------- |
+| `NEXT_PUBLIC_POSTHOG_KEY`  | Vercel env vars (preview + production)  | PostHog project API key (public, safe to expose)               |
+| `NEXT_PUBLIC_POSTHOG_HOST` | Vercel env vars                         | `https://us.i.posthog.com` (or EU: `https://eu.i.posthog.com`) |
+| `POSTHOG_API_KEY`          | Wrangler secrets (production + staging) | Same PostHog project API key (used server-side)                |
 
 #### 2. Frontend Initialization (Provider Component)
 
@@ -1199,7 +1320,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         if (process.env.NODE_ENV === "development") {
           ph.debug();
         }
-      },
+      }
     });
   }, []);
 
@@ -1213,7 +1334,7 @@ export function useIdentifyUser() {
   return (user: { id: string; email: string; name: string }) => {
     ph.identify(user.id, {
       email: user.email,
-      name: user.name,
+      name: user.name
     });
   };
 }
@@ -1274,7 +1395,7 @@ const buffer: CaptureEvent[] = [];
 export function capture(event: CaptureEvent): void {
   buffer.push({
     ...event,
-    timestamp: event.timestamp ?? new Date().toISOString(),
+    timestamp: event.timestamp ?? new Date().toISOString()
   });
 }
 
@@ -1291,7 +1412,7 @@ export async function flush(apiKey: string): Promise<void> {
     await fetch("https://us.i.posthog.com/batch/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ api_key: apiKey, batch }),
+      body: JSON.stringify({ api_key: apiKey, batch })
     });
   } catch {
     // Fire-and-forget: analytics must never break the application.
@@ -1313,13 +1434,13 @@ export function captureWithContext(
       ...properties,
       $groups: {
         org: orgId,
-        ...(projectId ? { project: projectId } : {}),
-      },
+        ...(projectId ? { project: projectId } : {})
+      }
     },
     groups: {
       org: orgId,
-      ...(projectId ? { project: projectId } : {}),
-    },
+      ...(projectId ? { project: projectId } : {})
+    }
   });
 }
 ```
@@ -1336,9 +1457,9 @@ capture({
   properties: {
     project_id: projectId,
     has_prompt_version_id: !!body.promptVersionId,
-    has_metrics: !!body.metrics,
+    has_metrics: !!body.metrics
   },
-  groups: { org: orgId, project: projectId },
+  groups: { org: orgId, project: projectId }
 });
 
 // At the end of the request (in the response middleware or finally block):
@@ -1350,19 +1471,21 @@ ctx.waitUntil(flush(env.POSTHOG_API_KEY));
 PostHog group analytics enables attributing events to organizations and projects, allowing per-org dashboards, per-project funnels, and cross-org comparisons.
 
 **PostHog Dashboard Configuration (one-time setup):**
+
 1. In PostHog Settings > Group Analytics, define two group types:
    - Type 0: `org` (display name: "Organization")
    - Type 1: `project` (display name: "Project")
 2. This enables queries like: "Show all events for org X", "Compare run volume across projects in org Y", "Which orgs are most active this week".
 
 **Frontend (on org/project context change):**
+
 ```typescript
 // In org-context.tsx, when the active org changes:
 posthog.group("org", orgId, {
   name: org.name,
   slug: org.slug,
   created_at: org.createdAt,
-  member_count: org.memberCount,
+  member_count: org.memberCount
 });
 
 // In project-context.tsx, when the active project changes:
@@ -1370,23 +1493,23 @@ posthog.group("project", projectId, {
   name: project.name,
   slug: project.slug,
   org_id: project.orgId,
-  created_at: project.createdAt,
+  created_at: project.createdAt
 });
 ```
 
 **Backend (on every authenticated request):**
+
 ```typescript
 // In the auth middleware, after resolving the user and org context:
-captureWithContext(
-  "api_request",
-  userId,
-  orgId,
-  projectId,
-  { method: request.method, path: routePath, status: response.status }
-);
+captureWithContext("api_request", userId, orgId, projectId, {
+  method: request.method,
+  path: routePath,
+  status: response.status
+});
 ```
 
 **Resulting Dashboard Capabilities:**
+
 - Per-org: total runs, active projects, member count, API key count, eval runs per week.
 - Per-project: SDK runs per day, eval pass rate trend, active API keys, latency percentiles.
 - Cross-org: compare engagement metrics, identify power users and at-risk orgs.
@@ -1394,6 +1517,7 @@ captureWithContext(
 #### 5. Feature Flag Integration for Gradual Rollouts
 
 **Frontend (using PostHog React hooks):**
+
 ```typescript
 import { useFeatureFlagEnabled, useFeatureFlagPayload } from "posthog-js/react";
 
@@ -1411,6 +1535,7 @@ const enabled = posthog.isFeatureEnabled("batch-import-v2");
 ```
 
 **Backend (evaluated per-request via PostHog Decide API):**
+
 ```typescript
 // Helper in apps/api/src/lib/feature-flags.ts:
 type FeatureFlags = Record<string, boolean | string>;
@@ -1427,8 +1552,8 @@ export async function getFeatureFlags(
       body: JSON.stringify({
         api_key: apiKey,
         distinct_id: distinctId,
-        groups: groups ?? {},
-      }),
+        groups: groups ?? {}
+      })
     });
     const data = await res.json();
     return (data.featureFlags as FeatureFlags) ?? {};
@@ -1438,7 +1563,9 @@ export async function getFeatureFlags(
 }
 
 // Usage in a handler:
-const flags = await getFeatureFlags(env.POSTHOG_API_KEY, userId, { org: orgId });
+const flags = await getFeatureFlags(env.POSTHOG_API_KEY, userId, {
+  org: orgId
+});
 if (flags["batch-run-endpoint"]) {
   // Enable the new batch endpoint logic
 }
@@ -1448,14 +1575,14 @@ if (flags["batch-run-endpoint"]) {
 
 **Recommended Feature Flags for the MVP Improvement Phase:**
 
-| Flag Name | Type | Rollout Strategy | Purpose |
-|---|---|---|---|
-| `batch-run-endpoint` | Boolean | 0% -> 10% -> 50% -> 100% by org group | Gate the new `POST /api/runs/batch` endpoint until validated at scale |
-| `new-eval-comparison-ui` | Boolean | Internal team first, then 50% -> 100% | Gradually roll out redesigned eval comparison UI |
-| `deep-health-check` | Boolean | 100% from start (kill switch) | Enable `/api/health/deep` with D1/R2 checks; disable if it causes issues |
-| `sdk-offline-queue` | Boolean | 10% -> 50% -> 100% | Gradually enable offline queue in the SDK for opted-in telemetry users |
-| `preview-environments` | Boolean | Per-user allowlist | Enable per-PR preview deployments only for select contributors |
-| `python-sdk-beta` | Boolean | Per-org allowlist | Gate Python SDK docs and download links for beta testers |
+| Flag Name                | Type    | Rollout Strategy                      | Purpose                                                                  |
+| ------------------------ | ------- | ------------------------------------- | ------------------------------------------------------------------------ |
+| `batch-run-endpoint`     | Boolean | 0% -> 10% -> 50% -> 100% by org group | Gate the new `POST /api/runs/batch` endpoint until validated at scale    |
+| `new-eval-comparison-ui` | Boolean | Internal team first, then 50% -> 100% | Gradually roll out redesigned eval comparison UI                         |
+| `deep-health-check`      | Boolean | 100% from start (kill switch)         | Enable `/api/health/deep` with D1/R2 checks; disable if it causes issues |
+| `sdk-offline-queue`      | Boolean | 10% -> 50% -> 100%                    | Gradually enable offline queue in the SDK for opted-in telemetry users   |
+| `preview-environments`   | Boolean | Per-user allowlist                    | Enable per-PR preview deployments only for select contributors           |
+| `python-sdk-beta`        | Boolean | Per-org allowlist                     | Gate Python SDK docs and download links for beta testers                 |
 
 **SDK-Side Feature Flags (evaluated at initialization):**
 When SDK telemetry is opted in, the SDK can optionally call the PostHog `/decide` endpoint during `new PromptOpsClient()` initialization to check for remotely-toggled SDK behavior flags. This enables the team to disable buggy SDK features (e.g., batch mode, offline queue) without requiring users to upgrade their SDK version. The flag response should be cached for the lifetime of the client instance to avoid per-request overhead. Implementation: a single `fetch` call during construction, with a 2-second timeout and a fail-open policy (if unreachable, all flags default to their local config values).
@@ -1466,81 +1593,88 @@ When SDK telemetry is opted in, the SDK can optionally call the PostHog `/decide
 
 ### Total Improvements by Domain
 
-| Domain | Improvements | PostHog Events | Key Theme |
-|--------|-------------|----------------|-----------|
-| Frontend | 18 | 15 | UX polish, error handling, accessibility, onboarding |
-| Backend API | 20 | 15 | Missing endpoints, pagination, search, webhooks, OpenAPI |
-| Authentication | 9 | 13 | Invite system, token refresh, Google OAuth, API key scoping |
-| Database | 12 | 10 | Encryption, cursor pagination, soft deletes, FTS5, archival |
-| Eval Engine | 20 | 15 | New checks, providers, judge improvements, cost tracking |
-| SDK & Deployment | 17 | 14 | Python SDK, NPM publish, staging, PostHog implementation |
-| **Total** | **96** | **82** | |
+| Domain           | Improvements | PostHog Events | Key Theme                                                   |
+| ---------------- | ------------ | -------------- | ----------------------------------------------------------- |
+| Frontend         | 18           | 15             | UX polish, error handling, accessibility, onboarding        |
+| Backend API      | 20           | 15             | Missing endpoints, pagination, search, webhooks, OpenAPI    |
+| Authentication   | 9            | 13             | Invite system, token refresh, Google OAuth, API key scoping |
+| Database         | 12           | 10             | Encryption, cursor pagination, soft deletes, FTS5, archival |
+| Eval Engine      | 20           | 15             | New checks, providers, judge improvements, cost tracking    |
+| SDK & Deployment | 17           | 14             | Python SDK, NPM publish, staging, PostHog implementation    |
+| **Total**        | **96**       | **82**         |                                                             |
 
 ### Sprint Priority Recommendations
 
 #### Sprint 1 — Foundation (Week 1-2)
-*Focus: Ship what blocks team adoption and analytics*
 
-| # | Improvement | Domain | Effort | Why First |
-|---|-------------|--------|--------|-----------|
-| 1 | PostHog Provider + Server Client | SDK | S+S | Unlocks all analytics tracking |
-| 2 | Invite System (email-based org invites) | Auth | M | Biggest blocker for team adoption |
-| 3 | NPM Publishing Workflow | SDK | S | SDK not installable without this |
-| 4 | Global Error Boundary | Frontend | M | Users see white screens on errors |
-| 5 | Provider Key Encryption | Database | M | Security-critical gap |
-| 6 | Prompt Update/Delete endpoints | Backend | S | Basic CRUD incomplete |
+_Focus: Ship what blocks team adoption and analytics_
+
+| #   | Improvement                             | Domain   | Effort | Why First                         |
+| --- | --------------------------------------- | -------- | ------ | --------------------------------- |
+| 1   | PostHog Provider + Server Client        | SDK      | S+S    | Unlocks all analytics tracking    |
+| 2   | Invite System (email-based org invites) | Auth     | M      | Biggest blocker for team adoption |
+| 3   | NPM Publishing Workflow                 | SDK      | S      | SDK not installable without this  |
+| 4   | Global Error Boundary                   | Frontend | M      | Users see white screens on errors |
+| 5   | Provider Key Encryption                 | Database | M      | Security-critical gap             |
+| 6   | Prompt Update/Delete endpoints          | Backend  | S      | Basic CRUD incomplete             |
 
 #### Sprint 2 — Polish (Week 3-4)
-*Focus: UX quality and eval engine depth*
 
-| # | Improvement | Domain | Effort | Why Next |
-|---|-------------|--------|--------|----------|
-| 7 | Skeleton Loading Consistency | Frontend | S | Perceived performance |
-| 8 | Cursor-Based Pagination | Database | M | Performance at scale |
-| 9 | Token Refresh + Session Revocation | Auth | L+M | Security posture |
-| 10 | New Check Types (contains, similarity) | Eval | M | Most-requested eval features |
-| 11 | Search & Filtering | Backend | M | Usability at scale |
-| 12 | Cost Tracking per Eval Run | Eval | M | Users need spend visibility |
+_Focus: UX quality and eval engine depth_
+
+| #   | Improvement                            | Domain   | Effort | Why Next                     |
+| --- | -------------------------------------- | -------- | ------ | ---------------------------- |
+| 7   | Skeleton Loading Consistency           | Frontend | S      | Perceived performance        |
+| 8   | Cursor-Based Pagination                | Database | M      | Performance at scale         |
+| 9   | Token Refresh + Session Revocation     | Auth     | L+M    | Security posture             |
+| 10  | New Check Types (contains, similarity) | Eval     | M      | Most-requested eval features |
+| 11  | Search & Filtering                     | Backend  | M      | Usability at scale           |
+| 12  | Cost Tracking per Eval Run             | Eval     | M      | Users need spend visibility  |
 
 #### Sprint 3 — Scale (Week 5-6)
-*Focus: Production readiness and developer experience*
 
-| # | Improvement | Domain | Effort | Why Then |
-|---|-------------|--------|--------|----------|
-| 13 | Staging Environment | SDK | M | Safe deployment pipeline |
-| 14 | Google OAuth | Auth | M | Expand user base |
-| 15 | Eval Comparison Views | Eval | L | Core differentiator |
-| 16 | Batch Logging (SDK) | SDK | M | Production SDK performance |
-| 17 | Soft Deletes | Database | M | Data safety |
-| 18 | Keyboard Shortcuts + Cmd+K | Frontend | L | Power user retention |
+_Focus: Production readiness and developer experience_
+
+| #   | Improvement                | Domain   | Effort | Why Then                   |
+| --- | -------------------------- | -------- | ------ | -------------------------- |
+| 13  | Staging Environment        | SDK      | M      | Safe deployment pipeline   |
+| 14  | Google OAuth               | Auth     | M      | Expand user base           |
+| 15  | Eval Comparison Views      | Eval     | L      | Core differentiator        |
+| 16  | Batch Logging (SDK)        | SDK      | M      | Production SDK performance |
+| 17  | Soft Deletes               | Database | M      | Data safety                |
+| 18  | Keyboard Shortcuts + Cmd+K | Frontend | L      | Power user retention       |
 
 #### Sprint 4 — Growth (Week 7-8)
-*Focus: Platform expansion and self-service*
 
-| # | Improvement | Domain | Effort | Why Then |
-|---|-------------|--------|--------|----------|
-| 19 | Python SDK | SDK | L | Reach Python AI teams |
-| 20 | New Providers (Gemini, Ollama) | Eval | M | Broader LLM coverage |
-| 21 | OpenAPI/Swagger Docs | Backend | M | Developer self-service |
-| 22 | Eval Templates | Eval | M | Lower barrier to first eval |
-| 23 | Full-Text Search (FTS5) | Database | M | Scale UX |
-| 24 | Onboarding Tour | Frontend | L | Activation rate |
+_Focus: Platform expansion and self-service_
+
+| #   | Improvement                    | Domain   | Effort | Why Then                    |
+| --- | ------------------------------ | -------- | ------ | --------------------------- |
+| 19  | Python SDK                     | SDK      | L      | Reach Python AI teams       |
+| 20  | New Providers (Gemini, Ollama) | Eval     | M      | Broader LLM coverage        |
+| 21  | OpenAPI/Swagger Docs           | Backend  | M      | Developer self-service      |
+| 22  | Eval Templates                 | Eval     | M      | Lower barrier to first eval |
+| 23  | Full-Text Search (FTS5)        | Database | M      | Scale UX                    |
+| 24  | Onboarding Tour                | Frontend | L      | Activation rate             |
 
 ### PostHog Event Priority
 
 **Implement immediately (Sprint 1):**
+
 - `user_signed_up`, `user_logged_in`, `org_created`, `project_created`
 - `eval_run_started`, `eval_run_completed`, `eval_run_failed`
 - `prompt_created`, `prompt_version_created`
 - `page_viewed` (auto-capture)
 
 **Implement in Sprint 2:**
+
 - `dataset_created`, `dataset_items_imported`
 - `api_key_created`, `sdk_run_logged`
 - `invite_sent`, `invite_accepted`
 - All funnel events (signup → first eval completion)
 
 **Implement in Sprint 3-4:**
+
 - Feature usage events, performance metrics, error tracking
 - Group analytics (org → project hierarchy)
 - Feature flag integration

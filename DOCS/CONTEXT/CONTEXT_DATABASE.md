@@ -129,3 +129,7 @@ Required indexes include:
 - 2026-03-07 - Task 6.1 - Added the core tenancy migration for users, orgs, org_members, and projects with `_migrations` tracking.
 - 2026-03-06 - Task 5.1 - Provisioned the production D1 database and recorded the `DB` binding in Wrangler.
 - 2026-03-06 - Task 3.2 - Documented the migration/query-helper test strategy and the integration coverage expectations for database-backed flows.
+
+## Security Fixes Applied (2026-03-28)
+
+Database agent: Created migration 008_security_fixes.sql adding ON DELETE CASCADE/RESTRICT to eval_configs, eval_runs, audit_events FKs; added UNIQUE indexes on users.email and eval_run_items(eval_run_id, dataset_item_id); added provider_keys index; added GOLDEN to datasets type CHECK; added LIMIT 10000 to getRunStats; added null guard in audit middleware.

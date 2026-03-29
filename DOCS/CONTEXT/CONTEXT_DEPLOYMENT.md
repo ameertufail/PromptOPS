@@ -224,3 +224,7 @@ For MVP, use the default Vercel and Workers subdomains. Later, add custom domain
 - 2026-03-02 - Task 4.1 - Added env example templates, seeded local env files, and added gitignore secret-file rules for web/api development.
 - 2026-03-02 - Task 2.2 - Standardized root install/dev/build/lint/typecheck/test commands and aligned deployment/CI command references to the root script contract.
 - 2026-03-02 - Task 1.2 - Finalized production secret-handling rules for approved stores, env separation, rotation, and log redaction.
+
+## Security Fixes Applied (2026-03-28)
+
+SDK/Deployment agent: Added security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy) to Next.js config; documented migration idempotency requirement in deploy workflow.

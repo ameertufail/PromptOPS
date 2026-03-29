@@ -5,6 +5,8 @@ export const API_RUNS_PATH = `${API_BASE_PATH}/runs`;
 export const AUTH_CALLBACK_FRONTEND_PATH = "/callback";
 export const AUTH_SESSION_COOKIE_NAME = "po_session";
 
+// WARNING: This default is for local development only. Production usage MUST
+// provide an explicit HTTPS baseUrl to avoid sending API keys over an insecure connection.
 export const SDK_DEFAULT_BASE_URL = "http://localhost:8787";
 export const SDK_DEFAULT_TIMEOUT_MS = 5_000;
 

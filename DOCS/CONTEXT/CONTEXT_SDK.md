@@ -88,3 +88,7 @@ A simple script in `packages/sdk/examples/` that: initializes PromptOpsClient, s
 - 2026-03-16 - Task 21.2 - Added API key create/list/revoke endpoints, SHA-256 hash auth middleware, run logging POST /api/runs, run list/stats endpoints, and per-key rate limiting.
 - 2026-03-08 - Task 9.3 - Added API-key rate-limit middleware scaffolding and request-context contracts the future `/api/runs` SDK endpoint will plug into.
 - 2026-03-08 - Task 7.2 - Documented the Phase 7 `runs` index baseline that the SDK logging list and stats endpoints will rely on.
+
+## Security Fixes Applied (2026-03-28)
+
+SDK agent: Made apiKey private in PromptOpsClient; added insecure baseUrl warning; added logRun input validation; added response shape validation; sanitized error logging; fixed AbortController cleanup with finally block; added onLogError callback option; fixed evalJudgeSchema scaleMin==scaleMax; added security headers to Next.js config; documented migration idempotency requirement in deploy workflow.

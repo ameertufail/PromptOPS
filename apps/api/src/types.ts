@@ -1,6 +1,7 @@
 import type { JsonValue, User, UserRole } from "@promptops/shared";
 
 export type AppBindings = {
+  BACKEND_URL?: string;
   DB?: D1Database;
   ENCRYPTION_KEY?: string;
   ENVIRONMENT?: string;

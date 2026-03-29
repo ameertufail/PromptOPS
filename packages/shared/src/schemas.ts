@@ -316,11 +316,11 @@ export const evalJudgeSchema = z
     if (
       value.scaleMin !== undefined &&
       value.scaleMax !== undefined &&
-      value.scaleMax < value.scaleMin
+      value.scaleMax <= value.scaleMin
     ) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Judge scaleMax must be greater than or equal to scaleMin.",
+        message: "Judge scaleMax must be strictly greater than scaleMin.",
         path: ["scaleMax"]
       });
     }

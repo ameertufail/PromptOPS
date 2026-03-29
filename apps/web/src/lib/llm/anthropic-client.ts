@@ -50,20 +50,26 @@ export class AnthropicClient implements LLMClient {
         "anthropic-dangerous-direct-browser-access": "true",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(60_000)
     });
 
     if (!res.ok) {
       const errorBody = await res.text();
-      throw new Error(
-        `Anthropic API error ${res.status}: ${errorBody.slice(0, 500)}`
-      );
+      const safeBody = errorBody
+        .slice(0, 500)
+        .replace(this.apiKey, "[REDACTED]");
+      throw new Error(`Anthropic API error ${res.status}: ${safeBody}`);
     }
 
     const data = (await res.json()) as {
       content: Array<{ type: string; text: string }>;
       usage?: { input_tokens: number; output_tokens: number };
     };
+
+    if (!data.content?.length || !data.content[0]?.text) {
+      throw new Error("Invalid LLM response: missing or empty content");
+    }
 
     const latencyMs = Math.round(performance.now() - startMs);
     const textBlock = data.content.find((b) => b.type === "text");

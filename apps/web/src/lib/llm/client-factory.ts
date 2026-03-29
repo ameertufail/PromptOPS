@@ -9,6 +9,28 @@ import { GroqClient } from "./groq-client";
 import { OpenAIClient } from "./openai-client";
 import type { LLMClient, LLMClientConfig } from "./types";
 
+function validateBaseUrl(url: string): void {
+  const parsed = new URL(url);
+  const hostname = parsed.hostname;
+  if (
+    parsed.protocol !== "https:" &&
+    hostname !== "localhost" &&
+    hostname !== "127.0.0.1"
+  ) {
+    throw new Error("Custom provider baseUrl must use HTTPS");
+  }
+  if (
+    /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|0\.)/.test(
+      hostname
+    ) ||
+    hostname === "metadata.google.internal"
+  ) {
+    throw new Error(
+      "Custom provider baseUrl cannot target private/internal networks"
+    );
+  }
+}
+
 /**
  * Creates an LLM client for the given provider type and API key.
  * OpenAI-compatible providers (TOGETHER, CUSTOM) use the OpenAI adapter
@@ -37,6 +59,7 @@ export function createLLMClient(config: LLMClientConfig): LLMClient {
           "Custom provider requires a baseUrl in the configuration."
         );
       }
+      validateBaseUrl(config.baseUrl);
       return new OpenAIClient(config);
 
     default:

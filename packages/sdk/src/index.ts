@@ -11,6 +11,7 @@ export type PromptOpsClientConfig = {
   apiKey: string;
   baseUrl?: string;
   timeout?: number;
+  onLogError?: (error: unknown) => void;
 };
 
 export type InstrumentedGenerateOptions<T> = {
@@ -39,9 +40,10 @@ function sleep(ms: number) {
 }
 
 export class PromptOpsClient {
-  readonly apiKey: string;
+  private readonly apiKey: string;
   readonly baseUrl: string;
   readonly timeout: number;
+  private readonly onLogError?: (error: unknown) => void;
 
   constructor(config: PromptOpsClientConfig) {
     if (!config.apiKey) {
@@ -55,9 +57,27 @@ export class PromptOpsClient {
     this.apiKey = config.apiKey;
     this.baseUrl = config.baseUrl ?? SDK_DEFAULT_BASE_URL;
     this.timeout = config.timeout ?? SDK_DEFAULT_TIMEOUT_MS;
+    this.onLogError = config.onLogError;
+
+    if (
+      !this.baseUrl.startsWith("https://") &&
+      !this.baseUrl.includes("localhost") &&
+      !this.baseUrl.includes("127.0.0.1")
+    ) {
+      console.warn(
+        "[PromptOps SDK] Warning: baseUrl is not using HTTPS. API keys will be sent over an insecure connection."
+      );
+    }
   }
 
   async logRun(params: LogRunRequest): Promise<LogRunResponse | null> {
+    if (!params.projectId || !params.promptId) {
+      console.warn(
+        "[PromptOps SDK] logRun: missing required fields (projectId, promptId)"
+      );
+      return null;
+    }
+
     const url = `${this.baseUrl}${API_RUNS_PATH}`;
 
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
@@ -65,31 +85,41 @@ export class PromptOpsClient {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(params),
-          signal: controller.signal
-        });
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${this.apiKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(params),
+            signal: controller.signal
+          });
 
-        clearTimeout(timeoutId);
+          if (response.ok) {
+            const data = await response.json();
+            if (data && typeof data === "object" && "id" in data) {
+              return data as LogRunResponse;
+            }
+            console.warn("[PromptOps SDK] logRun: unexpected response shape");
+            return null;
+          }
 
-        if (response.ok) {
-          return (await response.json()) as LogRunResponse;
-        }
-
-        if (!isRetryableStatus(response.status) || attempt === MAX_RETRIES) {
-          console.warn(
-            `[PromptOps SDK] logRun failed with status ${response.status}`
-          );
-          return null;
+          if (!isRetryableStatus(response.status) || attempt === MAX_RETRIES) {
+            console.warn(
+              `[PromptOps SDK] logRun failed with status ${response.status}`
+            );
+            return null;
+          }
+        } finally {
+          clearTimeout(timeoutId);
         }
       } catch (error) {
         if (attempt === MAX_RETRIES) {
-          console.warn("[PromptOps SDK] logRun failed after retries:", error);
+          console.warn(
+            "[PromptOps SDK] logRun failed after retries:",
+            error instanceof Error ? error.message : "Unknown error"
+          );
           return null;
         }
       }
@@ -118,8 +148,8 @@ export class PromptOpsClient {
       promptVersionId: options.promptVersionId,
       metadata: options.metadata,
       metrics: { latencyMs }
-    }).catch(() => {
-      // Intentionally swallowed - SDK logging should never crash user's app
+    }).catch((err) => {
+      this.onLogError?.(err);
     });
 
     return result;

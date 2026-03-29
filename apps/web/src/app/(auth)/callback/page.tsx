@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { User } from "@promptops/shared";
-import { api, storeSessionToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 
 export default function CallbackPage() {
   const router = useRouter();
@@ -14,24 +14,21 @@ export default function CallbackPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+
+    const errorMessages: Record<string, string> = {
+      auth_callback_failed: "Authentication failed. Please try again.",
+      missing_email: "Could not retrieve your email from GitHub.",
+      missing_state: "Invalid authentication state. Please try again.",
+      state_mismatch: "Authentication state mismatch. Please try again."
+    };
     const authError = params.get("error");
 
     if (authError) {
       setError(
-        authError === "auth_failed"
-          ? "Authentication failed. Please try again."
-          : authError === "missing_email"
-            ? "Could not retrieve your email from GitHub. Check your GitHub email settings."
-            : `Authentication error: ${authError}`
+        errorMessages[authError] ??
+          "An authentication error occurred. Please try again."
       );
       return;
-    }
-
-    const token = params.get("token");
-    if (token) {
-      storeSessionToken(token);
-      // Clean the token from the URL to avoid leaking it in browser history
-      window.history.replaceState({}, "", "/callback");
     }
 
     api

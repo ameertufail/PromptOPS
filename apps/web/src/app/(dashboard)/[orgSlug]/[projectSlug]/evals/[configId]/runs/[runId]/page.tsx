@@ -56,6 +56,17 @@ import {
 import { motion } from "motion/react";
 import { toast } from "sonner";
 
+function sanitizeCsvField(value: string): string {
+  let safe = value.replace(/"/g, '""');
+  // Prevent formula injection
+  if (/^[=+\-@\t\r]/.test(safe)) {
+    safe = "'" + safe;
+  }
+  return `"${safe}"`;
+}
+
+const MAX_EXPORT_PAGES = 100;
+
 export default function EvalRunReportPage() {
   const params = useParams();
   const router = useRouter();
@@ -156,6 +167,7 @@ export default function EvalRunReportPage() {
       let exportPage = 1;
       let hasMore = true;
       while (hasMore) {
+        if (exportPage > MAX_EXPORT_PAGES) break;
         const data = await api.get<EvalRunItemsResponse>(
           api.paths.evalRunItems(runId),
           { page: String(exportPage), limit: "100" }
@@ -179,16 +191,16 @@ export default function EvalRunReportPage() {
       ];
 
       const rows = allItems.map((item) => [
-        item.datasetItemId,
-        item.verdict,
-        `"${(item.baseOutput ?? "").replace(/"/g, '""')}"`,
-        `"${(item.candidateOutput ?? "").replace(/"/g, '""')}"`,
-        item.baseMetrics?.allChecksPassed ?? "",
-        item.candidateMetrics?.allChecksPassed ?? "",
-        item.baseMetrics?.judgeScore ?? "",
-        item.candidateMetrics?.judgeScore ?? "",
-        item.delta?.scoreDelta ?? "",
-        item.delta?.latencyDelta ?? ""
+        sanitizeCsvField(item.datasetItemId ?? ""),
+        sanitizeCsvField(item.verdict ?? ""),
+        sanitizeCsvField(item.baseOutput ?? ""),
+        sanitizeCsvField(item.candidateOutput ?? ""),
+        sanitizeCsvField(String(item.baseMetrics?.allChecksPassed ?? "")),
+        sanitizeCsvField(String(item.candidateMetrics?.allChecksPassed ?? "")),
+        sanitizeCsvField(String(item.baseMetrics?.judgeScore ?? "")),
+        sanitizeCsvField(String(item.candidateMetrics?.judgeScore ?? "")),
+        sanitizeCsvField(String(item.delta?.scoreDelta ?? "")),
+        sanitizeCsvField(String(item.delta?.latencyDelta ?? ""))
       ]);
 
       const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join(
@@ -214,6 +226,7 @@ export default function EvalRunReportPage() {
       let exportPage = 1;
       let hasMore = true;
       while (hasMore) {
+        if (exportPage > MAX_EXPORT_PAGES) break;
         const data = await api.get<EvalRunItemsResponse>(
           api.paths.evalRunItems(runId),
           { page: String(exportPage), limit: "100" }

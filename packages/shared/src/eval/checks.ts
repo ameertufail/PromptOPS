@@ -6,13 +6,17 @@
 import Ajv from "ajv";
 import type { CheckResult, EvalChecks, JsonObject } from "../types";
 
-const ajv = new Ajv({ allErrors: true });
-
 /**
  * Checks whether the output is valid JSON.
  * Returns pass=true if parsing succeeds.
  */
 export function checkJsonValid(output: string): CheckResult {
+  if (output.length > 100_000) {
+    return {
+      pass: false,
+      error: "Input exceeds maximum length of 100,000 characters"
+    };
+  }
   try {
     JSON.parse(output);
     return { pass: true };
@@ -32,6 +36,12 @@ export function checkJsonSchema(
   output: string,
   schema: JsonObject
 ): CheckResult {
+  if (output.length > 100_000) {
+    return {
+      pass: false,
+      error: "Input exceeds maximum length of 100,000 characters"
+    };
+  }
   let parsed: unknown;
   try {
     parsed = JSON.parse(output);
@@ -39,6 +49,7 @@ export function checkJsonSchema(
     return { pass: false, error: "Output is not valid JSON" };
   }
 
+  const ajv = new Ajv({ allErrors: true }); // Fresh instance per call
   const validate = ajv.compile(schema);
   const valid = validate(parsed);
 
@@ -58,6 +69,30 @@ export function checkJsonSchema(
  * Tests whether the output matches a given regex pattern.
  */
 export function checkRegexMatch(output: string, pattern: string): CheckResult {
+  if (output.length > 100_000) {
+    return {
+      pass: false,
+      error: "Input exceeds maximum length of 100,000 characters"
+    };
+  }
+  if (pattern.length > 500) {
+    return {
+      pass: false,
+      score: 0,
+      reason: "Regex pattern exceeds maximum length of 500 characters"
+    };
+  }
+  // Check for dangerous nested quantifiers
+  if (
+    /(\+|\*|\{)\s*(\+|\*|\{)/.test(pattern) ||
+    /\([^)]*(\+|\*)[^)]*\)\s*(\+|\*|\{)/.test(pattern)
+  ) {
+    return {
+      pass: false,
+      score: 0,
+      reason: "Regex pattern contains potentially dangerous nested quantifiers"
+    };
+  }
   try {
     const regex = new RegExp(pattern);
     const match = regex.test(output);

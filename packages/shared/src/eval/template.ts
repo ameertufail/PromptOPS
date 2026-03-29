@@ -30,12 +30,20 @@ export function extractVariables(template: string): string[] {
  * Renders a mustache-style template by replacing {{variable}} placeholders
  * with values from the provided variables object.
  *
+ * WARNING: Values are interpolated raw. If the rendered template is used as an LLM prompt,
+ * variable values could contain prompt injection content. Consider sanitizing inputs.
+ *
  * Throws if a variable in the template is not provided in the variables object.
  * Values are coerced to strings via String().
+ *
+ * @param template - The template string with {{variable}} placeholders
+ * @param variables - Key-value pairs to substitute into the template
+ * @param maxValueLength - Optional maximum length for each interpolated value (truncates if exceeded)
  */
 export function renderTemplate(
   template: string,
-  variables: Record<string, unknown>
+  variables: Record<string, unknown>,
+  maxValueLength?: number
 ): string {
   const required = extractVariables(template);
   const missing = required.filter(
@@ -47,7 +55,11 @@ export function renderTemplate(
   }
 
   return template.replace(VARIABLE_PATTERN, (_match, name: string) => {
-    return String(variables[name]);
+    const value = String(variables[name]);
+    if (maxValueLength !== undefined && value.length > maxValueLength) {
+      return value.slice(0, maxValueLength);
+    }
+    return value;
   });
 }
 

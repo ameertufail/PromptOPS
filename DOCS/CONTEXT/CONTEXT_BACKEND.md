@@ -144,3 +144,7 @@ Every route should follow: validate with Zod -> RBAC middleware -> business logi
 - 2026-03-06 - Task 4.2 - Validated backend startup on port 8787 and documented the local health/CORS runtime contract.
 - 2026-03-06 - Task 3.2 - Added backend smoke coverage for the health endpoint and documented the future integration-test targets.
 - 2026-03-02 - Task 2.1 - Scaffolded `apps/api` workspace boundary files and initialized the Hono entrypoint using shared contract constants.
+
+## Security Fixes Applied (2026-03-28)
+
+Backend agent: Fixed eval-run RBAC bypass (now uses standard resolveProjectAccess middleware); added LIMIT to all unbounded list queries (prompts, versions, org members, org projects, dataset items, eval run items, eval configs, API keys); wrapped JSON.parse in try/catch across all route serializers; validated X-Request-Id format; added size guard to diff algorithm; fixed bulkCreateDatasetItems to use DB session; removed key_hash from API key list SELECT.

@@ -5,8 +5,7 @@ import Link from "next/link";
 import { Github, ArrowLeft, ShieldCheck, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+import { api } from "@/lib/api-client";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -34,7 +33,7 @@ export default function LoginPage() {
 
   const handleLogin = () => {
     setLoading(true);
-    window.location.href = `${API_URL}/api/auth/github`;
+    window.location.href = api.paths.auth.github;
   };
 
   return (

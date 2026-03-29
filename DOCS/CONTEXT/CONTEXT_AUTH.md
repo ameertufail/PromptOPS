@@ -125,3 +125,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 - 2026-03-06 - Task 5.2 - Registered separate local and production GitHub OAuth apps and stored the production auth secrets in Cloudflare.
 - 2026-03-02 - Task 1.2 - Locked auth guardrails for BYOK boundaries, encrypted/hashed keys, JWT cookie policy, and deny-by-default RBAC.
 - 2026-03-02 - Task 4.1 - Added backend secrets template and seeded local `.dev.vars` placeholders for JWT, GitHub OAuth, and encryption key.
+
+## Security Fixes Applied (2026-03-28)
+
+Auth agent: Removed session token from OAuth redirect URL (cookie-only flow); added requireSessionIdentity to logout endpoint; removed PII (email/name) from JWT claims; added BACKEND_URL env var for OAuth redirect_uri; fixed cookie Secure flag to default true (except localhost); added error logging in auth middleware and OAuth callback catch blocks.

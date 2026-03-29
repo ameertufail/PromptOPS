@@ -37,11 +37,31 @@ function isValidLuhn(digits: string): boolean {
   return sum % 10 === 0;
 }
 
+function redactPii(category: string, value: string): string {
+  switch (category) {
+    case "email":
+      return value.replace(/^(.).*@(.).*(\..+)$/, "$1***@$2***$3");
+    case "phone":
+      return value.replace(/\d(?=\d{4})/g, "*");
+    case "ssn":
+      return "***-**-" + value.slice(-4);
+    case "ipAddress":
+      return value.replace(/\d+\.\d+$/, "*.*");
+    case "creditCard":
+      return value.slice(0, 4) + "****";
+    default:
+      return "***";
+  }
+}
+
 /**
  * Detects PII in the output text.
  * Returns flagged=true if any PII pattern matches.
  */
 export function detectPii(text: string): GuardrailResult {
+  if (text.length > 100_000) {
+    return { flagged: false, matches: [] };
+  }
   const matches: string[] = [];
 
   for (const [category, pattern] of Object.entries(PII_PATTERNS)) {
@@ -51,10 +71,10 @@ export function detectPii(text: string): GuardrailResult {
     while ((match = regex.exec(text)) !== null) {
       if (category === "creditCard") {
         if (isValidLuhn(match[0])) {
-          matches.push(`${category}:${match[0].slice(0, 4)}****`);
+          matches.push(`${category}:${redactPii(category, match[0])}`);
         }
       } else {
-        matches.push(`${category}:${match[0]}`);
+        matches.push(`${category}:${redactPii(category, match[0])}`);
       }
     }
   }
@@ -85,6 +105,9 @@ const INJECTION_PATTERNS: RegExp[] = [
  * Returns flagged=true if any injection pattern matches.
  */
 export function detectPromptInjection(text: string): GuardrailResult {
+  if (text.length > 100_000) {
+    return { flagged: false, matches: [] };
+  }
   const matches: string[] = [];
 
   for (const pattern of INJECTION_PATTERNS) {

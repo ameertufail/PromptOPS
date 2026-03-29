@@ -235,18 +235,20 @@ export class EvalEngine {
       expectedOutput
     });
 
-    // 4. Run guardrails
+    // 4. Run guardrails (use raw dataset input for injection check, not rendered prompt)
+    const rawInputText =
+      typeof item.input === "string" ? item.input : JSON.stringify(item.input);
     const baseGuardrailsResult = runGuardrails({
       piiDetection: rules.guardrails.piiDetection,
       promptInjectionCheck: rules.guardrails.promptInjectionCheck,
       output: baseResponse.output,
-      input: basePrompt
+      input: rawInputText
     });
     const candidateGuardrailsResult = runGuardrails({
       piiDetection: rules.guardrails.piiDetection,
       promptInjectionCheck: rules.guardrails.promptInjectionCheck,
       output: candidateResponse.output,
-      input: candidatePrompt
+      input: rawInputText
     });
 
     // 5. Optional judge scoring

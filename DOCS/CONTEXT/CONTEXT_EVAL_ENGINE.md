@@ -152,3 +152,7 @@ When a run completes, the backend computes and stores:
 - 2026-03-16 - Task 17.1 - Added eval config CRUD backend endpoints with project-scoped access control and dataset reference validation.
 - 2026-03-06 - Task 3.2 - Added a shared-package smoke-test baseline and documented the immediate eval-utility unit-test targets.
 - 2026-03-02 - Task 1.1 - Confirmed browser-first eval execution and added scope-lock/non-goal guardrails for eval architecture.
+
+## Security Fixes Applied (2026-03-28)
+
+Eval Engine agent: Added SSRF validation for custom LLM base URLs; hardened judge prompt with XML delimiters and anti-injection instructions; sanitized API keys from error messages in all 3 LLM clients; added 60s fetch timeouts; added ReDoS protection (pattern length + nested quantifier check); fixed Ajv memory leak (new instance per call); added PII redaction to all guardrail categories; added input length limits to all eval functions; added LLM response structure validation; added template injection warning; fixed guardrail to check raw dataset input.

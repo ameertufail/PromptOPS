@@ -163,3 +163,7 @@ Located at `apps/web/`. Next.js 14 with the App Router. Entry: `src/app/`.
 - 2026-03-06 - Task 4.2 - Validated frontend startup on port 3000 and documented the local runtime contract against the Worker API scaffold.
 - 2026-03-02 - Task 4.1 - Added the frontend env template and seeded local `.env.local` with localhost API/app URLs.
 - 2026-03-02 - Task 2.1 - Scaffolded `apps/web` workspace boundaries and wired frontend shared-contract usage via `@promptops/shared`.
+
+## Security Fixes Applied (2026-03-28)
+
+Frontend agent: Removed localStorage token storage (cookie-only auth); removed token-from-URL in callback page; whitelisted auth error messages; added CSV export sanitization against formula injection with export page limit; fixed auth gate race condition with useEffect; added handleResume error handling; fixed clipboard API with async/try-catch; unified API_URL computation; fixed React Fragment key prop; added runtime param validation.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import type {
@@ -355,9 +355,8 @@ export default function DatasetDetailPage() {
                   {items.map((item, idx) => {
                     const isExpanded = expandedItem === item.id;
                     return (
-                      <>
+                      <React.Fragment key={item.id}>
                         <motion.tr
-                          key={item.id}
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{
@@ -510,7 +509,7 @@ export default function DatasetDetailPage() {
                             </motion.tr>
                           )}
                         </AnimatePresence>
-                      </>
+                      </React.Fragment>
                     );
                   })}
                 </TableBody>

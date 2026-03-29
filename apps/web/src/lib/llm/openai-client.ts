@@ -60,20 +60,26 @@ export class OpenAIClient implements LLMClient {
         Authorization: `Bearer ${this.apiKey}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(60_000)
     });
 
     if (!res.ok) {
       const errorBody = await res.text();
-      throw new Error(
-        `OpenAI API error ${res.status}: ${errorBody.slice(0, 500)}`
-      );
+      const safeBody = errorBody
+        .slice(0, 500)
+        .replace(this.apiKey, "[REDACTED]");
+      throw new Error(`OpenAI API error ${res.status}: ${safeBody}`);
     }
 
     const data = (await res.json()) as {
       choices: Array<{ message: { content: string } }>;
       usage?: { total_tokens: number };
     };
+
+    if (!data.choices?.length || !data.choices[0]?.message?.content) {
+      throw new Error("Invalid LLM response: missing or empty choices");
+    }
 
     const latencyMs = Math.round(performance.now() - startMs);
     const output = data.choices[0]?.message?.content ?? "";

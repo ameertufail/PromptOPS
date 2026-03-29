@@ -60,7 +60,7 @@ export default function EvalRunExecutionPage() {
   const router = useRouter();
   const { currentOrg } = useOrg();
   const { currentProject } = useProject();
-  const configId = params.configId as string;
+  const configId = typeof params.configId === "string" ? params.configId : "";
 
   // Setup state
   const [config, setConfig] = useState<EvalConfig | null>(null);
@@ -231,15 +231,37 @@ export default function EvalRunExecutionPage() {
     if (!engineRef.current) return;
     engineRef.current.resume();
     setErrorMessage(null);
-    engineRef.current.execute().then(() => {
-      setPhase("completing");
-      if (run) {
-        api.patch(api.paths.evalRunComplete(run.id), {}).then(() => {
-          setPhase("done");
-          toast.success("Eval run completed!");
-        });
-      }
-    });
+    engineRef.current
+      .execute()
+      .then(() => {
+        setPhase("completing");
+        if (run) {
+          api
+            .patch(api.paths.evalRunComplete(run.id), {})
+            .then(() => {
+              setPhase("done");
+              toast.success("Eval run completed!");
+            })
+            .catch((err) => {
+              setPhase("error");
+              setErrorMessage(
+                err instanceof Error
+                  ? err.message
+                  : "Failed to complete eval run."
+              );
+              toast.error("Failed to complete eval run.");
+            });
+        }
+      })
+      .catch((err) => {
+        setPhase("error");
+        setErrorMessage(
+          err instanceof Error
+            ? err.message
+            : "An error occurred while resuming."
+        );
+        toast.error("Eval run failed.");
+      });
   };
 
   const basePath = `/${currentOrg?.slug}/${currentProject?.slug}`;

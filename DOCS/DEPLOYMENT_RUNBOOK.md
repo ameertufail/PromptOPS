@@ -14,16 +14,16 @@ Use this guide for the manual provisioning work that cannot be done from the rep
 
 Capture these values as you go:
 
-| Item                                     | Where you get it                                       | Where it goes                                           |
-| ---------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
-| Cloudflare Worker URL                    | `wrangler deploy` output                               | `NEXT_PUBLIC_API_URL`, GitHub production OAuth callback |
-| D1 `database_id`                         | `wrangler d1 create ... --update-config` output        | `apps/api/wrangler.toml`                                |
-| R2 bucket binding                        | `wrangler r2 bucket create ... --update-config` output | `apps/api/wrangler.toml`                                |
-| Vercel production URL                    | Vercel project dashboard                               | `NEXT_PUBLIC_APP_URL`, `FRONTEND_URL`                   |
-| Local GitHub OAuth client ID/secret      | GitHub Developer Settings                              | `apps/api/.dev.vars`                                    |
-| Production GitHub OAuth client ID/secret | GitHub Developer Settings                              | Wrangler production secrets                             |
-| `JWT_SECRET`                             | generated locally                                      | Wrangler production secret                              |
-| `ENCRYPTION_KEY`                         | generated locally                                      | Wrangler production secret                              |
+| Item                                     | Where you get it                                       | Where it goes                                                                          |
+| ---------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| Cloudflare Worker URL                    | `wrangler deploy` output                               | `NEXT_PUBLIC_API_URL`                                                                  |
+| D1 `database_id`                         | `wrangler d1 create ... --update-config` output        | `apps/api/wrangler.toml`                                                               |
+| R2 bucket binding                        | `wrangler r2 bucket create ... --update-config` output | `apps/api/wrangler.toml`                                                               |
+| Vercel production URL                    | Vercel project dashboard                               | `NEXT_PUBLIC_APP_URL`, `FRONTEND_URL`, `BACKEND_URL`, GitHub production OAuth callback |
+| Local GitHub OAuth client ID/secret      | GitHub Developer Settings                              | `apps/api/.dev.vars`                                                                   |
+| Production GitHub OAuth client ID/secret | GitHub Developer Settings                              | Wrangler production secrets                                                            |
+| `JWT_SECRET`                             | generated locally                                      | Wrangler production secret                                                             |
+| `ENCRYPTION_KEY`                         | generated locally                                      | Wrangler production secret                                                             |
 
 ## 1. Cloudflare Account And Worker Resources
 
@@ -92,8 +92,10 @@ GitHub OAuth Apps do not support one callback setup that cleanly covers both `lo
 2. Use:
    - Application name: `PromptOps Studio Production`
    - Homepage URL: `https://prompt-ops-web.vercel.app`
-   - Authorization callback URL: `https://promptops-api-production.promptops-ameer.workers.dev/api/auth/callback`
+   - Authorization callback URL: `https://prompt-ops-web.vercel.app/api/auth/callback`
 3. Generate the client secret and keep it only in a secure notes manager long enough to set the Wrangler secrets.
+
+Production uses the Vercel `/api/*` rewrite for OAuth callbacks so the browser stores both the OAuth state cookie and `po_session` cookie on `prompt-ops-web.vercel.app`. Do not point the production GitHub OAuth App directly at the Worker domain unless the frontend is also changed to start and verify auth on that same domain.
 
 ## 3. Production Secrets
 
@@ -156,7 +158,9 @@ Run this after pulling the Phase 7 migration files locally and before you start 
 5. Deploy once and record the assigned production URL.
 6. If the final Vercel URL is not `https://prompt-ops-web.vercel.app`, update:
    - the GitHub production OAuth app Homepage URL
+   - the GitHub production OAuth app Authorization callback URL (`https://<your-vercel-domain>/api/auth/callback`)
    - the `FRONTEND_URL` value under `[env.production.vars]` in [`apps/api/wrangler.toml`](../apps/api/wrangler.toml)
+   - the `BACKEND_URL` value under `[env.production.vars]` in [`apps/api/wrangler.toml`](../apps/api/wrangler.toml)
    - `NEXT_PUBLIC_APP_URL` in Vercel
 
 ## 5. Verification Checklist
@@ -165,7 +169,8 @@ Run this after pulling the Phase 7 migration files locally and before you start 
 - Cloudflare production secrets exist for `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `JWT_SECRET`, and `ENCRYPTION_KEY`
 - Vercel production env vars exist for `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_APP_URL`
 - `GET https://promptops-api-production.promptops-ameer.workers.dev/api/health` returns `200`
-- The GitHub production OAuth app callback URL matches the Worker domain exactly
+- The GitHub production OAuth app callback URL is `https://prompt-ops-web.vercel.app/api/auth/callback`
+- The Cloudflare production `BACKEND_URL` matches that callback origin so GitHub authorize and token-exchange `redirect_uri` values are identical
 
 ## 6. CI/CD — GitHub Actions Deploy
 

@@ -17,14 +17,14 @@ User clicks login → backend redirects to GitHub (with CSRF state param) → Gi
 
 GitHub OAuth Apps support one callback base URL, so keep one app for local development and a separate app for production.
 
-The GitHub provider callback URL should target the backend route, not the frontend route:
+The GitHub provider callback URL must match the public origin used for the OAuth `redirect_uri`:
 
-- Local: `http://localhost:8787/api/auth/callback`
-- Production: `https://promptops-api-production.promptops-ameer.workers.dev/api/auth/callback`
+- Local direct API auth: `http://localhost:8787/api/auth/callback`
+- Production: `https://prompt-ops-web.vercel.app/api/auth/callback`
 
-The frontend `/callback` route is the post-auth app landing page, not the GitHub provider callback target.
+In production, `/api/auth/callback` is a frontend-domain Vercel rewrite to the Worker. This keeps the OAuth state cookie, session cookie, and `/api/auth/me` verification on `prompt-ops-web.vercel.app`, avoiding cross-site cookie dependence. The frontend `/callback` route is still the post-auth app landing page, not the GitHub provider callback target.
 
-Secrets needed: environment-specific `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `JWT_SECRET` values in Wrangler secrets.
+Secrets needed: environment-specific `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `JWT_SECRET` values in Wrangler secrets. Public callback origins are configured through `BACKEND_URL` and `FRONTEND_URL` in `apps/api/wrangler.toml`.
 
 ## RBAC
 
@@ -102,6 +102,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 
 - Format: `YYYY-MM-DD - Task X.Y - one-line summary`
 - Add newest entry at the top.
+- 2026-04-29 - Production OAuth callback fix - Pointed production `BACKEND_URL` and the GitHub OAuth callback contract at the frontend-proxied `/api/auth/callback` route so OAuth state/session cookies stay on the Vercel app origin.
 - 2026-03-16 - Login page redesign - Redesigned login page: aurora background, enlarged card (420px), purple branded logo with glow, shimmer CTA button with loading state (spinner + "Redirecting..."), trust signals ("Your API keys never touch our servers"), back-to-home link. Redesigned callback error card with matching styling. Auth layout updated with aurora blobs, footer with GitHub/MIT links.
 - 2026-03-16 - Landing page auth change - Removed auto-redirect for logged-in users on `/`. Landing page now always renders; auth check runs in background and adapts CTA labels (navbar: "Dashboard"/"Sign In", hero: "Go to Dashboard"/"Get Started") without blocking page render.
 - 2026-03-16 - Task 22.2 - Added QA integration tests for auth edge cases (expired token, wrong secret, missing code) and RBAC role matrix validation.
@@ -129,3 +130,7 @@ JWT in Wrangler secrets. CSRF on OAuth. API keys hashed. Provider keys encrypted
 ## Security Fixes Applied (2026-03-28)
 
 Auth agent: Removed session token from OAuth redirect URL (cookie-only flow); added requireSessionIdentity to logout endpoint; removed PII (email/name) from JWT claims; added BACKEND_URL env var for OAuth redirect_uri; fixed cookie Secure flag to default true (except localhost); added error logging in auth middleware and OAuth callback catch blocks.
+
+## Security Fixes Applied (2026-04-29)
+
+OAuth callback origin now stays same-origin with the Vercel frontend in production. Logout remains idempotent and only clears the caller's `po_session` cookie; it does not expose user data or mutate server-side records.

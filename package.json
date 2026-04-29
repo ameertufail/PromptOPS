@@ -18,7 +18,7 @@
     "format:check": "corepack pnpm exec prettier --check .",
     "typecheck": "corepack pnpm -r typecheck",
     "fix": "corepack pnpm lint:fix && corepack pnpm format && corepack pnpm typecheck",
-    "test": "corepack pnpm -r test"
+    "test": "corepack pnpm exec vitest run CLAUDE.md.test.ts --config vitest.config.ts && corepack pnpm -r test"
   },
   "packageManager": "pnpm@10.2.0",
   "engines": {

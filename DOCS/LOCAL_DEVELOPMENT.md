@@ -96,6 +96,7 @@ This becomes relevant once the OAuth routes are enabled.
 - Confirm the local GitHub OAuth app callback URL is `http://localhost:8787/api/auth/callback`.
 - Keep `NEXT_PUBLIC_APP_URL=http://localhost:3000`.
 - Keep `FRONTEND_URL=http://localhost:3000` in `apps/api/wrangler.toml`.
+- Keep `BACKEND_URL=http://localhost:8787` in `apps/api/wrangler.toml` for local direct API auth.
 - Use a separate production GitHub OAuth app instead of reusing local credentials.
 
 ### Missing secrets in `apps/api/.dev.vars`

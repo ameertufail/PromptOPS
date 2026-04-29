@@ -144,12 +144,8 @@ authRoutes.get(`${API_AUTH_BASE_PATH}/me`, requireSessionIdentity(), (c) => {
   );
 });
 
-authRoutes.post(
-  `${API_AUTH_BASE_PATH}/logout`,
-  requireSessionIdentity(),
-  (c) => {
-    clearSessionCookie(c);
+authRoutes.post(`${API_AUTH_BASE_PATH}/logout`, (c) => {
+  clearSessionCookie(c);
 
-    return c.json(authLogoutResponseSchema.parse({ success: true }));
-  }
-);
+  return c.json(authLogoutResponseSchema.parse({ success: true }));
+});

@@ -23,3 +23,5 @@ coverage/
 
 #Misc
 D1DB.txt
+.omx/
+.codex/

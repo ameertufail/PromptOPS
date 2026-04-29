@@ -41,6 +41,25 @@ describe("auth routes", () => {
     );
   });
 
+  it("uses the configured public callback origin for GitHub OAuth", async () => {
+    const response = await createApp().request(
+      "https://promptops-api-production.promptops-ameer.workers.dev/api/auth/github",
+      undefined,
+      {
+        BACKEND_URL: "https://prompt-ops-web.vercel.app",
+        GITHUB_CLIENT_ID: "github-client-id"
+      } as AppBindings
+    );
+
+    const location = response.headers.get("location");
+
+    expect(response.status).toBe(302);
+    expect(location).toContain("https://github.com/login/oauth/authorize");
+    expect(location).toContain(
+      "redirect_uri=https%3A%2F%2Fprompt-ops-web.vercel.app%2Fapi%2Fauth%2Fcallback"
+    );
+  });
+
   it("redirects back to the frontend when OAuth state validation fails", async () => {
     const response = await createApp().request(
       "http://localhost:8787/api/auth/callback?code=abc123&state=wrong-state",
@@ -114,7 +133,81 @@ describe("auth routes", () => {
       `${AUTH_SESSION_COOKIE_NAME}=`
     );
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      body: JSON.stringify({
+        client_id: "github-client-id",
+        client_secret: "github-client-secret",
+        code: "abc123",
+        redirect_uri: "http://localhost:8787/api/auth/callback",
+        state: "expected-state"
+      })
+    });
     expect(db.sessionConstraints).toEqual(["first-primary"]);
+  });
+
+  it("exchanges GitHub codes with the configured public callback origin", async () => {
+    const upsertedUser = {
+      avatar_url: "https://avatars.example/alice.png",
+      created_at: "2026-03-08T12:00:00.000Z",
+      email: "alice@example.com",
+      github_id: 42,
+      id: "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+      name: "Alice"
+    };
+    const db = new MockDb([[createResult([]), createResult([upsertedUser])]]);
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ access_token: "gho_token" }), {
+          status: 200
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            avatar_url: upsertedUser.avatar_url,
+            email: upsertedUser.email,
+            id: upsertedUser.github_id,
+            login: "alice",
+            name: upsertedUser.name
+          }),
+          {
+            status: 200
+          }
+        )
+      );
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await createApp().request(
+      "https://promptops-api-production.promptops-ameer.workers.dev/api/auth/callback?code=abc123&state=expected-state",
+      {
+        headers: {
+          Cookie: `${getOAuthStateCookieName()}=expected-state`
+        }
+      },
+      {
+        BACKEND_URL: "https://prompt-ops-web.vercel.app",
+        DB: db as unknown as D1Database,
+        GITHUB_CLIENT_ID: "github-client-id",
+        GITHUB_CLIENT_SECRET: "github-client-secret",
+        JWT_SECRET: "jwt-secret"
+      } as AppBindings
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("set-cookie")).toContain(
+      `${AUTH_SESSION_COOKIE_NAME}=`
+    );
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      body: JSON.stringify({
+        client_id: "github-client-id",
+        client_secret: "github-client-secret",
+        code: "abc123",
+        redirect_uri: "https://prompt-ops-web.vercel.app/api/auth/callback",
+        state: "expected-state"
+      })
+    });
   });
 
   it("returns the active session for /api/auth/me when the cookie is valid", async () => {

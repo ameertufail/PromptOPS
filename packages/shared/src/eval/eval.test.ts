@@ -183,6 +183,22 @@ describe("checkRegexMatch", () => {
     expect(result.pass).toBe(false);
     expect(result.error).toContain("Invalid regex");
   });
+
+  it("returns normalized errors for oversized regex patterns", () => {
+    const result = checkRegexMatch("test", "a".repeat(501));
+    expect(result).toEqual({
+      pass: false,
+      error: "Regex pattern exceeds maximum length of 500 characters"
+    });
+  });
+
+  it("returns normalized errors for dangerous nested regex quantifiers", () => {
+    const result = checkRegexMatch("test", "(a+)+$");
+    expect(result).toEqual({
+      pass: false,
+      error: "Regex pattern contains potentially dangerous nested quantifiers"
+    });
+  });
 });
 
 describe("checkExactMatch", () => {

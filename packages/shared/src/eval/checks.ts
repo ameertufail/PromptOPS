@@ -78,8 +78,7 @@ export function checkRegexMatch(output: string, pattern: string): CheckResult {
   if (pattern.length > 500) {
     return {
       pass: false,
-      score: 0,
-      reason: "Regex pattern exceeds maximum length of 500 characters"
+      error: "Regex pattern exceeds maximum length of 500 characters"
     };
   }
   // Check for dangerous nested quantifiers
@@ -89,8 +88,7 @@ export function checkRegexMatch(output: string, pattern: string): CheckResult {
   ) {
     return {
       pass: false,
-      score: 0,
-      reason: "Regex pattern contains potentially dangerous nested quantifiers"
+      error: "Regex pattern contains potentially dangerous nested quantifiers"
     };
   }
   try {

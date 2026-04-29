@@ -5,6 +5,7 @@ compatibility_date = "2026-03-02"
 [vars]
 ENVIRONMENT = "development"
 FRONTEND_URL = "http://localhost:3000"
+BACKEND_URL = "http://localhost:8787"
 
 [[d1_databases]]
 binding = "DB"
@@ -20,6 +21,7 @@ remote = true
 [env.production.vars]
 ENVIRONMENT = "production"
 FRONTEND_URL = "https://prompt-ops-web.vercel.app"
+BACKEND_URL = "https://prompt-ops-web.vercel.app"
 
 [[env.production.d1_databases]]
 binding = "DB"

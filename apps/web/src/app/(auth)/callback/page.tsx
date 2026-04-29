@@ -19,6 +19,7 @@ export default function CallbackPage() {
       auth_callback_failed: "Authentication failed. Please try again.",
       missing_email: "Could not retrieve your email from GitHub.",
       missing_state: "Invalid authentication state. Please try again.",
+      oauth_state_mismatch: "Authentication state mismatch. Please try again.",
       state_mismatch: "Authentication state mismatch. Please try again."
     };
     const authError = params.get("error");

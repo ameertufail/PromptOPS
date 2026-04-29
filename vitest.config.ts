@@ -7,7 +7,8 @@ export default defineConfig({
       "apps/**/*.{test,spec}.ts",
       "apps/**/*.{test,spec}.tsx",
       "packages/**/*.{test,spec}.ts",
-      "packages/**/*.{test,spec}.tsx"
+      "packages/**/*.{test,spec}.tsx",
+      "*.{test,spec}.ts"
     ]
   }
 });

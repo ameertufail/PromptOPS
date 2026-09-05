@@ -538,20 +538,17 @@ export const apiHealthResponseSchema = z
   })
   .strict();
 
+// Not .strict(): GitHub owns these params and may add new ones (e.g. iss per RFC 9207).
 export const authGithubCallbackQuerySchema = z.union([
-  z
-    .object({
-      code: nonEmptyTrimmedStringSchema,
-      state: nonEmptyTrimmedStringSchema
-    })
-    .strict(),
-  z
-    .object({
-      error: nonEmptyTrimmedStringSchema,
-      errorDescription: z.string().optional(),
-      state: z.string().optional()
-    })
-    .strict()
+  z.object({
+    code: nonEmptyTrimmedStringSchema,
+    state: nonEmptyTrimmedStringSchema
+  }),
+  z.object({
+    error: nonEmptyTrimmedStringSchema,
+    errorDescription: z.string().optional(),
+    state: z.string().optional()
+  })
 ]);
 
 export const authSessionResponseSchema = z

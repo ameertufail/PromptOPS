@@ -145,6 +145,64 @@ describe("auth routes", () => {
     expect(db.sessionConstraints).toEqual(["first-primary"]);
   });
 
+  it("ignores extra provider params like iss on the OAuth callback", async () => {
+    const upsertedUser = {
+      avatar_url: "https://avatars.example/alice.png",
+      created_at: "2026-03-08T12:00:00.000Z",
+      email: "alice@example.com",
+      github_id: 42,
+      id: "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+      name: "Alice"
+    };
+    const db = new MockDb([[createResult([]), createResult([upsertedUser])]]);
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ access_token: "gho_token" }), {
+          status: 200
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            avatar_url: upsertedUser.avatar_url,
+            email: upsertedUser.email,
+            id: upsertedUser.github_id,
+            login: "alice",
+            name: upsertedUser.name
+          }),
+          {
+            status: 200
+          }
+        )
+      );
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await createApp().request(
+      "http://localhost:8787/api/auth/callback?code=abc123&state=expected-state&iss=https%3A%2F%2Fgithub.com%2Flogin%2Foauth",
+      {
+        headers: {
+          Cookie: `${getOAuthStateCookieName()}=expected-state`
+        }
+      },
+      {
+        DB: db as unknown as D1Database,
+        GITHUB_CLIENT_ID: "github-client-id",
+        GITHUB_CLIENT_SECRET: "github-client-secret",
+        JWT_SECRET: "jwt-secret"
+      } as AppBindings
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost:3000/callback"
+    );
+    expect(response.headers.get("set-cookie")).toContain(
+      `${AUTH_SESSION_COOKIE_NAME}=`
+    );
+  });
+
   it("exchanges GitHub codes with the configured public callback origin", async () => {
     const upsertedUser = {
       avatar_url: "https://avatars.example/alice.png",

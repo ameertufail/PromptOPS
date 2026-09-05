@@ -387,12 +387,24 @@ describe("QA: Security headers on all API responses", () => {
     expect(response.headers.get("X-Request-Id")).toBeTruthy();
   });
 
-  it("preserves request ID when provided", async () => {
+  it("preserves a valid UUID request ID when provided", async () => {
+    const requestId = "0f8fad5b-d9cb-469f-a165-70867728950e";
+    const response = await createApp().request("/api/health", {
+      headers: { "X-Request-Id": requestId }
+    });
+
+    expect(response.headers.get("X-Request-Id")).toBe(requestId);
+  });
+
+  it("replaces a non-UUID request ID with a generated one", async () => {
     const response = await createApp().request("/api/health", {
       headers: { "X-Request-Id": "custom-req-id-123" }
     });
 
-    expect(response.headers.get("X-Request-Id")).toBe("custom-req-id-123");
+    const requestId = response.headers.get("X-Request-Id");
+
+    expect(requestId).toBeTruthy();
+    expect(requestId).not.toBe("custom-req-id-123");
   });
 });
 
